@@ -1,0 +1,524 @@
+<html>
+  <head>
+    <meta content='text/html;charset=UTF-8' http-equiv='Content-Type'/>
+    <title>NLP &mdash; Assignment 6 - Parsing</title>
+    <style type='text/css'>
+      @import '../css/default.css';
+      @import '../css/syntax.css';
+    </style>
+    <link rel="shortcut icon" href="../favicon.ico" />
+    <meta content='Natural Language Processing Class' name='subject'/>
+    <!--<link href='images/favicon.png' rel='shortcut icon'>-->
+
+    <!-- MathJax Section -->
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script>
+      MathJax.Hub.Config({
+        tex2jax: {
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+        }
+      });
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+
+  </head>
+  <body>
+    <div id='wrap'>
+      <div id='header'>
+        <img height="100" alt='NLP Class' src='../images/utexas.png'/>
+        <div class='tagline'>Natural Language Processing: Fall 2013</div>
+      </div>
+      <div id='pages'>
+        <ol class='toc'>
+          <li>NLP Class
+            <ol class="toc">
+              <li><a href='../index.html'>Home</a></li>
+              <li><a href='../syllabus.html'>Syllabus</a></li>
+              <li><a href='../schedule.html'>Schedule</a></li>
+              <li><a href='../notes'>Notes</a></li>
+              <li><a href='../requirements.html'>Assignment Requirements</a></li>
+              <li><a href='../links.html'>Links</a></li>
+            </ol>
+          </li>
+          <li>Useful Information
+            <ol class="toc">
+              <li><a href='../scala'>Scala</a></li>
+            </ol>
+          </li>
+          <li>Assignments
+            <ol class="toc">
+              <li><a href='../assignments/a0programming.html'>#0 - Programming</a></li>
+              <li><a href='../assignments/a1prob.html'>#1 - Probability</a></li>
+              <li><a href='../assignments/a2classification.html'>#2 - Classification</a></li>
+              <li><a href='../assignments/a3ngrams.html'>#3 - N-Grams</a></li>
+              <li><a href='../assignments/a4hmm.html'>#4 - HMMs</a></li>
+              <li><a href='../assignments/a5maxent.html'>#5 - MaxEnt</a></li>
+              <li><a href='../assignments/a6parsing.html'>#6 - Parsing</a></li>
+            </ol>
+          </li>
+          <li>External Links
+            <ol class="toc">
+              <li><a href='http://www.utcompling.com'>UTCL Main site</a></li>
+              <li><a href='https://courses.utexas.edu/webapps/portal/frameset.jsp?tab_tab_group_id=_11_1&url=%2Fwebapps%2Fblackboard%2Fexecute%2Flauncher%3Ftype%3DCourse%26id%3D_159651_1%26url%3D'>Blackboard</a></li>
+            </ol>
+          </li>
+        </ol>
+      </div>
+      <div id='content'>
+        <h1>Assignment 6 - Parsing</h1>
+        <ol class="toc"><li><a href="#introduction">Introduction</a></li><li><a href="#part_1_trees">Part 1: Trees</a></li><li><a href="#part_2_chomsky_normal_form_10_points">Part 2: Chomsky Normal Form (10 points)</a></li><li><a href="#part_3_likelihood_of_a_parsed_sentence_10_points">Part 3: Likelihood of a Parsed Sentence (10 points)</a></li><li><a href="#part_4_unsmoothed_pcfg_parser_trainer_10_points">Part 4: Unsmoothed PCFG Parser Trainer (10 points)</a></li><li><a href="#part_5_parsing_with_pcky_30_points">Part 5: Parsing with P-CKY (30 points)</a></li><li><a href="#part_6_generating_text_10_points">Part 6: Generating Text (10 points)</a></li><li><a href="#part_7_add_smoothed_pcfg_30_points">Part 7: Add-λ Smoothed PCFG (30 points)</a></li></ol>
+        <p><strong>Due: Tuesday, December 3. Programming at noon. Written portions at 2pm.</strong></p>
+
+<ul>
+<li>Written portions are found throughout the assignment, and are clearly marked.</li>
+
+<li>Coding portions must be turned in via GitHub using the tag <code>a6</code>.</li>
+</ul>
+
+<p>&#160;<span><span style='color: red; font-weight: bold'>UPDATE:</span> nlpclass-fall2013 dependency changed to version 0011</span></p>
+
+<h2 id='introduction'>Introduction</h2>
+
+<p>This homework is designed to guide you in constructing a syntactic parser built from a probabilistic context-free grammar (PCFG).</p>
+
+<p>To complete the homework, use the code and interfaces found in the class GitHub repository.</p>
+
+<ul>
+<li>Your written answers should be hand-written or printed and handed in before class. The problem descriptions clearly state where a written answer is expected.</li>
+
+<li>Programming portions should be turned in via GitHub by noon on the assignment due date.</li>
+</ul>
+
+<p>There are 100 points total in this assignment. Point values for each problem/sub-problem are given below.</p>
+
+<p>The classes used here will extend traits that are found in the <code>nlpclass-fall2013</code> dependency. In order to get these updates, you will need to edit your root <code>build.sbt</code> file and update the version of the dependency:</p>
+
+<pre><code>libraryDependencies += &quot;com.utcompling&quot; % &quot;nlpclass-fall2013_2.10&quot; % &quot;0011&quot; changing()</code></pre>
+
+<p>If you use Eclipse, then after you modify the dependency you will once again have to run <code>sbt &quot;eclipse with-source=true&quot;</code> and refresh your project in Eclipse.</p>
+
+<p><strong>If you have any questions or problems with any of the materials, don&#8217;t hesitate to ask!</strong></p>
+
+<p><strong>Tip:</strong> Look over the entire homework before starting on it. Then read through each problem carefully, in its entirety, before answering questions and doing the implementation.</p>
+
+<p>Finally: if possible, don&#8217;t print this homework out! Just read it online, which ensures you&#8217;ll be looking at the latest version of the homework (in case there are any corrections), you can easily cut-and-paste and follow links, and you won&#8217;t waste paper.</p>
+
+<h2 id='part_1_trees'>Part 1: Trees</h2>
+
+<p>With a context-free grammar, the syntax of a sentence is represented as a tree. Thus, your code will have to represent trees. I have provided a some tools to get your started.</p>
+
+<p>First, there is an trait <code>nlpclass.Tree</code> that will encompass all tree structures. The trait requires only that a tree implementation have a <code>label</code>, and a vector of <code>children</code>:</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>trait</span> <span class='nc'>Tree</span> <span class='o'>{</span>
+  <span class='k'>def</span> <span class='n'>label</span><span class='k'>:</span> <span class='kt'>String</span>
+  <span class='k'>def</span> <span class='n'>children</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[</span><span class='kt'>Tree</span><span class='o'>]</span>
+<span class='o'>}</span>
+</code></pre></div>
+<p>Since you will have to read in data from files, it will be necessary to be able to convert a string representation of a tree into a <code>Tree</code> object. The <code>nlpclass.Tree.fromString</code> method does exactly this.</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>import</span> <span class='nn'>nlpclass._</span>
+<span class='k'>val</span> <span class='n'>s</span> <span class='k'>=</span> <span class='s'>&quot;(S (NP (D the) (N man)) (VP (V walks) (NP (D the) (N dog))))&quot;</span>
+<span class='k'>val</span> <span class='n'>t</span> <span class='k'>=</span> <span class='nc'>Tree</span><span class='o'>.</span><span class='n'>fromString</span><span class='o'>(</span><span class='n'>s</span><span class='o'>)</span>
+</code></pre></div>
+<p>The <code>Tree.fromString</code> method returns an object that implements the <code>Tree</code> trait. Specifically, it returns an instance of <code>nlpclass.TreeNode</code>, a very basic kind of <code>Tree</code>. A <code>TreeNode</code> simply stores the label and children that are required by the <code>Tree</code> trait (and the <code>children</code> field defaults to an empty vector):</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>case</span> <span class='k'>class</span> <span class='nc'>TreeNode</span><span class='o'>(</span><span class='n'>label</span><span class='k'>:</span> <span class='kt'>String</span><span class='o'>,</span> <span class='n'>children</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[</span><span class='kt'>Tree</span><span class='o'>]</span> <span class='k'>=</span> <span class='nc'>Vector</span><span class='o'>())</span> <span class='k'>extends</span> <span class='nc'>Tree</span>
+</code></pre></div>
+<p>The <code>Tree</code> trait also provides a <code>toString</code> implementation and method called <code>pretty</code> that can be used to view the tree in different forms.</p>
+
+<pre><code>scala&gt; println(t)
+(S (NP (D the) (N man)) (VP (V walks) (NP (D the) (N dog))))
+scala&gt; println(t.pretty)
+S
+  NP
+    D the
+    N man
+  VP
+    V walks
+    NP
+      D the
+      N dog</code></pre>
+
+<p>Further, I have provided a method <code>nlpclass.TreeViz.drawTree</code> that produces an image of the tree</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='nc'>TreeViz</span><span class='o'>.</span><span class='n'>drawTree</span><span class='o'>(</span><span class='n'>t</span><span class='o'>)</span>
+</code></pre></div>
+<h2 id='part_2_chomsky_normal_form_10_points'>Part 2: Chomsky Normal Form (10 points)</h2>
+
+<h3 id='to_cnf'>To CNF</h3>
+
+<p>Our goal is to implement the CKY algorithm for parsing. Since CKY requires that all trees be in Chomsky Normal Form (CNF), we will first write a function for transforming a tree into CNF. However, we will not strictly be using CNF; we want to allow for unary productions since this makes it easier to covert back from CNF.</p>
+
+<p>A tree is in CNF (with unary rules) if each of its productions fall into one of three categories:</p>
+
+<ul>
+<li>A non-terminal yielding exactly two non-terminals: A → B C</li>
+
+<li>A non-terminal yielding exactly one non-terminals: A → B</li>
+
+<li>A non-terminal yielding exactly one terminal: A → w</li>
+</ul>
+
+<p>It is provable that any CFG can be converted to a CFG in CNF. To transform any tree into a CNF tree, you should trace through the tree, making the following change:</p>
+
+<ul>
+<li>
+<p>If the node has more than two children, take the last two children X and Y and group them into a new node {X+Y} that has X and Y as children. Repeat until there are exactly two children.</p>
+
+<p>(NP (D a) (A big) (A brown) (N dog)) <br /> → (NP (D a) (A big) ({A+N} (A brown) (N dog)))<br /> → (NP (D a) ({A+{A+N}} (A big) ({A+N} (A brown) (N dog))))</p>
+
+<p>Note: While it would be possible to group in a left-branching way (eg, &#8220;(NP ({D+A} N))&#8221; instead of &#8220;(NP (D {A+N}))&#8221;), I find it more visually appealing to branch right since English is generally a right-branching language.</p>
+</li>
+</ul>
+
+<p>We do not need to worry about cases where terminals are found in non-unary productions since all of our terminals are words, which cannot have children, and all words are produced by part-of-speech tags, which do not have non-terminal children.</p>
+
+<p>For this part of the assigment, you will create an object called <code>nlp.a6.Cnf</code> with a method <code>convertTree</code> that takes a tree as a parameter and returns a new tree that is in CNF:</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>object</span> <span class='nc'>Cnf</span> <span class='o'>{</span>
+  <span class='k'>def</span> <span class='n'>convertTree</span><span class='o'>(</span><span class='n'>t</span><span class='k'>:</span> <span class='kt'>Tree</span><span class='o'>)</span><span class='k'>:</span> <span class='kt'>?</span> <span class='o'>=</span> <span class='o'>{</span>
+    <span class='c1'>// your code here</span>
+  <span class='o'>}</span>
+<span class='o'>}</span>
+</code></pre></div>
+<p>Note the question mark: your result tree <strong>does not need to use the TreeNode class</strong>. You are welcome to implement your own CNF tree class or CNF tree class hierarchy if you find it useful. Whatever you decide to use as your CNF tree representation will be the return type from <code>apply</code>. If you want the tree printing and TreeViz functionality, then have your classes extend <code>nlpclass.Tree</code>.</p>
+
+<p>Once this method is implemented, you should get behavior similar to this:</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>import</span> <span class='nn'>nlpclass._</span>
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>s</span> <span class='k'>=</span> <span class='s'>&quot;(S (NP (D the) (A big) (N dog)) (VP (V walks)))&quot;</span>
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>t</span> <span class='k'>=</span> <span class='nc'>Tree</span><span class='o'>.</span><span class='n'>fromString</span><span class='o'>(</span><span class='n'>s</span><span class='o'>)</span>
+
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>t</span><span class='o'>.</span><span class='n'>pretty</span>
+<span class='n'>S</span>
+  <span class='nc'>NP</span>
+    <span class='n'>D</span> <span class='n'>the</span>
+    <span class='n'>A</span> <span class='n'>big</span>
+    <span class='n'>N</span> <span class='n'>dog</span>
+  <span class='nc'>VP</span> <span class='n'>V</span> <span class='n'>walks</span>
+
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>import</span> <span class='nn'>nlp.a6._</span>
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>c</span> <span class='k'>=</span> <span class='nc'>Cnf</span><span class='o'>.</span><span class='n'>convertTree</span><span class='o'>(</span><span class='n'>t</span><span class='o'>)</span>
+<span class='o'>(</span><span class='n'>S</span> <span class='o'>(</span><span class='nc'>NP</span> <span class='o'>(</span><span class='n'>D</span> <span class='n'>the</span><span class='o'>)</span> <span class='o'>({</span><span class='n'>A</span><span class='o'>+</span><span class='n'>N</span><span class='o'>}</span> <span class='o'>(</span><span class='n'>A</span> <span class='n'>big</span><span class='o'>)</span> <span class='o'>(</span><span class='n'>N</span> <span class='n'>dog</span><span class='o'>)))</span> <span class='o'>(</span><span class='nc'>VP</span> <span class='o'>(</span><span class='n'>V</span> <span class='n'>walks</span><span class='o'>)))</span>
+
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>c</span><span class='o'>.</span><span class='n'>pretty</span>
+<span class='n'>S</span>
+  <span class='nc'>NP</span>
+    <span class='n'>D</span> <span class='n'>the</span>
+    <span class='o'>{</span><span class='n'>A</span><span class='o'>+</span><span class='n'>N</span><span class='o'>}</span>
+      <span class='n'>A</span> <span class='n'>big</span>
+      <span class='n'>N</span> <span class='n'>dog</span>
+  <span class='nc'>VP</span> <span class='n'>V</span> <span class='n'>walks</span>
+</code></pre></div>
+<h3 id='from_cnf'>From CNF</h3>
+
+<p>Since we untimately want our parser to be able to give us trees in the form of our training data (which may not be in CNF), we will need a function for reversing the CNF conversion.</p>
+
+<p>You will write a function <code>Cnf.undo</code> that takes a tree in CNF and returns a <code>Tree</code> in the original format.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>u</span> <span class='k'>=</span> <span class='nc'>Cnf</span><span class='o'>.</span><span class='n'>undo</span><span class='o'>(</span><span class='n'>c</span><span class='o'>)</span>
+<span class='o'>(</span><span class='n'>S</span> <span class='o'>(</span><span class='nc'>NP</span> <span class='o'>(</span><span class='n'>D</span> <span class='n'>the</span><span class='o'>)</span> <span class='o'>(</span><span class='n'>A</span> <span class='n'>big</span><span class='o'>)</span> <span class='o'>(</span><span class='n'>N</span> <span class='n'>dog</span><span class='o'>))</span> <span class='o'>(</span><span class='nc'>VP</span> <span class='o'>(</span><span class='n'>V</span> <span class='n'>walks</span><span class='o'>)))</span>
+
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>u</span><span class='o'>.</span><span class='n'>pretty</span>
+<span class='n'>S</span>
+  <span class='nc'>NP</span>
+    <span class='n'>D</span> <span class='n'>the</span>
+    <span class='n'>A</span> <span class='n'>big</span>
+    <span class='n'>N</span> <span class='n'>dog</span>
+  <span class='nc'>VP</span> <span class='n'>V</span> <span class='n'>walks</span>
+</code></pre></div>
+<h3 id='written_exercises'>Written Exercises</h3>
+
+<p>Assume the following three-sentence dataset:</p>
+
+<pre><code>(V walk)
+(S (NP (D the) (A big) (N dogs)) (VP (V walk)))
+(S (NP (D the) (A tall) (N men)) (VP (V walk) (NP (D the) (N dogs))))</code></pre>
+
+<blockquote>
+<p><strong>Written Answer (a):</strong> Give the PCFG that would be generated by this dataset using the Maximum Likelihood Estimate.</p>
+</blockquote>
+
+<blockquote>
+<p><strong>Written Answer (b):</strong> Transform the PCFG from above into its CNF (with unary productions) equivalent.</p>
+</blockquote>
+
+<h2 id='part_3_likelihood_of_a_parsed_sentence_10_points'>Part 3: Likelihood of a Parsed Sentence (10 points)</h2>
+
+<p>You will need to create a class <code>nlp.a6.PcfgParser</code> that extends the trait <code>nlpclass.Parser</code>. For this part, you should implement the <code>likelihood</code> method (you can use <code>???</code> for the other methods to prevent compiler errors):</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>class</span> <span class='nc'>PcfgParser</span><span class='o'>(...)</span> <span class='k'>extends</span> <span class='nc'>Parser</span> <span class='o'>{</span>
+
+  <span class='k'>def</span> <span class='n'>likelihood</span><span class='o'>(</span><span class='n'>t</span><span class='k'>:</span> <span class='kt'>Tree</span><span class='o'>)</span><span class='k'>:</span> <span class='kt'>Double</span> <span class='o'>=</span> <span class='o'>{</span>
+    <span class='c1'>// your code here</span>
+  <span class='o'>}</span>
+
+  <span class='k'>def</span> <span class='n'>parse</span><span class='o'>(</span><span class='n'>tokens</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[</span><span class='kt'>String</span><span class='o'>])</span><span class='k'>:</span> <span class='kt'>Option</span><span class='o'>[</span><span class='kt'>Tree</span><span class='o'>]</span> <span class='k'>=</span> <span class='o'>???</span>
+  <span class='k'>def</span> <span class='n'>generate</span><span class='o'>()</span><span class='k'>:</span> <span class='kt'>Tree</span> <span class='o'>=</span> <span class='o'>???</span>
+<span class='o'>}</span>
+</code></pre></div>
+<p>This method should take a <code>Tree</code> as input and return the likelihood of that tree. The result should be returned as a <strong>logarithm</strong> (and computed that way as well).</p>
+
+<p>In order to calculate the likelihood, you will need two probability distributions:</p>
+
+<ul>
+<li>The conditional probability distribution <code>\( p(\beta \mid A) \)</code> for non-terminal A and production <code>\( \beta \)</code></li>
+
+<li>The probability distribution over possible root tree nodes p(S) for non-terminal S</li>
+</ul>
+
+<p>Since we will need the grammar to be in CNF for parsing, you should assume (or ensure?) that these distributions are in CNF. In other words, <code>\( \beta \)</code> can only have three forms: a pair of nonterminals (B C), a single nonterminal (B), or a single terminal (<em>w</em>).</p>
+
+<p>The likelihood of a parsed sentence is computed as the product of all productions in the tree. Additionally, you must take into consideration the likelihood of the tree&#8217;s root.</p>
+
+<p>Since you will be storing your probability distributions for the grammar in CNF, you will need to convert the incoming tree into CNF before looking up the productions in the distributions.</p>
+
+<h3 id='written_exercises'>Written Exercises</h3>
+
+<p>For the following parsed sentence:</p>
+
+<pre><code>(S (NP (D the) (A tall) (N dogs)) (VP (V walk)))</code></pre>
+
+<blockquote>
+<p><strong>Written Answer (a):</strong> Calculate the likelihood given the PCFG from exercise 2a.</p>
+</blockquote>
+
+<blockquote>
+<p><strong>Written Answer (a):</strong> Convert the parsed sentence to CNF (with unary rules) and calculate the likelihood given the PCFG from exercise 2b. Confirm that this is the same value as you found in 3a.</p>
+</blockquote>
+
+<h2 id='part_4_unsmoothed_pcfg_parser_trainer_10_points'>Part 4: Unsmoothed PCFG Parser Trainer (10 points)</h2>
+
+<p>To initialize the probability distributions for the PcfgParser from the Maximum Likelihood Estimate (MLE), you will implement a class <code>nlp.a6.UnsmoothedPcfgParserTrainer</code> that extends <code>nlpclass.ParserTrainer</code> and implements a method called <code>train</code>:</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>class</span> <span class='nc'>UnsmoothedPcfgParserTrainer</span><span class='o'>()</span> <span class='k'>extends</span> <span class='nc'>ParserTrainer</span> <span class='o'>{</span>
+  <span class='k'>def</span> <span class='n'>train</span><span class='o'>(</span><span class='n'>trees</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[</span><span class='kt'>Tree</span><span class='o'>])</span><span class='k'>:</span> <span class='kt'>PcfgParser</span> <span class='o'>=</span> <span class='o'>{</span>
+    <span class='c1'>// your code here</span>
+  <span class='o'>}</span>
+<span class='o'>}</span>
+</code></pre></div>
+<p>The <code>train</code> method will count up productions across all given trees to compute the MLE. Since the <code>PcfgParser</code> will be expecting probability distributions over productions that conform to CNF, you should convert all the given trees to CNF before computing the MLE.</p>
+
+<p>To check your implementation, assume the following dataset (<code>trees2</code>):</p>
+
+<pre><code>(S (NP (D the) (N dog)) (VP (V barks)))
+(S (NP (D the) (N dog)) (VP (V walks)))
+(S (NP (D the) (N man)) (VP (V walks) (NP (D the) (N dog))))</code></pre>
+
+<p>And you should be able to do this:</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>val</span> <span class='n'>trainer</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>UnsmoothedPcfgParserTrainer</span><span class='o'>()</span>
+<span class='k'>val</span> <span class='n'>pcfg</span> <span class='k'>=</span> <span class='n'>trainer</span><span class='o'>.</span><span class='n'>train</span><span class='o'>(</span><span class='n'>trees2</span><span class='o'>)</span>
+<span class='k'>val</span> <span class='n'>s1</span> <span class='k'>=</span> <span class='s'>&quot;(S (NP (D the) (N dog)) (VP (V walks) (NP (D the) (N man)))))&quot;</span>
+<span class='n'>pcfg</span><span class='o'>.</span><span class='n'>likelihood</span><span class='o'>(</span><span class='nc'>Tree</span><span class='o'>.</span><span class='n'>fromString</span><span class='o'>(</span><span class='n'>s1</span><span class='o'>))</span> <span class='c1'>// -3.1780538303479453</span>
+<span class='k'>val</span> <span class='n'>s2</span> <span class='k'>=</span> <span class='s'>&quot;(S (NP (D a) (N cat)) (VP (V runs)))&quot;</span>
+<span class='n'>pcfg</span><span class='o'>.</span><span class='n'>likelihood</span><span class='o'>(</span><span class='nc'>Tree</span><span class='o'>.</span><span class='n'>fromString</span><span class='o'>(</span><span class='n'>s2</span><span class='o'>))</span> <span class='c1'>// -Infinity</span>
+</code></pre></div>
+<h2 id='part_5_parsing_with_pcky_30_points'>Part 5: Parsing with P-CKY (30 points)</h2>
+
+<p>For this part you will implement the <code>parse</code> method on <code>PcfgParser</code>:</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>def</span> <span class='n'>parse</span><span class='o'>(</span><span class='n'>tokens</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[</span><span class='kt'>String</span><span class='o'>])</span><span class='k'>:</span> <span class='kt'>Option</span><span class='o'>[</span><span class='kt'>Tree</span><span class='o'>]</span>
+</code></pre></div>
+<p>This method takes a sentence (as a sequence of tokens), runs the Probabilistic CKY algorithm, and returns a <code>Tree</code> representing the most likely parse of that sentence, if there is one, and returns <code>None</code> if there is no valid parse of the sentence. Be sure to convert the tree back from CNF before returning it.</p>
+
+<p>Using this dataset (<code>trees3</code>):</p>
+
+<pre><code>(S (NP (D the) (A big) (N dog)) (VP (V barks)))
+(S (NP (D the) (N dog)) (VP (V walks)))
+(S (NP (D the) (A tall) (N man)) (VP (V walks) (NP (D the) (N dog))))
+(S (NP (D the) (N man)) (VP (V saw) (NP (D the) (N dog) (PP (P in) (NP (D a) (N house))))))
+(S (NP (D the) (N man)) (VP (V saw) (NP (D the) (N dog)) (PP (P with) (NP (D a) (N telescope)))))</code></pre>
+
+<p>you should see this behavior without smoothing:</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>trainer</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>UnsmoothedPcfgParserTrainer</span><span class='o'>()</span>
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>pcfg</span> <span class='k'>=</span> <span class='n'>trainer</span><span class='o'>.</span><span class='n'>train</span><span class='o'>(</span><span class='n'>trees3</span><span class='o'>)</span>
+
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>s1</span> <span class='k'>=</span> <span class='s'>&quot;the dog walks the man&quot;</span><span class='o'>.</span><span class='n'>split</span><span class='o'>(</span><span class='s'>&quot; &quot;</span><span class='o'>).</span><span class='n'>toVector</span>
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>pcfg</span><span class='o'>.</span><span class='n'>parse</span><span class='o'>(</span><span class='n'>s1</span><span class='o'>).</span><span class='n'>fold</span><span class='o'>(</span><span class='s'>&quot;None&quot;</span><span class='o'>)(</span><span class='k'>_</span><span class='o'>.</span><span class='n'>pretty</span><span class='o'>)</span>
+<span class='n'>S</span>
+  <span class='nc'>NP</span>
+    <span class='n'>D</span> <span class='n'>the</span>
+    <span class='n'>N</span> <span class='n'>dog</span>
+  <span class='nc'>VP</span>
+    <span class='n'>V</span> <span class='n'>walks</span>
+    <span class='nc'>NP</span>
+      <span class='n'>D</span> <span class='n'>the</span>
+      <span class='n'>N</span> <span class='n'>man</span>
+
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>s2</span> <span class='k'>=</span> <span class='s'>&quot;a man in the telescope barks the dog with the house with a telescope&quot;</span><span class='o'>.</span><span class='n'>split</span><span class='o'>(</span><span class='s'>&quot; &quot;</span><span class='o'>).</span><span class='n'>toVector</span>
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>pcfg</span><span class='o'>.</span><span class='n'>parse</span><span class='o'>(</span><span class='n'>s2</span><span class='o'>).</span><span class='n'>fold</span><span class='o'>(</span><span class='s'>&quot;None&quot;</span><span class='o'>)(</span><span class='k'>_</span><span class='o'>.</span><span class='n'>pretty</span><span class='o'>)</span>
+<span class='n'>S</span>
+  <span class='nc'>NP</span>
+    <span class='n'>D</span> <span class='n'>a</span>
+    <span class='n'>N</span> <span class='n'>man</span>
+    <span class='nc'>PP</span>
+      <span class='n'>P</span> <span class='n'>in</span>
+      <span class='nc'>NP</span>
+        <span class='n'>D</span> <span class='n'>the</span>
+        <span class='n'>N</span> <span class='n'>telescope</span>
+  <span class='nc'>VP</span>
+    <span class='n'>V</span> <span class='n'>barks</span>
+    <span class='nc'>NP</span>
+      <span class='n'>D</span> <span class='n'>the</span>
+      <span class='n'>N</span> <span class='n'>dog</span>
+    <span class='nc'>PP</span>
+      <span class='n'>P</span> <span class='k'>with</span>
+      <span class='nc'>NP</span>
+        <span class='n'>D</span> <span class='n'>the</span>
+        <span class='n'>N</span> <span class='n'>house</span>
+        <span class='nc'>PP</span>
+          <span class='n'>P</span> <span class='k'>with</span>
+          <span class='nc'>NP</span>
+            <span class='n'>D</span> <span class='n'>a</span>
+            <span class='n'>N</span> <span class='n'>telescope</span>
+
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>s3</span> <span class='k'>=</span> <span class='s'>&quot;a cat walks&quot;</span><span class='o'>.</span><span class='n'>split</span><span class='o'>(</span><span class='s'>&quot; &quot;</span><span class='o'>).</span><span class='n'>toVector</span>
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>pcfg</span><span class='o'>.</span><span class='n'>parse</span><span class='o'>(</span><span class='n'>s3</span><span class='o'>).</span><span class='n'>fold</span><span class='o'>(</span><span class='s'>&quot;None&quot;</span><span class='o'>)(</span><span class='k'>_</span><span class='o'>.</span><span class='n'>pretty</span><span class='o'>)</span>
+<span class='nc'>None</span>
+</code></pre></div>
+<h2 id='part_6_generating_text_10_points'>Part 6: Generating Text (10 points)</h2>
+
+<p>Since a PCFG is a generative model, we can use it to generate sentences. For this part, you will implement the <code>generate</code> method on <code>PcfgParser</code>. The method should return a <code>Tree</code> object</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>def</span> <span class='n'>generate</span><span class='o'>()</span><span class='k'>:</span> <span class='kt'>Tree</span>
+</code></pre></div>
+<p>Your method should first sample some non-terminal A from the distribution p(S) over possible start non-terminals. Then, it should sample some <code>\( \beta \)</code> from <code>\( p(\beta \mid A) \)</code>. For each non-terminal in <code>\( \beta \)</code>, you should recursively sample a next production until all paths result in terminal nodes (words).</p>
+
+<p>Be sure to convert your generated tree back from CNF before returning it.</p>
+
+<p>Using <code>trees3</code> from Part 5 above, you should get something like this:</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>trainer</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>UnsmoothedPcfgParserTrainer</span><span class='o'>()</span>
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>pcfg</span> <span class='k'>=</span> <span class='n'>trainer</span><span class='o'>.</span><span class='n'>train</span><span class='o'>(</span><span class='n'>trees3</span><span class='o'>)</span>
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>pcfg</span><span class='o'>.</span><span class='n'>generate</span><span class='o'>().</span><span class='n'>sentence</span><span class='o'>.</span><span class='n'>mkString</span><span class='o'>(</span><span class='s'>&quot; &quot;</span><span class='o'>)</span>
+<span class='s'>&quot;the dog with the man saw the dog&quot;</span>
+</code></pre></div>
+<h3 id='agreement_features'>Agreement features</h3>
+
+<p>Using this data:</p>
+
+<pre><code>(S (NP (D all) (N dogs)) (VP (V bark)))
+(S (NP (D a) (N man)) (VP (V walks) (NP (D a) (N dog))))</code></pre>
+
+<p>you might see trees like this:</p>
+<div class='highlight'><pre><code class='scala'><span class='s'>&quot;a dogs bark&quot;</span>
+<span class='s'>&quot;all man bark all man&quot;</span>
+</code></pre></div>
+<p>A large number of possible sentences can be generated from this grammar, but not all of them would generally be considered grammatical.</p>
+
+<p>To ensure number agreement, we can add <em>features</em> to the same data:</p>
+<div class='highlight'><pre><code class='scala'><span class='o'>(</span><span class='n'>S</span> <span class='o'>(</span><span class='nc'>NPpl</span> <span class='o'>(</span><span class='nc'>Dpl</span> <span class='n'>all</span><span class='o'>)</span> <span class='o'>(</span><span class='nc'>Npl</span> <span class='n'>dogs</span><span class='o'>))</span> <span class='o'>(</span><span class='nc'>VPpl</span> <span class='o'>(</span><span class='nc'>Vpl</span> <span class='n'>bark</span><span class='o'>)))</span>
+<span class='o'>(</span><span class='n'>S</span> <span class='o'>(</span><span class='nc'>NPsg</span> <span class='o'>(</span><span class='nc'>Dsg</span> <span class='n'>a</span><span class='o'>)</span> <span class='o'>(</span><span class='nc'>Nsg</span> <span class='n'>man</span><span class='o'>))</span> <span class='o'>(</span><span class='nc'>VPsg</span> <span class='o'>(</span><span class='nc'>Vsg</span> <span class='n'>walks</span><span class='o'>)</span> <span class='o'>(</span><span class='nc'>NPpl</span> <span class='o'>(</span><span class='nc'>Dpl</span> <span class='n'>all</span><span class='o'>)</span> <span class='o'>(</span><span class='nc'>Npl</span> <span class='n'>dogs</span><span class='o'>))))</span>
+</code></pre></div>
+<p>and, again, generate trees. But with this grammar, all trees will have number agreement.</p>
+
+<blockquote>
+<p><strong>Written Answer (a):</strong> How many distinct trees can be generated from the above grammar with features? What is the probability of each tree?</p>
+</blockquote>
+
+<h2 id='part_7_add_smoothed_pcfg_30_points'>Part 7: Add-λ Smoothed PCFG (30 points)</h2>
+
+<p>We would ultimately like for our parser to be able to return a &#8220;best guess&#8221; tree for <em>any</em> sentence that it is given. To accomplish this, you will implement add-λ smoothing on the PCFG.</p>
+
+<p>Add-λ smoothing works much the same as we&#8217;ve seen in previous assignments. However, there are a couple special cases in the conditional probability distribution <code>\( p(\beta \mid A) \)</code> that need to be handled to avoid some problematic pitfalls in the parser.</p>
+
+<p>First, consider that in CNF production rules can have three forms:</p>
+
+<ul>
+<li>A non-terminal yielding exactly two non-terminals: A → B C</li>
+
+<li>A non-terminal yielding exactly one non-terminals: A → B</li>
+
+<li>A non-terminal yielding exactly one terminal: A → w</li>
+</ul>
+
+<p>Further, a non-terminal rule root A can take one of three forms:</p>
+
+<ul>
+<li>A part-of-speech tag (D, N, V, &#8230;)</li>
+
+<li>A phrase tag (S, NP, VP, &#8230;)</li>
+
+<li>A compound non-terminal tag introduced by CNF conversion ({A+N}, {N+PP}, {NP+PP}, &#8230;)</li>
+</ul>
+
+<p>All production rules in the grammar will be a combinaion of these two lists. However, there are some clear limitations on how things can be combined, and these limitations must be controlled for when smoothing.</p>
+
+<ol>
+<li>
+<p>Part-of-speech tags can only yield terminals. This is a function of the way our grammar works: POS tags are always the bottom layer of the tree, and each POS tag produces just one word. Therefore, you must prevent POS tag non-terminals from smoothing over anything except terminals. Give &#8220;w&#8221; productions non-zero probabilities but all &#8220;B C&#8221; and &#8220;B&#8221; productions must have probability zero.</p>
+</li>
+
+<li>
+<p>Only part-of-speech tags may yield terminals (words). This is the flip side of 1. You must prevent any non-POS non-terminal (which may be a normal phrase tag or a compound non-terminal tag) from yielding a terminal (word). Give all &#8220;B C&#8221; and &#8220;B&#8221; productions non-zero probabilities but all &#8220;w&#8221; productions probability zero.</p>
+</li>
+
+<li>
+<p>A compound tag {X+Y} can <em>only</em> yield the production &#8220;X Y&#8221;. Therefore, it should <em>not</em> be smoothed.</p>
+</li>
+</ol>
+
+<p>Finally, we must smooth the probability distribution p(S) over potential start symbols. However, we know that a compound non-terminal {X+Y} can never be a start symbol because it can only ever be used when its parent has more than two children. Since compound tags must have a parent, they should receive a probability of zero in the start-symbol distribution.</p>
+
+<p>In summary:</p>
+
+<p><code>\[
+  \begin{align}
+    p(w \mid P) &amp;= \frac{C(P \rightarrow w) + \lambda}{C(P) + \lambda|V|}
+      \stackrel{\hbox{
+        where $P$ is a POS tag and $V$ is the set of all known words
+      }}{\hbox{
+      }}  \\
+    p(\beta \mid A) &amp;= \frac{C(A \rightarrow \beta) + \lambda}{C(A) + \lambda(|N|+|N|^2)}
+      \stackrel{\hbox{
+        where $A$ is a non-compound non-terminal and $N$ is the
+      }}{\hbox{
+        set of all non-terminals (including compounds and POS)
+      }}  \\
+    p(X~Y \mid \{X\text{+}Y\}) &amp;= 1.0 \\
+    p(A) &amp;= \frac{C(A\text{ is the root of the tree})+\lambda}{\text{(# of trees in corpus)}+\lambda(|N|-|C|)}
+      \stackrel{\hbox{
+        where $C$ is the set of all 
+      }}{\hbox{
+        compound non-terminals
+      }} 
+  \end{align}
+\]</code></p>
+
+<blockquote>
+<p><strong>Written Answer (a):</strong> Why do we have <code>\( |N|+|N|^2 \)</code> in the denominator of the second equation?</p>
+</blockquote>
+
+<p>Note that you will never need to condition on an unknown non-terminal since the parser is not able to invent new non-terminals. Additionally, It principle it would be possible to allow for arbirary compounds {X+Y} for any X and Y, but doing so causes a huge blowup in the number of possible parses.</p>
+
+<p>When trained on the corpus <code>trees3</code>, you should see this behavior:</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>val</span> <span class='n'>trainer</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>AddLambdaPcfgParserTrainer</span><span class='o'>(</span><span class='mf'>0.1</span><span class='o'>)</span>
+<span class='k'>val</span> <span class='n'>pcfg</span> <span class='k'>=</span> <span class='n'>trainer</span><span class='o'>.</span><span class='n'>train</span><span class='o'>(</span><span class='n'>trees3</span><span class='o'>)</span>
+
+<span class='k'>val</span> <span class='n'>s1</span> <span class='k'>=</span> <span class='s'>&quot;(S (NP (D the) (N dog)) (VP (V walks) (NP (D the) (N man)))))&quot;</span>
+<span class='n'>pcfg</span><span class='o'>.</span><span class='n'>likelihood</span><span class='o'>(</span><span class='nc'>Tree</span><span class='o'>.</span><span class='n'>fromString</span><span class='o'>(</span><span class='n'>s1</span><span class='o'>)))</span> <span class='c1'>// -10.243563630152428</span>
+
+<span class='k'>val</span> <span class='n'>s2</span> <span class='k'>=</span> <span class='s'>&quot;(S (NP (D a) (N cat)) (VP (V runs)))&quot;</span>
+<span class='n'>pcfg</span><span class='o'>.</span><span class='n'>likelihood</span><span class='o'>(</span><span class='nc'>Tree</span><span class='o'>.</span><span class='n'>fromString</span><span class='o'>(</span><span class='n'>s2</span><span class='o'>))</span> <span class='c1'>// -15.661001571843844</span>
+
+<span class='k'>val</span> <span class='n'>s3</span> <span class='k'>=</span> <span class='s'>&quot;a fast cat runs&quot;</span><span class='o'>.</span><span class='n'>split</span><span class='o'>(</span><span class='s'>&quot; &quot;</span><span class='o'>).</span><span class='n'>toVector</span>
+<span class='n'>pcfg</span><span class='o'>.</span><span class='n'>parse</span><span class='o'>(</span><span class='n'>s3</span><span class='o'>).</span><span class='n'>fold</span><span class='o'>(</span><span class='s'>&quot;None&quot;</span><span class='o'>)(</span><span class='k'>_</span><span class='o'>.</span><span class='n'>pretty</span><span class='o'>)</span>
+<span class='n'>S</span>
+  <span class='nc'>NP</span>
+    <span class='n'>D</span> <span class='n'>a</span>
+    <span class='n'>A</span> <span class='n'>fast</span>
+    <span class='n'>N</span> <span class='n'>cat</span>
+  <span class='nc'>VP</span> <span class='n'>V</span> <span class='n'>runs</span>
+
+<span class='k'>val</span> <span class='n'>s4</span> <span class='k'>=</span> <span class='s'>&quot;oh no ! what&#39;s happening ? ahhhhhhh !!!!!!&quot;</span><span class='o'>.</span><span class='n'>split</span><span class='o'>(</span><span class='s'>&quot; &quot;</span><span class='o'>).</span><span class='n'>toVector</span>
+<span class='n'>pcfg</span><span class='o'>.</span><span class='n'>parse</span><span class='o'>(</span><span class='n'>s4</span><span class='o'>).</span><span class='n'>fold</span><span class='o'>(</span><span class='s'>&quot;None&quot;</span><span class='o'>)(</span><span class='k'>_</span><span class='o'>.</span><span class='n'>pretty</span><span class='o'>)</span>
+<span class='n'>S</span>
+  <span class='nc'>NP</span>
+    <span class='n'>A</span> <span class='n'>oh</span>
+    <span class='n'>N</span> <span class='n'>no</span>
+    <span class='n'>A</span> <span class='o'>!</span>
+    <span class='n'>N</span> <span class='n'>what</span><span class='-Symbol'>&#39;s</span>
+  <span class='nc'>VP</span>
+    <span class='n'>A</span> <span class='n'>happening</span>
+    <span class='n'>N</span> <span class='o'>?</span>
+    <span class='n'>A</span> <span class='n'>ahhhhhhh</span>
+    <span class='n'>N</span> <span class='o'>!!!!!!</span>
+</code></pre></div>
+      </div>
+      <div id='footer'></div>
+    </div>
+  </body>
+</html>

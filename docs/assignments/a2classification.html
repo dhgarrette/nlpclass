@@ -1,0 +1,764 @@
+<html>
+  <head>
+    <meta content='text/html;charset=UTF-8' http-equiv='Content-Type'/>
+    <title>NLP &mdash; Assignment 2 - Classification</title>
+    <style type='text/css'>
+      @import '../css/default.css';
+      @import '../css/syntax.css';
+    </style>
+    <link rel="shortcut icon" href="../favicon.ico" />
+    <meta content='Natural Language Processing Class' name='subject'/>
+    <!--<link href='images/favicon.png' rel='shortcut icon'>-->
+
+    <!-- MathJax Section -->
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script>
+      MathJax.Hub.Config({
+        tex2jax: {
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+        }
+      });
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+
+  </head>
+  <body>
+    <div id='wrap'>
+      <div id='header'>
+        <img height="100" alt='NLP Class' src='../images/utexas.png'/>
+        <div class='tagline'>Natural Language Processing: Fall 2013</div>
+      </div>
+      <div id='pages'>
+        <ol class='toc'>
+          <li>NLP Class
+            <ol class="toc">
+              <li><a href='../index.html'>Home</a></li>
+              <li><a href='../syllabus.html'>Syllabus</a></li>
+              <li><a href='../schedule.html'>Schedule</a></li>
+              <li><a href='../notes'>Notes</a></li>
+              <li><a href='../requirements.html'>Assignment Requirements</a></li>
+              <li><a href='../links.html'>Links</a></li>
+            </ol>
+          </li>
+          <li>Useful Information
+            <ol class="toc">
+              <li><a href='../scala'>Scala</a></li>
+            </ol>
+          </li>
+          <li>Assignments
+            <ol class="toc">
+              <li><a href='../assignments/a0programming.html'>#0 - Programming</a></li>
+              <li><a href='../assignments/a1prob.html'>#1 - Probability</a></li>
+              <li><a href='../assignments/a2classification.html'>#2 - Classification</a></li>
+              <li><a href='../assignments/a3ngrams.html'>#3 - N-Grams</a></li>
+              <li><a href='../assignments/a4hmm.html'>#4 - HMMs</a></li>
+              <li><a href='../assignments/a5maxent.html'>#5 - MaxEnt</a></li>
+              <li><a href='../assignments/a6parsing.html'>#6 - Parsing</a></li>
+            </ol>
+          </li>
+          <li>External Links
+            <ol class="toc">
+              <li><a href='http://www.utcompling.com'>UTCL Main site</a></li>
+              <li><a href='https://courses.utexas.edu/webapps/portal/frameset.jsp?tab_tab_group_id=_11_1&url=%2Fwebapps%2Fblackboard%2Fexecute%2Flauncher%3Ftype%3DCourse%26id%3D_159651_1%26url%3D'>Blackboard</a></li>
+            </ol>
+          </li>
+        </ol>
+      </div>
+      <div id='content'>
+        <h1>Assignment 2 - Classification</h1>
+        <ol class="toc"><li><a href="#introduction">Introduction</a></li><li><a href="#problem_1__a_good_day_to_play_tennis_10_pts">Problem 1 - A good day to play tennis? (10 pts)</a></li><li><a href="#problem_2__implement_basic_naive_bayes_30_pts">Problem 2 - Implement basic naive Bayes (30 pts)</a></li><li><a href="#problem_3__prepositional_phrase_attachment_and_smoothing_25_pts">Problem 3 - Prepositional Phrase Attachment and smoothing (25 pts)</a></li><li><a href="#problem_4__computing_with_logarithms_15_pts">Problem 4 - Computing with logarithms (15 pts)</a></li><li><a href="#problem_5__extending_the_feature_set_20_pts">Problem 5 - Extending the feature set (20 pts)</a></li><li><a href="#additional_notes">Additional Notes</a></li></ol>
+        <p><strong>Due: Tuesday, October 1. Written portion by 2pm, programming by noon</strong></p>
+
+<h2 id='introduction'>Introduction</h2>
+
+<p>For this homework, you will implement a naive Bayes classifier that estimates its parameters from training material in order to classify the unseen instances in test material. You will also extract features from data instances to improve classification accuracy.</p>
+
+<p>To complete the homework, use the stub programs and data found in the class GitHub repository.</p>
+
+<ul>
+<li>Your written answers should be hand-written or printed and handed in before class. The problem descriptions clearly state where a written answer is expected.</li>
+
+<li>Programming portions should be turned in via GitHub by noon on the assignment due date.</li>
+</ul>
+
+<p>There are 100 points total in this assignment. Point values for each problem/sub-problem are given below.</p>
+
+<p>The used here classes will extend traits that are found version <strong>0004</strong> of the <code>nlpclass-fall2013</code> dependency. In order to get these updates, you will need to edit your root <code>build.sbt</code> file and update the version of the dependency:</p>
+
+<pre><code>libraryDependencies += &quot;com.utcompling&quot; % &quot;nlpclass-fall2013_2.10&quot; % &quot;0004&quot; changing()</code></pre>
+
+<p>If you use Eclipse, then after you modify the dependency you will once again have to run <code>sbt &quot;eclipse with-source=true&quot;</code> and refresh your project in Eclipse.</p>
+
+<p><strong>If you have any questions or problems with any of the materials, don&#8217;t hesitate to ask!</strong></p>
+
+<p><strong>Tip:</strong> Look over the entire homework before starting on it. Then read through each problem carefully, in its entirety, before answering questions and doing the implementation.</p>
+
+<p>Finally: if possible, don&#8217;t print this homework out! Just read it online, which ensures you&#8217;ll be looking at the latest version of the homework (in case there are any corrections), you can easily cut-and-paste and follow links, and you won&#8217;t waste paper.</p>
+
+<h2 id='problem_1__a_good_day_to_play_tennis_10_pts'>Problem 1 - A good day to play tennis? (10 pts)</h2>
+
+<p>Let’s start with a simple example problem from Tom Mitchell’s book Machine Learning. The problem is to predict whether it is a good day to play tennis given various factors and some initial data that provides information about whether previous days were good or bad days for tennis. The factors include (in the format &#8220;Attribute: List, of, Possible, Values&#8221;):</p>
+
+<pre><code>Outlook: Sunny, Rain, Overcast
+Temperature: Hot, Mild, Cool
+Humidity: High, Normal
+Wind: String, Weak</code></pre>
+
+<p>Table 3.2 on page 59 of Mitchell’s book contains information for fourteen days; this data is encoded into a <a href='https://raw.github.com/utcompling/nlpclass-fall2013/master/data/classify/tennis/train.txt'>training file</a>. There is a separate <a href='https://raw.github.com/utcompling/nlpclass-fall2013/master/data/classify/tennis/test.txt'>test file</a>. As you might expect, you will learn model parameters using the training data and test the resulting model on the examples in the test data.</p>
+
+<p>Each row in the data files corresponds to a single classification instance. For example, here is the training set:</p>
+
+<pre><code>Outlook=Sunny,Temperature=Hot,Humidity=High,Wind=Weak,No
+Outlook=Sunny,Temperature=Hot,Humidity=High,Wind=Strong,No    
+Outlook=Overcast,Temperature=Hot,Humidity=High,Wind=Weak,Yes
+Outlook=Rain,Temperature=Mild,Humidity=High,Wind=Weak,Yes
+Outlook=Rain,Temperature=Cool,Humidity=Normal,Wind=Weak,Yes
+Outlook=Rain,Temperature=Cool,Humidity=Normal,Wind=Strong,No
+Outlook=Overcast,Temperature=Cool,Humidity=Normal,Wind=Strong,Yes
+Outlook=Sunny,Temperature=Mild,Humidity=High,Wind=Weak,No
+Outlook=Sunny,Temperature=Cool,Humidity=Normal,Wind=Weak,Yes
+Outlook=Rain,Temperature=Mild,Humidity=Normal,Wind=Weak,Yes
+Outlook=Sunny,Temperature=Mild,Humidity=Normal,Wind=Strong,Yes
+Outlook=Overcast,Temperature=Mild,Humidity=High,Wind=Strong,Yes
+Outlook=Overcast,Temperature=Hot,Humidity=Normal,Wind=Weak,Yes
+Outlook=Rain,Temperature=Mild,Humidity=High,Wind=Strong,No</code></pre>
+
+<p>Each instance consists of a list of attribute values, separated by commas, and the last element is the classification value. The value is &#8220;Yes&#8221; if it is a good day to play tennis based on the conditions, and &#8220;No&#8221; if it is not. This is the same format of the data used in <a href='http://utcompling.github.io/nlpclass-fall2013/assignments/a0programming.html#part_6_reading_a_data_file'>Assignment 0, Part 6</a>.</p>
+
+<p>What we are interested in for this toy example is to determine whether the probability of playing tennis is higher than the probability of not playing tennis. We can represent the probability of playing tennis as:</p>
+
+<ul>
+<li>p(Label=yes | Outlook=o, Temperator=t, Humidity=h, Wind=w)</li>
+</ul>
+
+<p>Note that <em>Label</em>, <em>Outlook</em>, <em>Temperature</em>, <em>Humidity</em>, and <em>Wind</em> are all random variables, <em>yes</em> is a value, and <em>o</em>, <em>t</em>, <em>h</em>, and <em>w</em> are variables for values. In order to reduce clutter, we&#8217;ll write expression without explicit random variables, so the above will be written just as:</p>
+
+<ul>
+<li>p( <strong>yes</strong> | o, t, h, w)</li>
+</ul>
+
+<p>So, we want to find out whether:</p>
+
+<ul>
+<li>p( <strong>yes</strong> | o,t,h,w) &gt; p( <strong>no</strong> | o,t,h,w)</li>
+</ul>
+
+<p>Another way of stating this is that for each instance (with values for <em>o</em>, <em>t</em>, <em>h</em>, and <em>w</em>), we seek to find the label <em>x</em> with maximum probability:</p>
+
+<p><code>\[
+    \begin{align}
+    \hat{x} 
+      &amp;= \stackrel{\arg\!\max}{\tiny{x\hspace{-1mm}\in\hspace{-1mm}\text{yes},\text{no}}} p(x \mid o,t,h,w) \\
+      &amp;= \stackrel{\arg\!\max}{\tiny{x\hspace{-1mm}\in\hspace{-1mm}\text{yes},\text{no}}} p(x)~p(o \mid x)~p(t \mid x)~p(h \mid x)~p(w \mid x)
+    \end{align}
+\]</code></p>
+
+<blockquote>
+<p><strong>Part (a) <span>4 pts</span>.</strong> Written answer. Show explicitly how the last line above is derived from the first line using Bayes rule, the chain rule, independence assumptions, and from the fact we are finding the argmax.</p>
+</blockquote>
+
+<p>So, if we have a new instance that we wish to classify, like:</p>
+
+<pre><code>Outlook=Sunny,Temperature=Cool,Humidity=High,Wind=Strong</code></pre>
+
+<p>what we seek is:</p>
+
+<p><code>\[
+    \begin{align}
+    \hat{x} 
+      &amp;= \stackrel{\arg\!\max}{\tiny{x\hspace{-1mm}\in\hspace{-1mm}\text{yes},\text{no}}} p(x \mid \text{sunny}, \text{cool}, \text{high}, \text{strong})\\
+      &amp;= \stackrel{\arg\!\max}{\tiny{x\hspace{-1mm}\in\hspace{-1mm}\text{yes},\text{no}}} p(x)~p(\text{sunny} \mid x)~p(\text{cool} \mid x)~p(\text{high} \mid x)~p(\text{strong} \mid x)
+    \end{align}
+\]</code></p>
+
+<p>This simply means we need to compute the two values:</p>
+
+<p><code>\[
+    \begin{align}    
+      &amp; p(\text{yes})~p(\text{sunny} \mid \text{yes})~p(\text{cool} \mid \text{yes})~p(\text{high} \mid \text{yes})~p(\text{strong} \mid \text{yes}) \\
+      &amp; p(\text{no})~p(\text{sunny} \mid \text{no})~p(\text{cool} \mid \text{no})~p(\text{high} \mid \text{no})~p(\text{strong} \mid \text{no})
+    \end{align}
+\]</code></p>
+
+<p>And pick the label that produced the higher value.</p>
+
+<p>Terms like p(yes) and p(sunny|no) are just parameters that we can estimate from a corpus, like the training corpus above. We&#8217;ll start by doing maximum likelihood estimation, which means that the values assigned to the parameters are those which maximize the probability of the training corpus. We&#8217;ll return to what this means precisely later in the course; for now, it just means that you do exactly what you&#8217;d think: count the number of times (frequency) each possibility happened and divide it by the number of times it could have happened. (Note that in class we wrote <em>C(x)</em> to mean <em>count</em> instead of <em>freq(x)</em>, but these are the same). Here are some examples:</p>
+
+<p><code>\[
+    p(\text{yes}) 
+      = \frac{freq(\text{yes})}{\sum_x freq(D=x)} 
+      = \frac{freq(\text{yes})}{freq(\text{yes}) + freq(\text{no})} 
+      = \frac{9}{9 + 5} = 0.643
+\]</code> &#160; <code>\[
+    \begin{align}
+    p(\text{sunny} \mid \text{yes}) 
+      &amp;= \frac{freq(\text{yes},\text{sunny})}{\sum_x freq(\text{yes},O=x)} \\
+      &amp;= \frac{freq(\text{yes},\text{sunny})}{freq(\text{yes},\text{sunny}) + freq(\text{yes},\text{rain}) + freq(\text{yes},\text{overcast})} \\
+      &amp;= \frac{2}{2 + 3 + 4} = 0.222
+    \end{align}
+\]</code> &#160; <code>\[
+    \begin{align}
+    p(\text{sunny} \mid \text{no}) 
+      &amp;= \frac{freq(\text{no},\text{sunny})}{\sum_x freq(\text{no},O=x)} \\
+      &amp;= \frac{freq(\text{no},\text{sunny})}{freq(\text{no},\text{sunny}) + freq(\text{no},\text{rain}) + freq(\text{no},\text{overcast})} \\
+      &amp;= \frac{2}{3 + 2 + 0} = 0.6
+    \end{align}
+\]</code></p>
+
+<p>Easy!</p>
+
+<p><em>Note:</em> you might have noticed that <em>freq</em>(<strong>yes</strong>, <strong>sunny</strong>) + <em>freq</em>(<strong>yes</strong>, <strong>rain</strong>) + <em>freq</em>(<strong>yes</strong>, <strong>overcast</strong>) = <em>freq</em>(<strong>yes</strong>). This is true for this example because each attribute only occurs exactly once per instance. Later on we&#8217;ll need the extra flexibility of being able to see the same attribute multiple times per instance, such as multiple words.</p>
+
+<p>The data includes a test set for the tennis task as well, provided in full here:</p>
+
+<pre><code>Outlook=Sunny,Temperature=Cool,Humidity=High,Wind=Strong,No
+Outlook=Overcast,Temperature=Cool,Humidity=Normal,Wind=Weak,Yes
+Outlook=Sunny,Temperature=Hot,Humidity=Normal,Wind=Weak,Yes
+Outlook=Rain,Temperature=Hot,Humidity=High,Wind=Strong,No
+Outlook=Sunny,Temperature=Cool,Humidity=Normal,Wind=Weak,Yes
+Outlook=Overcast,Temperature=Hot,Humidity=High,Wind=Strong,No
+Outlook=Sunny,Temperature=Mild,Humidity=High,Wind=Weak,Yes
+Outlook=Overcast,Temperature=Mild,Humidity=Normal,Wind=Strong,Yes
+Outlook=Rain,Temperature=Cool,Humidity=Normal,Wind=Strong,No
+Outlook=Overcast,Temperature=Cool,Humidity=Normal,Wind=Strong,Yes
+Outlook=Rain,Temperature=Hot,Humidity=Normal,Wind=Weak,Yes
+Outlook=Sunny,Temperature=Cool,Humidity=High,Wind=Weak,Yes
+Outlook=Rain,Temperature=Hot,Humidity=Normal,Wind=Strong,No</code></pre>
+
+<p>Like the training set, this provides a list of instances, and for each instance, the values for each of the attributes and the classification outcome.</p>
+
+<p><strong>Part (b) <span>2 pts</span>.</strong> Written answer. Using the training set to determine the relevant parameters, what is the most probable label for:</p>
+
+<pre><code>Outlook=Sunny,Temperature=Hot,Humidity=Normal,Wind=Weak</code></pre>
+
+<p>Make sure to show your work, including the values you obtained for each label. Does it match the label given for the third instance in the test set above?</p>
+
+<p><strong>Part (c) <span>3 pts</span>.</strong> Written answer. Derive the general formula for calculating p(x|o,t,h,w) and calculate p(yes|overcast,cool,normal,weak) based on parameters estimated from the training set.</p>
+
+<p><strong>Part (d) <span>1 pt</span>.</strong> Written answer. Provide a set of attribute values o, t, h, and w for which the probability of either yes or no is zero.</p>
+
+<h2 id='problem_2__implement_basic_naive_bayes_30_pts'>Problem 2 - Implement basic naive Bayes (30 pts)</h2>
+
+<p>This problem will walk you through the implementation and training of a naive Bayes model.</p>
+
+<h3 id='naivebayesmodel'>NaiveBayesModel</h3>
+
+<p>Implement a class</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>nlp</span><span class='o'>.</span><span class='n'>a2</span><span class='o'>.</span><span class='nc'>NaiveBayesModel</span><span class='o'>[</span><span class='kt'>Label</span>, <span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>]</span>
+</code></pre></div>
+<p>that extends</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>nlpclass</span><span class='o'>.</span><span class='nc'>Classifier</span><span class='o'>[</span><span class='kt'>Label</span>, <span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>]</span>
+</code></pre></div>
+<p>The <code>NaiveBayesModel</code> class will contain your naive Bayes implementation. It requires a method:</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>def</span> <span class='n'>predict</span><span class='o'>(</span><span class='n'>features</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[(</span><span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>)])</span><span class='k'>:</span> <span class='kt'>Label</span>
+</code></pre></div>
+<p>The <code>predict</code> method takes in a Vector of (feature,value) pairs and outputs the most likely label given the features.</p>
+
+<p>The structure in which you store the underlying data within the <code>NaiveBayesModel</code> class is ultimately up to you, but I highly encourage you to make use of the <code>ProbabilityDistribution</code> and <code>ConditionalProbabilityDistribution</code> classes that you wrote for <a href='http://utcompling.github.io/nlpclass-fall2013/assignments/a1prob.html#problem_5_30_points'>Assignment 1, Problem 5</a>. In fact, you&#8217;ll probably want something like this, which should look familiar:</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>class</span> <span class='nc'>NaiveBayesModel</span><span class='o'>[</span><span class='kt'>Label</span>, <span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>](</span>
+  <span class='n'>labels</span><span class='k'>:</span> <span class='kt'>Set</span><span class='o'>[</span><span class='kt'>Label</span><span class='o'>],</span>
+  <span class='n'>pLabel</span><span class='k'>:</span> <span class='kt'>ProbabilityDistributionToImplement</span><span class='o'>[</span><span class='kt'>Label</span><span class='o'>],</span>
+  <span class='n'>pValue</span><span class='k'>:</span> <span class='kt'>Map</span><span class='o'>[</span><span class='kt'>Feature</span>, <span class='kt'>ConditionalProbabilityDistributionToImplement</span><span class='o'>[</span><span class='kt'>Label</span>, <span class='kt'>Value</span><span class='o'>]])</span>
+  <span class='k'>extends</span> <span class='nc'>Classifier</span><span class='o'>[</span><span class='kt'>Label</span>, <span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>]</span>
+</code></pre></div>
+<p>When trained on the tennis <a href='https://raw.github.com/utcompling/nlpclass-fall2013/master/data/classify/tennis/train.txt'>training file</a>, you should get the following behavior:</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>nbm</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>NaiveBayesModel</span><span class='o'>[</span><span class='kt'>String</span>,<span class='kt'>String</span>,<span class='kt'>String</span><span class='o'>](...)</span>
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>nbm</span><span class='o'>.</span><span class='n'>predict</span><span class='o'>(</span><span class='nc'>Vector</span><span class='o'>(</span><span class='s'>&quot;Outlook&quot;</span><span class='o'>-&gt;</span><span class='s'>&quot;Sunny&quot;</span><span class='o'>,</span> <span class='s'>&quot;Temperature&quot;</span><span class='o'>-&gt;</span><span class='s'>&quot;Cool&quot;</span><span class='o'>,</span> <span class='s'>&quot;Humidity&quot;</span><span class='o'>-&gt;</span><span class='s'>&quot;High&quot;</span><span class='o'>,</span> <span class='s'>&quot;Wind&quot;</span><span class='o'>-&gt;</span><span class='s'>&quot;Strong&quot;</span><span class='o'>))</span>
+<span class='n'>res0</span><span class='k'>:</span> <span class='kt'>String</span> <span class='o'>=</span> <span class='nc'>No</span>
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>nbm</span><span class='o'>.</span><span class='n'>predict</span><span class='o'>(</span><span class='nc'>Vector</span><span class='o'>(</span><span class='s'>&quot;Outlook&quot;</span><span class='o'>-&gt;</span><span class='s'>&quot;Overcast&quot;</span><span class='o'>,</span> <span class='s'>&quot;Temperature&quot;</span><span class='o'>-&gt;</span><span class='s'>&quot;Cool&quot;</span><span class='o'>,</span> <span class='s'>&quot;Humidity&quot;</span><span class='o'>-&gt;</span><span class='s'>&quot;Normal&quot;</span><span class='o'>,</span> <span class='s'>&quot;Wind&quot;</span><span class='o'>-&gt;</span><span class='s'>&quot;Weak&quot;</span><span class='o'>))</span>
+<span class='n'>res1</span><span class='k'>:</span> <span class='kt'>String</span> <span class='o'>=</span> <span class='nc'>Yes</span>
+</code></pre></div>
+<h3 id='unsmoothednaivebayesmodeltrainer'>UnsmoothedNaiveBayesModelTrainer</h3>
+
+<p>In order to maintain good modularity in your code, you will not actually calculate the probability distributions from within the <code>NaiveBayesModel</code> class; you will only <em>use</em> the distributions to predict a label.</p>
+
+<p>Instead, you will use a distinct <em>trainer</em> class to turn the raw data into a <code>NaiveBayesModel</code>, calculating the probability distributions along the way.</p>
+
+<p>So you will implement a class</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>nlp</span><span class='o'>.</span><span class='n'>a2</span><span class='o'>.</span><span class='nc'>UnsmoothedNaiveBayesTrainer</span><span class='o'>[</span><span class='kt'>Label</span>, <span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>]</span>
+</code></pre></div>
+<p>that extends</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>nlpclass</span><span class='o'>.</span><span class='nc'>ClassifierTrainer</span><span class='o'>[</span><span class='kt'>Label</span>, <span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>]</span>
+</code></pre></div>
+<p>The <code>UnsmoothedNaiveBayesTrainer</code> class requires a method:</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>def</span> <span class='n'>train</span><span class='o'>(</span><span class='n'>instances</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[(</span><span class='kt'>Label</span>, <span class='kt'>Vector</span><span class='o'>[(</span><span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>)])])</span><span class='k'>:</span> <span class='kt'>Classifier</span><span class='o'>[</span><span class='kt'>Label</span>, <span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>]</span>
+</code></pre></div>
+<p>The <code>train</code> method takes a Vector of labeled instances, uses those instances to calculate probability distributions (without smoothing, of course), and then instantiates a <code>NaiveBayesModel</code> to be returned.</p>
+
+<p>When trained on the tennis <a href='https://raw.github.com/utcompling/nlpclass-fall2013/master/data/classify/tennis/train.txt'>training file</a>, you should get the following behavior:</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>instances</span> <span class='k'>=</span> <span class='o'>...</span> <span class='n'>from</span> <span class='n'>tennis</span> <span class='n'>training</span> <span class='n'>file</span> <span class='o'>...</span>
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>nbt</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>UnsmoothedNaiveBayesTrainer</span><span class='o'>[</span><span class='kt'>String</span>, <span class='kt'>String</span>, <span class='kt'>String</span><span class='o'>](...)</span>
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>nbm</span> <span class='k'>=</span> <span class='n'>nbt</span><span class='o'>.</span><span class='n'>train</span><span class='o'>(</span><span class='n'>instances</span><span class='o'>)</span>
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>nbm</span><span class='o'>.</span><span class='n'>predict</span><span class='o'>(</span><span class='nc'>Vector</span><span class='o'>(</span><span class='s'>&quot;Outlook&quot;</span><span class='o'>-&gt;</span><span class='s'>&quot;Sunny&quot;</span><span class='o'>,</span> <span class='s'>&quot;Temperature&quot;</span><span class='o'>-&gt;</span><span class='s'>&quot;Cool&quot;</span><span class='o'>,</span> <span class='s'>&quot;Humidity&quot;</span><span class='o'>-&gt;</span><span class='s'>&quot;High&quot;</span><span class='o'>,</span> <span class='s'>&quot;Wind&quot;</span><span class='o'>-&gt;</span><span class='s'>&quot;Strong&quot;</span><span class='o'>))</span>
+<span class='n'>res0</span><span class='k'>:</span> <span class='kt'>String</span> <span class='o'>=</span> <span class='nc'>No</span>
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>nbm</span><span class='o'>.</span><span class='n'>predict</span><span class='o'>(</span><span class='nc'>Vector</span><span class='o'>(</span><span class='s'>&quot;Outlook&quot;</span><span class='o'>-&gt;</span><span class='s'>&quot;Overcast&quot;</span><span class='o'>,</span> <span class='s'>&quot;Temperature&quot;</span><span class='o'>-&gt;</span><span class='s'>&quot;Cool&quot;</span><span class='o'>,</span> <span class='s'>&quot;Humidity&quot;</span><span class='o'>-&gt;</span><span class='s'>&quot;Normal&quot;</span><span class='o'>,</span> <span class='s'>&quot;Wind&quot;</span><span class='o'>-&gt;</span><span class='s'>&quot;Weak&quot;</span><span class='o'>))</span>
+<span class='n'>res1</span><span class='k'>:</span> <span class='kt'>String</span> <span class='o'>=</span> <span class='nc'>Yes</span>
+</code></pre></div>
+<p><em>Note:</em> This separation of concerns is nice because it means that the <code>NaiveBayesModel</code> needs only to be concerned with using the parameters to predict labels; it does not care where those parameters come from, meaning that it can be reused under all sorts of parameter-estimating scenarios. Thus, the trainer&#8217;s only job is to estimate the parameters from raw data and produce a model. This means that we can have many kinds of trainers that all have the same interface (train from data to make a model), but vary in their parameter estimation techniques.</p>
+
+<h3 id='naivebayesscorer'>NaiveBayesScorer</h3>
+
+<p>In order to evaluate your model, you will need to implement an object that runs labeled test instances through your classifier and checks the results.</p>
+
+<p>So you will implement an object:</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>nlp</span><span class='o'>.</span><span class='n'>a2</span><span class='o'>.</span><span class='nc'>NaiveBayesScorer</span>
+</code></pre></div>
+<p>that extends</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>nlpclass</span><span class='o'>.</span><span class='nc'>ClassifierScorerToImplement</span>
+</code></pre></div>
+<p>The <code>NaiveBayesScorer</code> class requires a method:</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>def</span> <span class='n'>score</span><span class='o'>[</span><span class='kt'>Label</span>, <span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>](</span>
+    <span class='n'>naiveBayesModel</span><span class='k'>:</span> <span class='kt'>Classifier</span><span class='o'>[</span><span class='kt'>Label</span>, <span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>],</span>
+    <span class='n'>testInstances</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[(</span><span class='kt'>Label</span>, <span class='kt'>Vector</span><span class='o'>[(</span><span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>)])],</span>
+    <span class='n'>positveLabel</span><span class='k'>:</span> <span class='kt'>Label</span><span class='o'>)</span>
+</code></pre></div>
+<p>The <code>score</code> method takes a three arguments.</p>
+
+<ol>
+<li><code>naiveBayesModel</code>: A trained <code>NaiveBayesModel</code> instance</li>
+
+<li><code>testInstances</code>: A Vector of test instances and their <em>correct</em> labels</li>
+
+<li><code>positveLabel</code>: The label to be treated as &#8220;positive&#8221; for precision and recall calculations</li>
+</ol>
+
+<p>Notice that the <code>score</code> method does not return anything. Instead, it should simply print out the information:</p>
+
+<ul>
+<li>Accuracy</li>
+
+<li>Precision (based on the <code>positiveLabel</code>)</li>
+
+<li>Recall (based on the <code>positiveLabel</code>)</li>
+
+<li>F1 (based on the <code>positiveLabel</code>)</li>
+</ul>
+
+<p>When trained on the tennis <a href='https://raw.github.com/utcompling/nlpclass-fall2013/master/data/classify/tennis/train.txt'>training file</a> and tested on the tennis <a href='https://raw.github.com/utcompling/nlpclass-fall2013/master/data/classify/tennis/test.txt'>testing file</a>, you should get the following behavior:</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>trainInstances</span> <span class='k'>=</span> <span class='o'>...</span> <span class='n'>from</span> <span class='n'>tennis</span> <span class='n'>training</span> <span class='n'>file</span> <span class='o'>...</span>
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>nbt</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>UnsmoothedNaiveBayesTrainer</span><span class='o'>[</span><span class='kt'>String</span>, <span class='kt'>String</span>, <span class='kt'>String</span><span class='o'>](...)</span>
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>nbm</span> <span class='k'>=</span> <span class='n'>nbt</span><span class='o'>.</span><span class='n'>train</span><span class='o'>(</span><span class='n'>trainInstances</span><span class='o'>)</span>
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>testInstances</span> <span class='k'>=</span> <span class='o'>...</span> <span class='n'>from</span> <span class='n'>tennis</span> <span class='n'>test</span> <span class='n'>file</span> <span class='o'>...</span>
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='nc'>NaiveBayesScorer</span><span class='o'>.</span><span class='n'>score</span><span class='o'>(</span><span class='n'>nbm</span><span class='o'>,</span> <span class='n'>testInstances</span><span class='o'>,</span> <span class='s'>&quot;Yes&quot;</span><span class='o'>)</span>
+<span class='n'>accuracy</span> <span class='k'>=</span> <span class='mf'>61.54</span>
+<span class='n'>precision</span> <span class='o'>(</span><span class='nc'>Yes</span><span class='o'>)</span> <span class='k'>=</span> <span class='mf'>66.67</span>
+<span class='n'>recall</span> <span class='o'>(</span><span class='nc'>Yes</span><span class='o'>)</span> <span class='k'>=</span> <span class='mf'>75.00</span>
+<span class='n'>f1</span> <span class='k'>=</span> <span class='mf'>70.59</span>
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='nc'>NaiveBayesScorer</span><span class='o'>.</span><span class='n'>score</span><span class='o'>(</span><span class='n'>nbm</span><span class='o'>,</span> <span class='n'>testInstances</span><span class='o'>,</span> <span class='s'>&quot;No&quot;</span><span class='o'>)</span>
+<span class='n'>accuracy</span> <span class='k'>=</span> <span class='mf'>61.54</span>
+<span class='n'>precision</span> <span class='o'>(</span><span class='nc'>No</span><span class='o'>)</span> <span class='k'>=</span> <span class='mf'>50.00</span>
+<span class='n'>recall</span> <span class='o'>(</span><span class='nc'>No</span><span class='o'>)</span> <span class='k'>=</span> <span class='mf'>40.00</span>
+<span class='n'>f1</span> <span class='k'>=</span> <span class='mf'>44.44</span>
+</code></pre></div>
+<h3 id='naive_bayes_from_the_commandline'>Naive Bayes from the command-line</h3>
+
+<p>In order for us to test your code, you will need to create an object <code>nlp.a2.NaiveBayes</code> with a <code>main</code> method so that we can train and test a model from the command line.</p>
+
+<p>There should be three options that correspond to the three scorer arguments above:</p>
+
+<ul>
+<li><code>--train FILE</code></li>
+
+<li><code>--test FILE</code></li>
+
+<li><code>--poslab LABEL</code></li>
+</ul>
+
+<p>Then we should be able to this:</p>
+
+<pre><code>$ sbt &quot;run-main nlp.a2.NaiveBayes --train tennis/train.txt --test tennis/test.txt --poslab Yes&quot;
+accuracy = 61.54
+precision (Yes) = 66.67
+recall (Yes) = 75.00
+f1 = 70.59
+$ sbt &quot;run-main nlp.a2.NaiveBayes --train tennis/train.txt --test tennis/test.txt --poslab No&quot;
+accuracy = 61.54
+precision (No) = 50.00
+recall (No) = 40.00
+f1 = 44.44</code></pre>
+
+<h3 id='logging'>Logging</h3>
+
+<p>A logging framework is one that lets you print information to the screen (or to a file) from your program in a clean way. Whereas println statements always show up, logging statements can be controlled when the program is run. You will use logging statements to show extra information in your output.</p>
+
+<p>You will have to take a few steps to make this work.</p>
+
+<p>First, you will have to extend the trait <code>com.typesafe.scalalogging.log4j.Logging</code> from any class or object that you want to be able to log. If your class or object is already extending something, then you should used the <code>with</code> keyword to indicate a second trait to extend:</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>import</span> <span class='nn'>com.typesafe.scalalogging.log4j.Logging</span>
+
+<span class='k'>class</span> <span class='nc'>NaiveBayesModel</span><span class='o'>[</span><span class='kt'>Label</span>, <span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>](...)</span>
+  <span class='k'>extends</span> <span class='nc'>Classifier</span><span class='o'>[</span><span class='kt'>Label</span>, <span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>]</span>
+  <span class='k'>with</span> <span class='nc'>Logging</span>
+</code></pre></div>
+<p>Then you will have to add logging statements to print out relevant information. There are 6 levels of logging statements: trace, debug, info, warn, error, and fatal. Trace is the lowest, fatal is the highest. You can log statements using the syntax <code>logger.debug</code>, <code>logger.info</code>, etc. (<code>logger</code> is a field on the <code>Logging</code> trait, which is why it exists even though you aren&#8217;t explicitly declaring it.)</p>
+<div class='highlight'><pre><code class='scala'>  <span class='k'>override</span> <span class='k'>def</span> <span class='n'>predict</span><span class='o'>(</span><span class='n'>features</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[(</span><span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>)])</span><span class='k'>:</span> <span class='kt'>Label</span> <span class='o'>=</span> <span class='o'>{</span>
+    <span class='o'>[</span><span class='kt'>...</span><span class='o'>]</span>
+    <span class='n'>logger</span><span class='o'>.</span><span class='n'>debug</span><span class='o'>(</span><span class='s'>&quot;something at the debug level&quot;</span><span class='o'>)</span>
+    <span class='o'>[</span><span class='kt'>...</span><span class='o'>]</span>
+    <span class='n'>logger</span><span class='o'>.</span><span class='n'>info</span><span class='o'>(</span><span class='s'>&quot;something at the info level&quot;</span><span class='o'>)</span>
+    <span class='o'>[</span><span class='kt'>...</span><span class='o'>]</span>
+  <span class='o'>}</span>
+</code></pre></div>
+<p>When <code>predict</code> is run, it will print two statement at different logging levels.</p>
+
+<p>To see the logging statements when you run your program, you should pass a VM argument indicating the log level that you want to show:</p>
+
+<pre><code>sbt -Dorg.apache.logging.log4j.level=INFO &quot;run-main nlp.a2.NaiveBayes ...&quot;</code></pre>
+
+<p>The way the logging framework works, you will get all the logging statements at the level you specify and above. So, if you specify INFO, you will get info, warn, error, and fatal statements. If you specify DEBUG, you will get debug, info, warn, error, and fatal statements.</p>
+
+<p>For this assignment, you should add log statements to the <code>predict</code> method of <code>NaiveBayesModel</code> so that, for each test instance, it logs posterior probabilities for each label, given the features.</p>
+
+<p>When <code>predict</code> receieves a feature vector, it will have to compute the probabilities of each of the labels in order to make a decision about which label is best. So, for each prediction, you should compute the probability of each label given the features, normalize them so that they sum to 1, sort them from greatest to least, and log them at the INFO level.</p>
+
+<p>If all probabilities are zero, then there will be no way to normalize them to 1, so you should instead log the statement &#8220;All posteriors are zero!&#8221;. In such a case, you should simply return the label with the highest prior, since all labels have feature counts with zeros.</p>
+
+<p>So I should be able to do this (minus sbt output noise and logging line noise):</p>
+
+<pre><code>$ sbt -Dorg.apache.logging.log4j.level=INFO &quot;run-main nlp.a2.NaiveBayes --train tennis/train.txt --test tennis/test.txt --poslab Yes&quot;
+[...logging stuff...] - No   0.7954  Yes  0.2046
+[...logging stuff...] - Yes  1.0000  No   0.0000
+[...logging stuff...] - Yes  0.6729  No   0.3271
+[...logging stuff...] - No   0.8383  Yes  0.1617
+[...logging stuff...] - Yes  0.8606  No   0.1394
+[...logging stuff...] - Yes  1.0000  No   0.0000
+[...logging stuff...] - No   0.6603  Yes  0.3397
+[...logging stuff...] - Yes  1.0000  No   0.0000
+[...logging stuff...] - Yes  0.8224  No   0.1776
+[...logging stuff...] - Yes  1.0000  No   0.0000
+[...logging stuff...] - Yes  0.8224  No   0.1776
+[...logging stuff...] - No   0.5645  Yes  0.4355
+[...logging stuff...] - Yes  0.6068  No   0.3932
+accuracy = 61.54
+precision (Yes) = 66.67
+recall (Yes) = 75.00
+f1 = 70.59</code></pre>
+
+<p>And when the logging flag is not given, I should still be able to do this:</p>
+
+<pre><code>$ sbt &quot;run-main nlp.a2.NaiveBayes --train tennis/train.txt --test tennis/test.txt --poslab Yes&quot;
+accuracy = 61.54
+precision (Yes) = 66.67
+recall (Yes) = 75.00
+f1 = 70.59</code></pre>
+
+<p><em>NOTE:</em> You are welcome to (and encouraged) to log additional information at the debug and trace levels if you find it useful as you are developing and testing your code. But please do not log additional information at the info level or above since it will interfere with grading.</p>
+
+<h2 id='problem_3__prepositional_phrase_attachment_and_smoothing_25_pts'>Problem 3 - Prepositional Phrase Attachment and smoothing (25 pts)</h2>
+
+<p>Prepositional phrase attachment is the well-known task of resolving a common ambiguity in English syntax regarding whether a prepositional phrase attaches to the verb or the noun in sentences with the pattern</p>
+
+<blockquote>
+<p>Verb Noun_Phrase Prepositional_Phrase</p>
+</blockquote>
+
+<p>An example is I saw the man with the telescope. If the prepositional phrase attaches to the verb, then the seeing was done with the telescope; if it attaches to the noun, it indicates that the man had the telescope in his possession. A clear difference can be seen with the following related examples:</p>
+
+<ul>
+<li>Attach to the noun: He ate the spaghetti with meatballs.</li>
+
+<li>Attach to the verb: He ate the spaghetti with chopsticks.</li>
+</ul>
+
+<p>We can deal with this decision just like any simple labeling problem: each sentence receives a label <em>V</em> or <em>N</em> indicating the attachment decision, and there is no benefit to be gained from using previous attachment decisions.</p>
+
+<p>For this problem, you will use a conveniently formatted <a href='https://github.com/utcompling/nlpclass-fall2013/tree/master/data/classify/ppa'>data set</a> for prepositional phrase attachment which has been made available by Adwait Ratnaparkhi. There are three files which you will use for this problem: <code>train.txt</code>, <code>dev.txt</code>, and <code>test.txt</code>. Look at the contents of training:</p>
+
+<pre><code>verb=join,noun=board,prep=as,prep_obj=director,V
+verb=is,noun=chairman,prep=of,prep_obj=N.V.,N
+verb=named,noun=director,prep=of,prep_obj=conglomerate,N
+verb=caused,noun=percentage,prep=of,prep_obj=deaths,N
+verb=using,noun=crocidolite,prep=in,prep_obj=filters,V
+...</code></pre>
+
+<p>Each row lists an abbreviated form of a prepositional phrase attachment. The four words correspond to the head verb, head noun, preposition, and head noun object of the preposition, in that order. The final element indicates whether the attachment was to the verb (V) or to the noun (N).</p>
+
+<p>For this exercise, you will train a classifier that learns a model from the data in training and use it to classify new instances. You will develop your model using the material in <code>dev.txt</code>. You must not personally inspect the contents of the test data — you will run your classifier on <code>test.txt</code> only once, when you are done developing.</p>
+
+<p>The first thing you should do is train your unsmoothed naive Bayes classifier on the ppa data:</p>
+
+<pre><code>$ sbt &quot;run-main nlp.a2.NaiveBayes --train ppa/train.txt --test ppa/dev.txt --poslab V&quot;
+accuracy = 68.63
+precision (V) = (1596 / 2562) 62.30
+recall (V) = (1596 / 1897) 84.13
+f1 = 71.59</code></pre>
+
+<p>Ratnaparkhi et al (1994) obtain accuracies of around 80%, so we clearly should be able to do much better. One obvious problem shows up if you look at the actual output (minus sbt output junk and logging line noise):</p>
+
+<pre><code>$ sbt -Dorg.apache.logging.log4j.level=INFO &quot;run-main nlp.a2.NaiveBayes --train ppa/train.txt --test ppa/dev.txt --poslab N&quot; | head -n20
+[...logging stuff...] - V    0.8328  N    0.1672
+[...logging stuff...] - V    1.0000  N    0.0000
+[...logging stuff...] - V    1.0000  N    0.0000
+[...logging stuff...] - V    1.0000  N    0.0000
+[...logging stuff...] - V    1.0000  N    0.0000
+[...logging stuff...] - All posteriors are zero!
+[...logging stuff...] - V    1.0000  N    0.0000
+[...logging stuff...] - V    1.0000  N    0.0000
+[...logging stuff...] - All posteriors are zero!
+[...logging stuff...] - V    1.0000  N    0.0000
+[...logging stuff...] - V    0.9998  N    0.0002
+[...logging stuff...] - V    0.9998  N    0.0002
+[...logging stuff...] - V    0.9998  N    0.0002
+[...logging stuff...] - V    1.0000  N    0.0000
+[...logging stuff...] - V    1.0000  N    0.0000
+[...logging stuff...] - V    1.0000  N    0.0000</code></pre>
+
+<p>There are many items that have zero probability for N, V, or both. The problem is that we haven&#8217;t done any smoothing, so there are many parameters that we assign zero to, and then the overall probability for the class becomes zero. For example, the tenth line in <code>dev.txt</code> is:</p>
+
+<pre><code>verb=was,noun=performer,prep=among,prep_obj=groups,N</code></pre>
+
+<p>The output gives zero probability to N because the only training instance that has noun=performer is with the V label:</p>
+
+<pre><code>verb=juxtapose,noun=performer,prep=with,prep_obj=tracks,V</code></pre>
+
+<p>Thus, the value of p(Noun=performer | Label=V) is zero, making p(Label=V | Verb=juxtapose, Noun=performer, Prep=with, PrepObj=tracks) also zero, regardless of how much the rest of the information looks like a V attachment.</p>
+
+<p>We can fix this by using add-λ smoothing. For example, we can smooth the prior probabilities of the labels as follows:</p>
+
+<p><code>\[
+    p(Label = x) = \frac{
+        freq(Label=x) + \lambda
+    }{
+        \left[\sum_y freq(Label=y)\right] + \lambda \cdot |L|
+    }
+\]</code></p>
+
+<p>Here, L is the set of labels, like {V, N} or {yes, no}, and |L| is the size of that set. Quite simply, we&#8217;ve added an extra λ count to both labels, so we&#8217;ve added λ|L| hallucinated counts. We ensure it still is a probability distribution by adding λ|L| to the denominator.</p>
+
+<p><strong>Part (a) <span>5 pts</span>.</strong> Written answer. Provide the general formula for a similar smoothed estimate for p(Feature=x|Label=y) in terms of the relevant frequencies of x and y and the set ValuesFeature consisting of the values associated with the attribute. (For example, ValuesOutlook from the tennis example is {sunny,rainy,overcast}.) If it helps, first write it down as the estimate for a specific parameter, like p(Outlook=sunny|Label=yes), and then do the more general formula.</p>
+
+<p><strong>Part (b) <span>20 pts</span>.</strong> Implementation.</p>
+
+<p>Similar to what you did for <a href='#problem_2__implement_basic_naive_bayes_30_pts'>Problem 2</a>, you should create a class <div class='highlight'><pre><code class='scala'><span class='n'>nlp</span><span class='o'>.</span><span class='n'>a2</span><span class='o'>.</span><span class='nc'>AddLambdaNaiveBayesTrainer</span><span class='o'>[</span><span class='kt'>Label</span>, <span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>]</span>
+</code></pre></div> that extends <div class='highlight'><pre><code class='scala'><span class='n'>nlpclass</span><span class='o'>.</span><span class='nc'>ClassifierTrainer</span><span class='o'>[</span><span class='kt'>Label</span>, <span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>]</span>
+</code></pre></div></p>
+
+<p>Again, you will need to implement the <code>train</code> method, but this time it should perform smoothing on the training data. The λ class-level parameter should be configurable.</p>
+
+<p>Be sure that, when calculating the demonminator for the smoothed probability, your code should be sure to take into account even the values that are not seen with a particular label.</p>
+
+<p>You should also update your <code>ProbabilityDistribution</code> class to allow for a &#8220;default&#8221; parameter so that if a previously-unseen key is looked up in the distribution, the default will be used to return the probability based on there being λ counts.</p>
+
+<p>With λ=2.0, you should see this behavior using the <code>tennis</code> training set:</p>
+
+<p><code>\[
+    \begin{align}
+      p_{+1}(Outlook=Overcast \mid No) 
+        &amp;= \frac{C(Overcast \mid No)}{C(Rain \mid No) + C(Sunny \mid No) + C(Overcast \mid No)} \\ 
+        &amp;= \frac{0+2}{(2+2) + (3+2) + (0+2)}
+        = \frac{2}{11}
+    \end{align}
+\]</code></p>
+
+<p>And this behavior:</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>val</span> <span class='n'>instances</span> <span class='k'>=</span> <span class='o'>...</span> <span class='n'>from</span> <span class='n'>tennis</span> <span class='n'>train</span> <span class='o'>...</span>
+<span class='k'>val</span> <span class='n'>nbt</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>AddLambdaNaiveBayesTrainer</span><span class='o'>[</span><span class='kt'>String</span>, <span class='kt'>String</span>, <span class='kt'>String</span><span class='o'>](...)</span>  <span class='c1'>// with lambda=2.0</span>
+<span class='k'>val</span> <span class='n'>nbm</span> <span class='k'>=</span> <span class='n'>nbt</span><span class='o'>.</span><span class='n'>train</span><span class='o'>(</span><span class='n'>instances</span><span class='o'>)</span>
+<span class='n'>nbm</span><span class='o'>.</span><span class='n'>predict</span><span class='o'>(</span><span class='nc'>Vector</span><span class='o'>(</span><span class='s'>&quot;Outlook&quot;</span> <span class='o'>-&gt;</span> <span class='s'>&quot;Overcast&quot;</span><span class='o'>,</span> <span class='s'>&quot;Temperature&quot;</span> <span class='o'>-&gt;</span> <span class='s'>&quot;Hot&quot;</span><span class='o'>,</span> <span class='s'>&quot;Humidity&quot;</span> <span class='o'>-&gt;</span> <span class='s'>&quot;High&quot;</span><span class='o'>,</span> <span class='s'>&quot;Wind&quot;</span> <span class='o'>-&gt;</span> <span class='s'>&quot;Strong&quot;</span><span class='o'>))</span>
+<span class='c1'>// Yes</span>
+</code></pre></div>
+<p>Finally, you should update the <code>main</code> method of the NaiveBayes object to support an extra <code>--lambda</code> option where the λ parameter can be specified from the command line. If specified, the option should specify the parameter lambda for the <code>AddLambdaNaiveBayesTrainer</code>. If the <code>--lambda</code> option is not specified, then <code>UnsmoothedNaiveBayesTrainer</code> should be used. Using this should yield these results:</p>
+
+<pre><code>$ sbt &quot;run-main nlp.a2.NaiveBayes --train tennis/train.txt --test tennis/test.txt --poslab Yes --lambda 1.0&quot;
+accuracy = 61.54
+precision (Yes) = 66.67
+recall (Yes) = 75.00
+f1 = 70.59
+
+$ sbt &quot;run-main nlp.a2.NaiveBayes --train tennis/train.txt --test tennis/test.txt --poslab Yes --lambda 4.0&quot;
+accuracy = 76.92
+precision (Yes) = 72.73
+recall (Yes) = 100.00
+f1 = 84.21</code></pre>
+
+<p>Now when you run on the <code>ppa</code> dataset, you should see that they are no more zero posteriors:</p>
+
+<pre><code>$ sbt -Dorg.apache.logging.log4j.level=INFO &quot;run-main nlp.a2.NaiveBayes --train ppa/train.txt --test ppa/dev.txt --poslab N --lambda 1.0&quot; | head -n20
+[...logging stuff...] - V    0.8010  N    0.1990
+[...logging stuff...] - V    0.9997  N    0.0003
+[...logging stuff...] - V    0.9997  N    0.0003
+[...logging stuff...] - V    0.9982  N    0.0018
+[...logging stuff...] - V    0.9999  N    0.0001
+[...logging stuff...] - V    0.9986  N    0.0014
+[...logging stuff...] - V    0.9996  N    0.0004
+[...logging stuff...] - V    0.9998  N    0.0002
+[...logging stuff...] - V    0.9996  N    0.0004
+[...logging stuff...] - V    0.5166  N    0.4834
+[...logging stuff...] - V    0.9997  N    0.0003
+[...logging stuff...] - V    0.9996  N    0.0004
+[...logging stuff...] - V    0.9995  N    0.0005
+[...logging stuff...] - V    0.9999  N    0.0001
+[...logging stuff...] - V    0.9999  N    0.0001
+[...logging stuff...] - V    0.9997  N    0.0003</code></pre>
+
+<p><strong>Written answer.</strong> Experiment on the <code>ppa</code> dataset with various λ values, checking accuracy on <code>dev.txt</code>. Report the best λ you found and what accuracy you obtained on <code>dev.txt</code>.</p>
+
+<h2 id='problem_4__computing_with_logarithms_15_pts'>Problem 4 - Computing with logarithms (15 pts)</h2>
+
+<p>When you calculated the values to determine the most probable label for problems 2 and 3, you (probably) followed the equation directly and used multiplication to combine the various probabilities. Doing so works fine on small examples like those in problems 2 and 3, but for problem 5 you will be using a much wider set of attributes with even more values than those used so far. This means that you will be combining a much larger group of much smaller probabilities, so you might easily end up exceeding the floating point precision when many more probabilties are to be combined. A straightforward way of getting around this is to convert the probabilities to logarithms and use addition of log probabilities instead of multiplication of probabilities.</p>
+
+<p>First, here&#8217;s a reminder of the basic property of interest:</p>
+
+<p><code>\[
+    a \cdot b = e^{\log_e a + \log_e b}
+\]</code></p>
+
+<p>Try it out in Scala:</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>import</span> <span class='nn'>scala.math</span>
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='mi'>6</span> <span class='o'>*</span> <span class='mi'>7</span>
+<span class='mi'>42</span>
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>math</span><span class='o'>.</span><span class='n'>exp</span><span class='o'>(</span><span class='n'>math</span><span class='o'>.</span><span class='n'>log</span><span class='o'>(</span><span class='mi'>6</span><span class='o'>)</span> <span class='o'>+</span> <span class='n'>math</span><span class='o'>.</span><span class='n'>log</span><span class='o'>(</span><span class='mi'>7</span><span class='o'>))</span>
+<span class='mf'>41.999999999999986</span>
+</code></pre></div>
+<p>More generally:</p>
+
+<p><code>\[
+    \prod_{x \in X} P(x) = e^{\sum_{x \in X} \log_e P(x)}
+\]</code></p>
+
+<p>Since multiplying numbers becomes addition of logarithms values, when determining the most probable label we can do the following:</p>
+
+<p><code>\[
+  \begin{align*}
+    \hat{x} &amp;= \text{argmax}_{x \in L}~p(Label=x) \cdot \prod_i p(Attribute_i = y_i \mid Label=x) \\
+            &amp;= \text{argmax}_{x \in L}~\log(p(Label=x)) + \sum_i \log(p(Attribute_i = y_i \mid Label=x))
+  \end{align*}
+\]</code></p>
+
+<p><strong>Part (a) <span>3 pts</span>.</strong> Written answer. Provide the formula for calculating p(yes|overcast,cool,normal,weak) when using log values of the parameters, such as <em>log p(yes)</em> and <em>log p(no|yes)</em>. Note: you need to determine the probability, not the argmax. This is simple, but writing this out explicitly will help you for part (b).</p>
+
+<p><strong>Part (b) <span>12 pts</span>.</strong> Implementation.</p>
+
+<p>Create a new class <div class='highlight'><pre><code class='scala'><span class='n'>nlp</span><span class='o'>.</span><span class='n'>a2</span><span class='o'>.</span><span class='nc'>LogNaiveBayesModel</span><span class='o'>[</span><span class='kt'>Label</span>, <span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>]</span>
+</code></pre></div></p>
+
+<p>that, like the previous version, extends <div class='highlight'><pre><code class='scala'><span class='n'>nlpclass</span><span class='o'>.</span><span class='nc'>Classifier</span><span class='o'>[</span><span class='kt'>Label</span>, <span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>]</span>
+</code></pre></div></p>
+
+<p>As before, you will have to implement the <code>predict</code> method: <div class='highlight'><pre><code class='scala'><span class='k'>def</span> <span class='n'>predict</span><span class='o'>(</span><span class='n'>features</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[(</span><span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>)])</span><span class='k'>:</span> <span class='kt'>Label</span>
+</code></pre></div></p>
+
+<p>But, this time, you will compute the argmax using logarithms of probabilities instead of multiplying simple probabilities together.</p>
+
+<p>You should also create a class <div class='highlight'><pre><code class='scala'><span class='n'>nlp</span><span class='o'>.</span><span class='n'>a2</span><span class='o'>.</span><span class='nc'>LogAddLambdaNaiveBayesTrainer</span><span class='o'>[</span><span class='kt'>Label</span>, <span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>]</span>
+</code></pre></div></p>
+
+<p>That is exactly the same as your <code>AddLambdaNaiveBayesTrainer</code> except that it returns a <code>LogNaiveBayesModel</code> instead of a <code>NaiveBayesModel</code>. Feel free to reuse code as much as possible here.</p>
+
+<p>Finally, add an option <code>--log</code> to the <code>main</code> function of <code>NaiveBayes</code> that takes an argument <code>true</code> or <code>false</code> specifying whether <code>LogAddLambdaNaiveBayesTrainer</code> should be used. If <code>--log</code> is not specified, then it should be treated as <code>false</code> so that the behavior of the program is as it was before.</p>
+
+<p>You should verify that your new class yields the same results as your previous version:</p>
+
+<pre><code>$ sbt &quot;run-main nlp.a2.NaiveBayes --train tennis/train.txt --test tennis/test.txt --poslab Yes --lambda 4.0 --log true&quot;
+accuracy = 76.92
+precision (Yes) = 72.73
+recall (Yes) = 100.00
+f1 = 84.21</code></pre>
+
+<p>Keep in mind that you must exponentiate the log scores for each label before you normalize to get the probabilities for logging to the console. You won&#8217;t be able to call <code>math.exp(p)</code> directly since the values are too small, which is why we were using logarithms in the first place. Instead, to normalize, you&#8217;ll need to make the values large enough to exponentiate. You can do this by dividing each of the values by the largest of them, since dividing all values by the same amount will increase them proportionally, making the largest value 1.0, and then exponentitating &#8212; and remember that dividing exponents is done via subtraction. So if <em>P</em> contains all the calculations for each of the of the labels:</p>
+
+<p><code>\[
+    p^* = \exp(\log(p) - \max_{v \in P} \log(p))
+\]</code></p>
+
+<p>Then you can normalize the <em>p</em>* values as usual.</p>
+
+<p>Notes: You can do logs in various bases; which base you use doesn’t matter, as long as you use it consistently. The easiest thing to do would be to use math.log(number), which gives you base <em>e</em>. Also, the log of zero corresponds to negative infinity in log-space (<code>Double.NegativeInfinity</code> in Scala).</p>
+
+<h2 id='problem_5__extending_the_feature_set_20_pts'>Problem 5 - Extending the feature set (20 pts)</h2>
+
+<p>The simple set of features used for the ppa data above can definitely be improved upon. For example, you could have features that:</p>
+
+<ul>
+<li>are combinations of the head noun and verb, e.g. <code>verb+noun=join+board</code></li>
+
+<li>are a lemmatized version of the verb, e.g. <code>verb_lemma=cause</code> from <em>cause</em>, <em>causes</em>, <em>caused</em>, and <em>causing</em></li>
+
+<li>identify all numbers, e.g. noun_form=number for 42, 1.5, 100,000, etc.</li>
+
+<li>identify capitalized forms, e.g. noun_form=Xx for Texas and noun_form=XX for USA.</li>
+</ul>
+
+<p><strong>Implementation.</strong></p>
+
+<p>Create a new class that extends the trait</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>nlpclass</span><span class='o'>.</span><span class='nc'>FeatureExtender</span><span class='o'>[</span><span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>]</span>
+</code></pre></div>
+<p>Your implementation will have to implement a method <code>extendFeatures</code> that takes an instance&#8217;s feature vector and produces a new feature vector containing any new features you want the classifier to use. Be sure to include the original features in the output unless you intentionally want to exclude them.</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>def</span> <span class='n'>extendFeatures</span><span class='o'>(</span><span class='n'>features</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[(</span><span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>)])</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[(</span><span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>)]</span>
+</code></pre></div>
+<p>You may call your implementation class whatever you want (maybe <code>PpaFeatureExtender</code>?).</p>
+
+<p>In order to make use of your <code>FeatureExtender</code> class, you will need to update your <code>NaiveBayesModel</code> and <code>NaiveBayesTrainer</code> implementations (as well as their <code>Log</code> versions from Problem 4) to store an additional field of type <code>FeatureExtender[Feature, Label]</code>. Your trainer requires this field so that it can adjust the features of any training instances that it sees as it counts for the model. It also needs the field so that it can give it as an argument to <code>NaiveBayesModel</code> during construction. The model needs the field so that it can adjust the features of a instance during prediction.</p>
+
+<p>For command-line use, add an option <code>--extend</code> to <code>NaiveBayes</code> that takes either a key indicating a specific FeatureExtender to use, or &#8220;none&#8221;, indicating that no extended features should be used. If a key is given, then the <code>main</code> method should instantiate the FeatureExtender specific to this key and pass it to the trainer. If &#8220;none&#8221;, or if the option is not present, you should, instead, instantiate <code>nlpclass.NoOpFeatureExtender</code> and pass <em>it</em> to the trainer. <code>NoOpFeatureExtender</code> is a <code>FeatureExtender</code> implementation that does not change the feature it is given. For this assignment, you will have the key &#8220;ppa&#8221; point to the <code>FeatureExtender</code> you create specifically for the ppa dataset. We should be able to run your classifier like this:</p>
+
+<pre><code>$ sbt &quot;run-main nlp.a2.NaiveBayes --train ppa/train.txt --test ppa/dev.txt --poslab V --lambda 1.0 --log true --extend ppa&quot;</code></pre>
+
+<p>To keep your code modular, you may want to create a variety of <code>FeatureExtender</code> implementations that each focus on a subset of useful features: one for number features, one for lemma features, one for wordshape feature, etc. This could be useful during testing when you want to easily try different combinations of features. To make it easy to combine these separate implementations, I have created a class <code>CompositeFeatureExtender</code> (which is itself a <code>FeatureExtender</code>) that will compose separate other <code>FeatureExtender</code>s into one <code>FeatureExtender</code>:</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>val</span> <span class='n'>featureExtender</span> <span class='k'>=</span> 
+  <span class='k'>new</span> <span class='nc'>CompositeFeatureExtender</span><span class='o'>[</span><span class='kt'>String</span>, <span class='kt'>String</span><span class='o'>](</span><span class='nc'>Vector</span><span class='o'>(</span>
+    <span class='k'>new</span> <span class='nc'>NumberFeatureExtender</span><span class='o'>(),</span>
+    <span class='k'>new</span> <span class='nc'>LemmaFeatureExtender</span><span class='o'>(),</span>
+    <span class='k'>new</span> <span class='nc'>WordShapeFeatureExtender</span><span class='o'>()))</span>
+</code></pre></div>
+<blockquote>
+<p><strong>Written answer.</strong> Come up with at least five <strong>new</strong> feature extensions. You can implement the feature extensions described here, but you must come up with five novel extensions on your own that are not just variants of each other. Be creative! Describe five of the features you added, and why you think they would be useful.</p>
+</blockquote>
+
+<p><strong>Tip.</strong> Some resources have been imported for you:</p>
+
+<ul>
+<li>
+<p>A <em>lemmatizer</em> is available for getting lemmas from words.</p>
+</li>
+</ul>
+<div class='highlight'><pre><code class='scala'>    <span class='k'>import</span> <span class='nn'>nlpclass.Lemmatize</span>
+
+    <span class='n'>println</span><span class='o'>(</span><span class='nc'>Lemmatize</span><span class='o'>(</span><span class='s'>&quot;causing&quot;</span><span class='o'>))</span>  <span class='c1'>// cause</span>
+    <span class='n'>println</span><span class='o'>(</span><span class='nc'>Lemmatize</span><span class='o'>(</span><span class='s'>&quot;cause&quot;</span><span class='o'>))</span>    <span class='c1'>// cause</span>
+    <span class='n'>println</span><span class='o'>(</span><span class='nc'>Lemmatize</span><span class='o'>(</span><span class='s'>&quot;causes&quot;</span><span class='o'>))</span>   <span class='c1'>// cause</span>
+    <span class='n'>println</span><span class='o'>(</span><span class='nc'>Lemmatize</span><span class='o'>(</span><span class='s'>&quot;caused&quot;</span><span class='o'>))</span>   <span class='c1'>// cause</span>
+</code></pre></div>
+<p>As before with the basic features, find an optimal λ on the dev set with the extended features. (Note that this may change as you add more features.) When you are satisfied that you cannot improve the performance any further, you can finally try out the test set! (Once you&#8217;ve done this, there is no going back to change the features any more.)</p>
+
+<blockquote>
+<p><strong>Written answer.</strong> What is the performance you obtain when using the basic features and the extended features, each with their best λ? Report the performance on <code>dev.txt</code> and <code>test.txt</code>.</p>
+</blockquote>
+
+<h2 id='additional_notes'>Additional Notes</h2>
+
+<h3 id='note_1'>Note 1</h3>
+
+<p>Keep in mind that it is possible to have the same attribute occur more than once in a given instance, so your code should handle this. What this means is that to get p(a=v|l), you do not divide by the frequency of l, but by the overall frequency of a and l occurring together. This will give you the same value for the tennis data and the ppa data <em>before</em> you add your own features.</p>
+
+<p>In general, we can have lots instances of the same attribute with text classification &#8211; for example, with twitter sentiment analysis, you will have tweets like:</p>
+
+<blockquote>
+<p>Love the angelic music behind Luke Russert #HCR reporting.</p>
+</blockquote>
+
+<p>With a positive sentiment. This will turn into a set of attribute-values + label like:</p>
+
+<pre><code>word=love,word=angelic,word=music,word=behind,word=luke,word=russert,hashtag=hcr,word=reporting,positive</code></pre>
+
+<p>So, your code should be set up to handle that!</p>
+
+<h3 id='note_2'>Note 2</h3>
+
+<p>Values can be shared across multiple random variables, which means that you can&#8217;t just use a tuple containing the value and the label &#8211; you have to make sure to include the attribute. For example, if you have ppa instances like:</p>
+
+<pre><code>verb=join,noun=board,prep=as,prep_obj=director,V
+verb=saw,noun=director,prep=of,prep_obj=company,N</code></pre>
+
+<p>You do not want the prep_obj=director and noun=director to be mixed in the same counts!</p>
+      </div>
+      <div id='footer'></div>
+    </div>
+  </body>
+</html>

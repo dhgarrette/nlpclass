@@ -1,0 +1,102 @@
+<html>
+  <head>
+    <meta content='text/html;charset=UTF-8' http-equiv='Content-Type'/>
+    <title>NLP &mdash; Scala</title>
+    <style type='text/css'>
+      @import '../css/default.css';
+      @import '../css/syntax.css';
+    </style>
+    <link rel="shortcut icon" href="../favicon.ico" />
+    <meta content='Natural Language Processing Class' name='subject'/>
+    <!--<link href='images/favicon.png' rel='shortcut icon'>-->
+
+    <!-- MathJax Section -->
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script>
+      MathJax.Hub.Config({
+        tex2jax: {
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+        }
+      });
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+
+  </head>
+  <body>
+    <div id='wrap'>
+      <div id='header'>
+        <img height="100" alt='NLP Class' src='../images/utexas.png'/>
+        <div class='tagline'>Natural Language Processing: Fall 2013</div>
+      </div>
+      <div id='pages'>
+        <ol class='toc'>
+          <li>NLP Class
+            <ol class="toc">
+              <li><a href='../index.html'>Home</a></li>
+              <li><a href='../syllabus.html'>Syllabus</a></li>
+              <li><a href='../schedule.html'>Schedule</a></li>
+              <li><a href='../notes'>Notes</a></li>
+              <li><a href='../requirements.html'>Assignment Requirements</a></li>
+              <li><a href='../links.html'>Links</a></li>
+            </ol>
+          </li>
+          <li>Useful Information
+            <ol class="toc">
+              <li><a href='../scala'>Scala</a></li>
+            </ol>
+          </li>
+          <li>Assignments
+            <ol class="toc">
+              <li><a href='../assignments/a0programming.html'>#0 - Programming</a></li>
+              <li><a href='../assignments/a1prob.html'>#1 - Probability</a></li>
+              <li><a href='../assignments/a2classification.html'>#2 - Classification</a></li>
+              <li><a href='../assignments/a3ngrams.html'>#3 - N-Grams</a></li>
+              <li><a href='../assignments/a4hmm.html'>#4 - HMMs</a></li>
+              <li><a href='../assignments/a5maxent.html'>#5 - MaxEnt</a></li>
+              <li><a href='../assignments/a6parsing.html'>#6 - Parsing</a></li>
+            </ol>
+          </li>
+          <li>External Links
+            <ol class="toc">
+              <li><a href='http://www.utcompling.com'>UTCL Main site</a></li>
+              <li><a href='https://courses.utexas.edu/webapps/portal/frameset.jsp?tab_tab_group_id=_11_1&url=%2Fwebapps%2Fblackboard%2Fexecute%2Flauncher%3Ftype%3DCourse%26id%3D_159651_1%26url%3D'>Blackboard</a></li>
+            </ol>
+          </li>
+        </ol>
+      </div>
+      <div id='content'>
+        <h1>Scala</h1>
+        <ol class="toc"><li><a href="#notes">Notes</a></li><li><a href="#links">Links</a></li><li><a href="#jason_baldridges_notes">Jason Baldridge&#8217;s Notes</a></li></ol>
+        <h2 id='notes'>Notes</h2>
+
+<p>I&#8217;ve written up some notes on Scala that might be useful</p>
+
+<p><a href='../scala/setup.html'>Scala Environment Setup</a><br /><a href='../scala/basics.html'>Scala Basics</a></p>
+
+<p><a href='../scala/scala-util.html'>My Scala Utilities Library</a></p>
+
+<h2 id='links'>Links</h2>
+
+<p><a href='http://www.scala-lang.org'>Scala</a>: Homepage<br /><a href='http://www.scala-lang.org/api/current/index.html#package'>Scala API</a>: The full API</p>
+
+<p><a href='http://stackoverflow.com/tags/scala/info'>Scala on Stack Overflow</a>: A great Scala community and a weath of Scala programming knowledge in question-and-answer format.</p>
+
+<p><a href='https://www.coursera.org/course/progfun'>Coursera course</a>: A course on Scala programming taught by the inventor of the language.</p>
+
+<p><a href='http://techblog.realestate.com.au/java-to-scala-cheatsheet/'>Java to Scala cheat sheet</a><br /><a href='http://blog.tmorris.net/posts/scalaoption-cheat-sheet/'>Option cheat sheet</a><br /><a href='http://brenocon.com/scalacheat/'>Syntax cheat sheet</a></p>
+
+<h2 id='jason_baldridges_notes'>Jason Baldridge&#8217;s Notes</h2>
+
+<p><a href='http://www.jasonbaldridge.com'>Jason Baldridge</a> has written some <a href='http://bcomposes.wordpress.com/'>blog</a> posts about Scala and NLP. I have corrected, updated, and improved some of them.</p>
+
+<p><a href='../scala/jb/funcomp.html'>Function Composition in Scala</a> <a href='http://bcomposes.wordpress.com/2011/08/20/fun-with-function-composition-in-scala/'>[original]</a><br /><a href='../scala/jb/jb1.html'>Part 1</a> <a href='http://bcomposes.wordpress.com/2011/08/22/first-steps-in-scala-for-first-time-programmers-part-1/'>[original]</a><br /><a href='http://bcomposes.wordpress.com/2011/08/24/first-steps-in-scala-for-beginning-programmers-part-2/'>Part 2</a><br /><a href='http://bcomposes.wordpress.com/2011/08/26/first-steps-in-scala-for-beginning-programmers-part-3/'>Part 3</a><br /><a href='http://bcomposes.wordpress.com/2011/08/30/first-steps-in-scala-for-beginning-programmers-part-4/'>Part 4</a><br /><a href='http://bcomposes.wordpress.com/2011/09/04/first-steps-in-scala-for-beginning-programmers-part-5/'>Part 5</a><br /><a href='http://bcomposes.wordpress.com/2011/09/06/first-steps-in-scala-for-beginning-programmers-part-6/'>Part 6</a><br /><a href='http://bcomposes.wordpress.com/2011/09/12/first-steps-in-scala-for-beginning-programmers-part-7/'>Part 7</a><br /><a href='http://bcomposes.wordpress.com/2011/09/19/first-steps-in-scala-for-beginning-programmers-part-8/'>Part 8</a><br /><a href='http://bcomposes.wordpress.com/2011/10/24/first-steps-in-scala-for-beginning-programmers-part-9/'>Part 9</a><br /><a href='http://bcomposes.wordpress.com/2011/10/25/first-steps-in-scala-for-beginning-programmers-part-10/'>Part 10</a><br /><a href='http://bcomposes.wordpress.com/2011/10/26/first-steps-in-scala-for-beginning-programmers-part-11/'>Part 11</a><br /><a href='http://bcomposes.wordpress.com/2011/11/14/first-steps-in-scala-for-beginning-programmers-part-12/'>Part 12</a><br /><a href='http://bcomposes.wordpress.com/2012/02/14/variations-for-computing-results-from-sequences-in-scala/'>Sequences</a><br /><a href='../scala/jb/faq1.html'>Questions from Students, Part 1</a> <a href='http://bcomposes.wordpress.com/2012/02/23/student-questions-about-scala-part-1/'>[original]</a><br /><a href='http://bcomposes.wordpress.com/2012/03/01/student-questions-about-scala-part-2/'>Questions from Students, Part 2</a></p>
+      </div>
+      <div id='footer'></div>
+    </div>
+  </body>
+</html>

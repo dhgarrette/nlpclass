@@ -1,0 +1,367 @@
+<html>
+  <head>
+    <meta content='text/html;charset=UTF-8' http-equiv='Content-Type'/>
+    <title>NLP &mdash; First Steps in Scala</title>
+    <style type='text/css'>
+      @import '../../css/default.css';
+      @import '../../css/syntax.css';
+    </style>
+    <link rel="shortcut icon" href="../../favicon.ico" />
+    <meta content='Natural Language Processing Class' name='subject'/>
+    <!--<link href='images/favicon.png' rel='shortcut icon'>-->
+
+    <!-- MathJax Section -->
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script>
+      MathJax.Hub.Config({
+        tex2jax: {
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+        }
+      });
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+
+  </head>
+  <body>
+    <div id='wrap'>
+      <div id='header'>
+        <img height="100" alt='NLP Class' src='../../images/utexas.png'/>
+        <div class='tagline'>Natural Language Processing: Fall 2013</div>
+      </div>
+      <div id='pages'>
+        <ol class='toc'>
+          <li>NLP Class
+            <ol class="toc">
+              <li><a href='../../index.html'>Home</a></li>
+              <li><a href='../../syllabus.html'>Syllabus</a></li>
+              <li><a href='../../schedule.html'>Schedule</a></li>
+              <li><a href='../../notes'>Notes</a></li>
+              <li><a href='../../requirements.html'>Assignment Requirements</a></li>
+              <li><a href='../../links.html'>Links</a></li>
+            </ol>
+          </li>
+          <li>Useful Information
+            <ol class="toc">
+              <li><a href='../../scala'>Scala</a></li>
+            </ol>
+          </li>
+          <li>Assignments
+            <ol class="toc">
+              <li><a href='../../assignments/a0programming.html'>#0 - Programming</a></li>
+              <li><a href='../../assignments/a1prob.html'>#1 - Probability</a></li>
+              <li><a href='../../assignments/a2classification.html'>#2 - Classification</a></li>
+              <li><a href='../../assignments/a3ngrams.html'>#3 - N-Grams</a></li>
+              <li><a href='../../assignments/a4hmm.html'>#4 - HMMs</a></li>
+              <li><a href='../../assignments/a5maxent.html'>#5 - MaxEnt</a></li>
+              <li><a href='../../assignments/a6parsing.html'>#6 - Parsing</a></li>
+            </ol>
+          </li>
+          <li>External Links
+            <ol class="toc">
+              <li><a href='http://www.utcompling.com'>UTCL Main site</a></li>
+              <li><a href='https://courses.utexas.edu/webapps/portal/frameset.jsp?tab_tab_group_id=_11_1&url=%2Fwebapps%2Fblackboard%2Fexecute%2Flauncher%3Ftype%3DCourse%26id%3D_159651_1%26url%3D'>Blackboard</a></li>
+            </ol>
+          </li>
+        </ol>
+      </div>
+      <div id='content'>
+        <h1>First Steps in Scala</h1>
+        <ol class="toc"><li><a href="#preface">Preface</a></li><li><a href="#functions">Functions</a></li><li><a href="#editing_programs_in_a_text_editor_and_running_them_on_the_command_line">Editing programs in a text editor and running them on the command line</a></li></ol>
+        <h2 id='preface'>Preface</h2>
+
+<p>The is the first of several Scala tutorials I’m creating for my Fall 2011 graduate Introduction to Computational Linguistics course at UT Austin, loosely based on similar tutorials that Katrin Erk created for teaching Python in a similar course. These tutorials assume no previous programming background, an assumption which is unfortunately still quite rare in the help-folks-learn-Scala universe, and which more or less necessitates the creation of these tutorials. The one exception I’m aware of is SimplyScala.</p>
+
+<p>Note: if you already know a programming language, this tutorial will probably not be very useful for you. (Though perhaps some of the later ones on functional programming and such that I intend to do will be, so check back.) In the meantime, check out existing Scala learning materials I’ve listed in the links page for the course.</p>
+
+<p>This tutorial assumes you have Scala installed and that you are using some form of Unix (if you use Windows, you’ll want to look into Cygwin). If you are having problems with this, you might try the examples by evaluating them in the code box on SimplyScala.</p>
+
+<p>A (partial) starter tour of Scala expressions, variables, and basic types</p>
+
+<p>We’ll use the Scala REPL for entering Scala expressions and seeing what the result of evaluating them is. REPL stands for read-eval(uate)-print-loop, which means it is a program that (1) reads the expressions you type in, (2) evaluates them using the Scala compiler, (3) prints out the result of the evaluation, and then (4) waits for you to enter further expressions.</p>
+
+<p>Note: it is very important that you actually type the commands given below into the REPL. If you just read them over, it will in many cases look quite obvious (and it is), but someone who is new to programming will generally find many gaps in their understanding by actually trying things out. In particular, programming languages are very exact, so they’ll do exactly what you tell them to do — and you’ll almost surely mess a few things up, and learn from that.</p>
+
+<p>In a Unix shell, type:</p>
+<div class='highlight'><pre><code class='text'>$ scala
+</code></pre></div>
+<p>You should see something like the following:</p>
+<div class='highlight'><pre><code class='text'>Welcome to Scala version 2.9.0.1 (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_26).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala&gt;
+</code></pre></div>
+<p>The scala&gt; line is the prompt that the REPL is waiting for you to enter expressions. Let’s enter some.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='s'>&quot;Hello world&quot;</span>
+<span class='n'>res0</span><span class='k'>:</span> <span class='kt'>java.lang.String</span> <span class='o'>=</span> <span class='nc'>Hello</span> <span class='n'>world</span>
+
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='mi'>2</span>
+<span class='n'>res1</span><span class='k'>:</span> <span class='kt'>Int</span> <span class='o'>=</span> <span class='mi'>2</span>
+</code></pre></div>
+<p>The REPL tells us that the first is a String which contains the characters Hello world, that the second is an Int whose value is the integer 2. Strings and Ints are types — this is an easy but important distinction that sometimes takes beginning programmers a while to get used to. This allows Scala to know what to do when you want to use the numerical value 2 (an Int) or the character representing 2 (a String). For example, here is the latter.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='s'>&quot;2&quot;</span>
+<span class='n'>res3</span><span class='k'>:</span> <span class='kt'>java.lang.String</span> <span class='o'>=</span> <span class='mi'>2</span>
+</code></pre></div>
+<p>Scala knows that different actions are afforded by different types. For example, Ints can be added to each other.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='mi'>2</span><span class='o'>+</span><span class='mi'>3</span>
+<span class='n'>res4</span><span class='k'>:</span> <span class='kt'>Int</span> <span class='o'>=</span> <span class='mi'>5</span>
+</code></pre></div>
+<p>Scala evaluates the result and prints the result to the screen. No surprise, the result is what you think it should be. With Strings, addition doesn’t make sense, but the + operator instead indicates concatenation of the strings.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='s'>&quot;Portis&quot;</span> <span class='o'>+</span> <span class='s'>&quot;head&quot;</span>
+<span class='n'>res5</span><span class='k'>:</span> <span class='kt'>java.lang.String</span> <span class='o'>=</span> <span class='nc'>Portishead</span>
+</code></pre></div>
+<p>So, if you consider the String “2″ and the String “3″, and use the + operator on them, you don’t get “5″ — instead you get “23″.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='s'>&quot;2&quot;</span> <span class='o'>+</span> <span class='s'>&quot;3&quot;</span>
+<span class='n'>res6</span><span class='k'>:</span> <span class='kt'>java.lang.String</span> <span class='o'>=</span> <span class='mi'>23</span>
+</code></pre></div>
+<p>We can ask Scala to display the result of evaluating a given expression by using the print command.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>print</span><span class='o'>(</span><span class='s'>&quot;Hello world&quot;</span><span class='o'>)</span>
+<span class='nc'>Hello</span> <span class='n'>world</span>
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>print</span><span class='o'>(</span><span class='mi'>2</span><span class='o'>)</span>
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>print</span><span class='o'>(</span><span class='mi'>2</span> <span class='o'>+</span> <span class='mi'>3</span><span class='o'>)</span>
+</code></pre></div>
+<p>Note that the result is the action of printing, not a value with a type. For the last item, what happens is:</p>
+
+<ol>
+<li>Scala evaluates 2 + 3, which is 5.</li>
+
+<li>Scala passes that value to the command print.</li>
+
+<li>print outputs “5″</li>
+</ol>
+
+<p>You can think of the print command as a verb, and its parameter (e.g. Hello world or 2) as its object.</p>
+
+<p>We often need to store the result of evaluating an expression to a variable for later use (in fact, programming doesn’t get done with out doing this). Let’s do this trivially to start with, breaking down the print statement above into two steps.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>x</span> <span class='k'>=</span> <span class='mi'>2</span> <span class='o'>+</span> <span class='mi'>3</span>
+<span class='n'>x</span><span class='k'>:</span> <span class='kt'>Int</span> <span class='o'>=</span> <span class='mi'>5</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>print</span><span class='o'>(</span><span class='n'>x</span><span class='o'>)</span>
+<span class='mi'>5</span>
+</code></pre></div>
+<p>Here, x is a variable, which we’ve indicate by prefacing it with val, which indicates it is a fixed variable whose value cannot change.</p>
+
+<p>You can choose the names for variables, but they must follow some rules.</p>
+
+<ul>
+<li>Variable names may contain: letters, numbers, underscore</li>
+
+<li>They must not start with a number</li>
+
+<li>They must not be identical to one of the “reserved words” that Scala has already defined, such as for, if, def, val, and var</li>
+
+<li>Typical names for variables will be strings like x, y1, result, firstName, here_is_a_long_variable_name.</li>
+</ul>
+
+<p>Returning to the variable x, we can now use it for other computations.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>x</span> <span class='o'>+</span> <span class='mi'>3</span>
+<span class='n'>res12</span><span class='k'>:</span> <span class='kt'>Int</span> <span class='o'>=</span> <span class='mi'>8</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>x</span> <span class='o'>*</span> <span class='n'>x</span>
+<span class='n'>res13</span><span class='k'>:</span> <span class='kt'>Int</span> <span class='o'>=</span> <span class='mi'>25</span>
+</code></pre></div>
+<p>And of course, we can assign the results of such computations to other variables.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>y</span> <span class='k'>=</span> <span class='mi'>3</span> <span class='o'>*</span> <span class='n'>x</span> <span class='o'>+</span> <span class='mi'>2</span>
+<span class='n'>y</span><span class='k'>:</span> <span class='kt'>Int</span> <span class='o'>=</span> <span class='mi'>17</span>
+</code></pre></div>
+<p>Notice that Scala knows that multiplication takes precedence over addition in such computations. If we wanted to override that, we’d need to use parentheses to indicate it, just like in basic algebra.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>z</span> <span class='k'>=</span> <span class='mi'>3</span> <span class='o'>*</span> <span class='o'>(</span><span class='n'>x</span> <span class='o'>+</span> <span class='mi'>2</span><span class='o'>)</span>
+<span class='n'>z</span><span class='k'>:</span> <span class='kt'>Int</span> <span class='o'>=</span> <span class='mi'>21</span>
+</code></pre></div>
+<p>Now, let’s introduce another type, Double, for working with real-valued numbers. The Ints considered thus far are whole numbers, which do fine with multiplication, but will lead to behavior you might not expect when used with division.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='mi'>5</span> <span class='o'>*</span> <span class='mi'>2</span>
+<span class='n'>res12</span><span class='k'>:</span> <span class='kt'>Int</span> <span class='o'>=</span> <span class='mi'>10</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='mi'>7</span><span class='o'>/</span><span class='mi'>2</span>
+<span class='n'>res13</span><span class='k'>:</span> <span class='kt'>Int</span> <span class='o'>=</span> <span class='mi'>3</span>
+</code></pre></div>
+<p>You probably expected to get 3.5 for the latter. However, because both 7 and 2 are Ints, Scala returns an Int — specifically it returns the number of times the denominator can go entirely into the numerator. To get the result you’d normally want here, you need to use Doubles such as the following.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='mf'>7.0</span><span class='o'>/</span><span class='mf'>2.0</span>
+<span class='n'>res14</span><span class='k'>:</span> <span class='kt'>Double</span> <span class='o'>=</span> <span class='mf'>3.5</span>
+</code></pre></div>
+<p>Now the result is the value you’d expect, and it is of type Double. Scala uses conventions to know the type of values, e.g. it knows that things in quotes are Strings, that numbers that have a “.” in them are Doubles, and that numbers without “.” are Ints. This is an important part of how it Scala infers the types of variables, which is a very useful and somewhat unique property among of languages of its kind (which are called statically typed languages). To see this in a bit more detail, note that you can tell Scala explicitly what a variable’s type is.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>a</span><span class='k'>:</span> <span class='kt'>Int</span>  <span class='o'>=</span> <span class='mi'>2</span>
+<span class='n'>a</span><span class='k'>:</span> <span class='kt'>Int</span> <span class='o'>=</span> <span class='mi'>2</span>
+</code></pre></div>
+<p>The a: Int portion of the line indicates that the variable a has the type Int. Here are some examples of other variables with different types.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>b</span><span class='k'>:</span> <span class='kt'>Double</span> <span class='o'>=</span> <span class='mf'>3.14</span>
+<span class='n'>b</span><span class='k'>:</span> <span class='kt'>Double</span> <span class='o'>=</span> <span class='mf'>3.14</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>c</span><span class='k'>:</span> <span class='kt'>String</span> <span class='o'>=</span> <span class='s'>&quot;Hello world&quot;</span>
+<span class='n'>c</span><span class='k'>:</span> <span class='kt'>String</span> <span class='o'>=</span> <span class='nc'>Hello</span> <span class='n'>world</span>
+</code></pre></div>
+<p>Because Scala already knows these types, it is redundant to specify them in these cases. However, when expressions are more complicated, it is at times necessary to specify types explicitly.</p>
+
+<p>Importantly, we cannot assign the variable a type that conflicts with the result of the expression. Here, we try to assign a Double value to a variable of type Int, and Scala reports an error.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>d</span><span class='k'>:</span> <span class='kt'>Int</span> <span class='o'>=</span> <span class='mf'>6.28</span>
+<span class='o'>&lt;</span><span class='n'>console</span><span class='k'>&gt;:</span><span class='mi'>7</span><span class='k'>:</span> <span class='kt'>error:</span> <span class='k'>type</span> <span class='kt'>mismatch</span><span class='o'>;</span>
+<span class='n'>found</span>   <span class='k'>:</span> <span class='kt'>Double</span><span class='o'>(</span><span class='err'>6</span><span class='kt'>.</span><span class='err'>28</span><span class='o'>)</span>
+<span class='kt'>required:</span> <span class='kt'>Int</span>
+<span class='k'>val</span> <span class='n'>d</span><span class='k'>:</span> <span class='kt'>Int</span> <span class='o'>=</span> <span class='mf'>6.28</span>
+<span class='o'>^</span>
+</code></pre></div>
+<p>In many cases, especially with beginning programming, you won’t have to worry about declaring the types of your variables. We’ll see situations where it is necessary as we progress.</p>
+
+<p>In addition to variables declared with val, Scala allows variables to be declared with var — these variable can have their values reassigned. A few examples are the easiest way to see the difference.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>a</span> <span class='k'>=</span> <span class='mi'>1</span>
+<span class='n'>a</span><span class='k'>:</span> <span class='kt'>Int</span> <span class='o'>=</span> <span class='mi'>1</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>a</span> <span class='k'>=</span> <span class='mi'>2</span>
+<span class='o'>&lt;</span><span class='n'>console</span><span class='k'>&gt;:</span><span class='mi'>8</span><span class='k'>:</span> <span class='kt'>error:</span> <span class='kt'>reassignment</span> <span class='kt'>to</span> <span class='kt'>val</span>
+<span class='n'>a</span> <span class='k'>=</span> <span class='mi'>2</span>
+<span class='o'>^</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>var</span> <span class='n'>b</span> <span class='k'>=</span> <span class='mi'>5</span>
+<span class='n'>b</span><span class='k'>:</span> <span class='kt'>Int</span> <span class='o'>=</span> <span class='mi'>5</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>b</span> <span class='k'>=</span> <span class='mi'>6</span>
+<span class='n'>b</span><span class='k'>:</span> <span class='kt'>Int</span> <span class='o'>=</span> <span class='mi'>6</span>
+</code></pre></div>
+<p>You can think of a val variable as a sealed glass container into which you can look to see its value, but into which you cannot put anything new, and a var variable as an openable container that allows you both to see the value and to swap a new value in for the old one. We’re going to focus on using vals mostly as they ultimately provide many advantages when combined with functional programming, and because I hope to get you thinking in terms of vals rather than vars while you are starting out.</p>
+
+<h2 id='functions'>Functions</h2>
+
+<p>Variables are more useful when used in the context of functions in which a variable like x can be injected with different values by the user of a function. Let’s consider converting degrees Fahrenheit to Celsius. To convert 87, 92, and 100 from Fahrenheit to Celcius, we could do the following.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='o'>(</span><span class='mi'>87</span> <span class='o'>-</span> <span class='mi'>32</span><span class='o'>)</span> <span class='o'>*</span> <span class='mi'>5</span> <span class='o'>/</span> <span class='mf'>9.0</span>
+<span class='n'>res15</span><span class='k'>:</span> <span class='kt'>Double</span> <span class='o'>=</span> <span class='mf'>30.555555555555557</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='o'>(</span><span class='mi'>92</span> <span class='o'>-</span> <span class='mi'>32</span><span class='o'>)</span> <span class='o'>*</span> <span class='mi'>5</span> <span class='o'>/</span> <span class='mf'>9.0</span>
+<span class='n'>res16</span><span class='k'>:</span> <span class='kt'>Double</span> <span class='o'>=</span> <span class='mf'>33.333333333333336</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='o'>(</span><span class='mi'>100</span> <span class='o'>-</span> <span class='mi'>32</span><span class='o'>)</span> <span class='o'>*</span> <span class='mi'>5</span> <span class='o'>/</span> <span class='mf'>9.0</span>
+<span class='n'>res17</span><span class='k'>:</span> <span class='kt'>Double</span> <span class='o'>=</span> <span class='mf'>37.77777777777778</span>
+</code></pre></div>
+<p>Obviously, there is a lot of repetition here. Functions allow us to specify the common parts of such calculations, while allowing variables to specify the parts that may be different. In the conversion case, the only thing that changes is the temperature reading in Fahrenheit. Here’s how we declare the appropriate function in Scala.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>def</span> <span class='n'>f2c</span> <span class='o'>(</span><span class='n'>x</span><span class='k'>:</span> <span class='kt'>Double</span><span class='o'>)</span> <span class='k'>=</span> <span class='o'>(</span><span class='n'>x</span> <span class='o'>-</span> <span class='mi'>32</span><span class='o'>)</span> <span class='o'>*</span> <span class='mi'>5</span><span class='o'>/</span><span class='mf'>9.0</span>
+<span class='n'>f2c</span><span class='k'>:</span> <span class='o'>(</span><span class='kt'>x:</span> <span class='kt'>Double</span><span class='o'>)</span><span class='kt'>Double</span>
+</code></pre></div>
+<p>Breaking this down we have:</p>
+
+<ul>
+<li>def is a Scala keyword indicating that a function is being defined</li>
+
+<li>f2c is the name given to the function</li>
+
+<li>(x: Double) is the parameter to the function, which is a variable named x of type Double</li>
+
+<li>(x – 32) * 5/9.0 is the body of the function, which will take the value given by the user of the function, subtract 32 from it and then multiply the result of that by five-ninths</li>
+</ul>
+
+<p>Using the function is easy — give the name of the function, and then provide the value you are passing into the function in parentheses.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>f2c</span><span class='o'>(</span><span class='mi'>87</span><span class='o'>)</span>
+<span class='n'>res18</span><span class='k'>:</span> <span class='kt'>Double</span> <span class='o'>=</span> <span class='mf'>30.555555555555557</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>f2c</span><span class='o'>(</span><span class='mi'>92</span><span class='o'>)</span>
+<span class='n'>res19</span><span class='k'>:</span> <span class='kt'>Double</span> <span class='o'>=</span> <span class='mf'>33.333333333333336</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>f2c</span><span class='o'>(</span><span class='mi'>100</span><span class='o'>)</span>
+<span class='n'>res20</span><span class='k'>:</span> <span class='kt'>Double</span> <span class='o'>=</span> <span class='mf'>37.77777777777778</span>
+</code></pre></div>
+<p>And so on. For each call, the function evaluates the expression for x equal to the value passed into the function. Now we don’t have to retype all the common stuff again and again.</p>
+
+<p>Functions can have multiple arguments. For example, the following is a function which takes two integers, squares each of them and then adds the squared values.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>def</span> <span class='n'>squareThenAdd</span><span class='o'>(</span><span class='n'>x</span><span class='k'>:</span> <span class='kt'>Int</span><span class='o'>,</span> <span class='n'>y</span><span class='k'>:</span> <span class='kt'>Int</span><span class='o'>)</span> <span class='k'>=</span> <span class='n'>x</span><span class='o'>*</span><span class='n'>x</span> <span class='o'>+</span> <span class='n'>y</span><span class='o'>*</span><span class='n'>y</span>
+<span class='n'>squareThenAdd</span><span class='k'>:</span> <span class='o'>(</span><span class='kt'>x:</span> <span class='kt'>Int</span><span class='o'>,</span> <span class='kt'>y:</span> <span class='kt'>Int</span><span class='o'>)</span><span class='nc'>Int</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>squareThenAdd</span><span class='o'>(</span><span class='mi'>3</span><span class='o'>,</span><span class='mi'>4</span><span class='o'>)</span>
+<span class='n'>res21</span><span class='k'>:</span> <span class='kt'>Int</span> <span class='o'>=</span> <span class='mi'>25</span>
+</code></pre></div>
+<p>Which indeed is the same as doing it explicitly.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='mi'>3</span><span class='o'>*</span><span class='mi'>3</span> <span class='o'>+</span> <span class='mi'>4</span><span class='o'>*</span><span class='mi'>4</span>
+<span class='n'>res22</span><span class='k'>:</span> <span class='kt'>Int</span> <span class='o'>=</span> <span class='mi'>25</span>
+</code></pre></div>
+<p>An important aspect of functions is that all of the variables must be bound. If not, we get an error.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>def</span> <span class='n'>badFunctionWithUnboundVariable</span><span class='o'>(</span><span class='n'>x</span><span class='k'>:</span> <span class='kt'>Int</span><span class='o'>)</span> <span class='k'>=</span> <span class='n'>x</span> <span class='o'>+</span> <span class='n'>y</span>
+<span class='o'>&lt;</span><span class='n'>console</span><span class='k'>&gt;:</span><span class='mi'>8</span><span class='k'>:</span> <span class='kt'>error:</span> <span class='kt'>not</span> <span class='kt'>found:</span> <span class='kt'>value</span> <span class='kt'>y</span>
+<span class='k'>def</span> <span class='n'>badFunctionWithUnboundVariable</span><span class='o'>(</span><span class='n'>x</span><span class='k'>:</span> <span class='kt'>Int</span><span class='o'>)</span> <span class='k'>=</span> <span class='n'>x</span> <span class='o'>+</span> <span class='n'>y</span>
+</code></pre></div>
+<p>Functions can do much more complex and interesting things that what I’ve shown here, which we’ll get to in another tutorial.</p>
+
+<h2 id='editing_programs_in_a_text_editor_and_running_them_on_the_command_line'>Editing programs in a text editor and running them on the command line</h2>
+
+<p>The REPL is very useful for trying out Scala expressions and seeing how they are evaluated in real time, but actual program development is done by writing a text file that contains a series of expressions that perform interesting behaviors. Doing this is straightforward. Open a text editor (see the course links page for some suggestions), and put the following as the first line, with nothing else.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>print</span><span class='o'>(</span><span class='s'>&quot;Hello world&quot;</span><span class='o'>)</span>
+</code></pre></div>
+<p>Save this file as HelloWorld.scala, making sure it is saved as text only. Then in a Unix shell, go to the directory where that file is saved, and type the following.</p>
+<div class='highlight'><pre><code class='text'>$ scala HelloWorld.scala
+</code></pre></div>
+<p>You’ll see that Hello world is output, but that the Unix prompt is jammed up right after it. You may have expected it to print out and then leave the Unix prompt on the next line; however, there is nothing in the print command or in the string we asked it to print that indicates that a newline should have been used. To fix this, go back to the editor and change the line to be the following.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>print</span><span class='o'>(</span><span class='s'>&quot;Hello world\n&quot;</span><span class='o'>)</span>
+</code></pre></div>
+<p>When you run this, your Unix prompt appears on the line following Hello world. Characters like ‘\n‘ are metacharacters that indicate outputs other than standard characters like letters, numbers and symbols.</p>
+
+<p>Now, you could also have achieved the same result by writing.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>println</span><span class='o'>(</span><span class='s'>&quot;Hello world&quot;</span><span class='o'>)</span>
+</code></pre></div>
+<p>The functions print and println are the same except that the latter always adds a newline at the end of its output — something that is often desired and thus simplifies the programmer’s life. However, we still often need to use the newline character and other characters when outputting strings. For example, put the following into HelloWorld.scala and run it again.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>println</span><span class='o'>(</span><span class='s'>&quot;Hello world\nHere is a list:\n\t1\n\t2\n\t3&quot;</span><span class='o'>)</span>
+</code></pre></div>
+<p>From the output, it should be quite clear what ‘\t‘ means. Notice that it wasn’t necessary to put ‘\n‘ after the final 3 because println was used instead of print.</p>
+
+<p>This is a trivial program, but in general they tend to get quite complex. This is where code comments come in handy. You can indicate that a line should be ignored by Scala as a comment by using two forward slashes. Comments can be used to indicate who the author of a program is, what the license is for it, documentation to help others (and your future self) understand what various parts of the code are doing, and commenting out lines of code that you don’t want to erase but which you want temporarily inactive.</p>
+
+<p>Here’s a slightly lengthier program with comments and function definitions and uses of those functions along with printing.</p>
+<div class='highlight'><pre><code class='scala'><span class='c1'>// Author: Jason Baldridge (jasonbaldridge@gmail.com)</span>
+ 
+<span class='c1'>// This is a trivial program for students learning to program with Scala.</span>
+ 
+<span class='c1'>// This is a comment. The next line defines a function that squares</span>
+<span class='c1'>// its argument.</span>
+<span class='k'>def</span> <span class='n'>sq</span><span class='o'>(</span><span class='n'>x</span><span class='k'>:</span> <span class='kt'>Int</span><span class='o'>)</span> <span class='k'>=</span> <span class='n'>x</span> <span class='o'>*</span> <span class='n'>x</span>
+ 
+<span class='c1'>// The next line prints the result of calling sq with the argument 3.</span>
+<span class='n'>println</span><span class='o'>(</span><span class='s'>&quot;3 squared = &quot;</span> <span class='o'>+</span> <span class='n'>sq</span><span class='o'>(</span><span class='mi'>3</span><span class='o'>))</span>
+ 
+<span class='c1'>// The next line is commented out, so even though it is a valid Scala</span>
+<span class='c1'>// expression, it won&#39;t be evaluated by Scala.</span>
+<span class='c1'>// println(&quot;4 squared = &quot; + sq(4))</span>
+ 
+<span class='c1'>// Now, we define a function that uses the previously defined sq</span>
+<span class='c1'>// (rather than using x*x and y*y as before).</span>
+<span class='k'>def</span> <span class='n'>squareThenAdd</span><span class='o'>(</span><span class='n'>x</span><span class='k'>:</span> <span class='kt'>Int</span><span class='o'>,</span> <span class='n'>y</span><span class='k'>:</span> <span class='kt'>Int</span><span class='o'>)</span> <span class='k'>=</span> <span class='n'>sq</span><span class='o'>(</span><span class='n'>x</span><span class='o'>)</span> <span class='o'>+</span> <span class='n'>sq</span><span class='o'>(</span><span class='n'>y</span><span class='o'>)</span>
+ 
+<span class='c1'>// Now we use it.</span>
+<span class='n'>println</span><span class='o'>(</span><span class='s'>&quot;Squaring 3 and 4 and adding the results = &quot;</span>
+        <span class='o'>+</span> <span class='n'>squareThenAdd</span><span class='o'>(</span><span class='mi'>3</span><span class='o'>,</span><span class='mi'>4</span><span class='o'>))</span>
+</code></pre></div>
+<p>Save this as ScalaFirstStepsPart1.scala and run it with the Scala executable. You should see the following results.</p>
+<div class='highlight'><pre><code class='text'>$ scala ScalaFirstStepsPart1.scala
+3 squared = 9
+Squaring 3 and 4 and adding the results = 25
+</code></pre></div>
+<p>Looks good, right? But what is going on with those print statements? We saw earlier that 2+3 evaluates to 5, but that “2″+”3″ evaluates to “23″, and here we have used + on a String and an Int. Shouldn’t that result in an error? What Scala is doing is converting the Int into a string automatically for us, which simplifies the outputing of results considerably. That means we can do things like the following (back to using the REPL).</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>println</span><span class='o'>(</span><span class='s'>&quot;August &quot;</span> <span class='o'>+</span> <span class='mi'>22</span> <span class='o'>+</span> <span class='s'>&quot;, &quot;</span> <span class='o'>+</span> <span class='mi'>2011</span><span class='o'>)</span>
+<span class='nc'>August</span> <span class='mi'>22</span><span class='o'>,</span> <span class='mi'>2011</span>
+</code></pre></div>
+<p>That seems a bit pointless because we could have just written “August 22, 2011″, but here’s an example where it is a bit more useful: we can name tomorrow’s day by using an Int for today’s and adding one to it.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>dayOfTheMonthToday</span> <span class='k'>=</span> <span class='mi'>22</span>
+<span class='n'>dayOfTheMonthToday</span><span class='k'>:</span> <span class='kt'>Int</span> <span class='o'>=</span> <span class='mi'>22</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>println</span><span class='o'>(</span><span class='s'>&quot;Today is August &quot;</span> <span class='o'>+</span> <span class='n'>dayOfTheMonthToday</span> <span class='o'>+</span> <span class='s'>&quot; and tomorrow is August &quot;</span> <span class='o'>+</span> <span class='o'>(</span><span class='n'>dayOfTheMonthToday</span><span class='o'>+</span><span class='mi'>1</span><span class='o'>))</span>
+</code></pre></div>
+<p>Today is August 22 and tomorrow is August 23 Note that the (dayOfTheMonthToday+1) part is actually Int addition, and the result of that is converted to a String that is concatenated with the rest of the string. This example is still fairly contrived (and obviously doesn’t deal with the end of the month and all), but this autoconversion gets used a lot when you start working with more complex programs. And, perhaps even more obviously, we might reasonably want to add an Int and a Double.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='mi'>2</span> <span class='o'>+</span> <span class='mf'>3.0</span>
+<span class='n'>res27</span><span class='k'>:</span> <span class='kt'>Double</span> <span class='o'>=</span> <span class='mf'>5.0</span>
+</code></pre></div>
+<p>Here, the result is a Double, since it is the more general type than Int. This kind of autoconversion happens a lot, and often you won’t even realize it is going on.</p>
+
+<p>Another thing to note is that the last print statement went over multiple lines. We’ll be seeing more about what the rules are for statements that run over multiple lines, but this example shows perhaps the easiest one to remember: when you open a parenthesis with “(“, you can keep on going multiple lines until its partner “)” is encountered. So, for example, we could have done the following very spread-out statement.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>println</span><span class='o'>(</span>
+  <span class='s'>&quot;Squaring 3 and 4 and adding the results = &quot;</span>
+ 
+  <span class='o'>+</span>
+ 
+  <span class='n'>squareThenAdd</span><span class='o'>(</span><span class='mi'>3</span><span class='o'>,</span><span class='mi'>4</span><span class='o'>)</span>
+<span class='o'>)</span>
+</code></pre></div>
+<p>As well as being used for boxing in a bunch of code that is an argument to a function, as above, parentheses are quite useful for indicating the order of precedence of combining multiple items, such as indicating that an addition should be done before a multiplication, or that an Int addition should be done before a String concatenation, as shown earlier in the tutorial. Basically, parentheses are often optional, but if you can’t remember what the default rules for expressions being grouped together are, then you can group them explicitly with parentheses.</p>
+      </div>
+      <div id='footer'></div>
+    </div>
+  </body>
+</html>

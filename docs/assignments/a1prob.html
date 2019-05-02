@@ -1,0 +1,486 @@
+<html>
+  <head>
+    <meta content='text/html;charset=UTF-8' http-equiv='Content-Type'/>
+    <title>NLP &mdash; Assignment 1 - Probability</title>
+    <style type='text/css'>
+      @import '../css/default.css';
+      @import '../css/syntax.css';
+    </style>
+    <link rel="shortcut icon" href="../favicon.ico" />
+    <meta content='Natural Language Processing Class' name='subject'/>
+    <!--<link href='images/favicon.png' rel='shortcut icon'>-->
+
+    <!-- MathJax Section -->
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script>
+      MathJax.Hub.Config({
+        tex2jax: {
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+        }
+      });
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+
+  </head>
+  <body>
+    <div id='wrap'>
+      <div id='header'>
+        <img height="100" alt='NLP Class' src='../images/utexas.png'/>
+        <div class='tagline'>Natural Language Processing: Fall 2013</div>
+      </div>
+      <div id='pages'>
+        <ol class='toc'>
+          <li>NLP Class
+            <ol class="toc">
+              <li><a href='../index.html'>Home</a></li>
+              <li><a href='../syllabus.html'>Syllabus</a></li>
+              <li><a href='../schedule.html'>Schedule</a></li>
+              <li><a href='../notes'>Notes</a></li>
+              <li><a href='../requirements.html'>Assignment Requirements</a></li>
+              <li><a href='../links.html'>Links</a></li>
+            </ol>
+          </li>
+          <li>Useful Information
+            <ol class="toc">
+              <li><a href='../scala'>Scala</a></li>
+            </ol>
+          </li>
+          <li>Assignments
+            <ol class="toc">
+              <li><a href='../assignments/a0programming.html'>#0 - Programming</a></li>
+              <li><a href='../assignments/a1prob.html'>#1 - Probability</a></li>
+              <li><a href='../assignments/a2classification.html'>#2 - Classification</a></li>
+              <li><a href='../assignments/a3ngrams.html'>#3 - N-Grams</a></li>
+              <li><a href='../assignments/a4hmm.html'>#4 - HMMs</a></li>
+              <li><a href='../assignments/a5maxent.html'>#5 - MaxEnt</a></li>
+              <li><a href='../assignments/a6parsing.html'>#6 - Parsing</a></li>
+            </ol>
+          </li>
+          <li>External Links
+            <ol class="toc">
+              <li><a href='http://www.utcompling.com'>UTCL Main site</a></li>
+              <li><a href='https://courses.utexas.edu/webapps/portal/frameset.jsp?tab_tab_group_id=_11_1&url=%2Fwebapps%2Fblackboard%2Fexecute%2Flauncher%3Ftype%3DCourse%26id%3D_159651_1%26url%3D'>Blackboard</a></li>
+            </ol>
+          </li>
+        </ol>
+      </div>
+      <div id='content'>
+        <h1>Assignment 1 - Probability</h1>
+        <ol class="toc"><li><a href="#overview">Overview</a></li><li><a href="#problem_1_33_points">Problem 1: 33 points</a></li><li><a href="#problem_2_15_points">Problem 2: 15 points</a></li><li><a href="#problem_3_15_points">Problem 3: 15 points</a></li><li><a href="#problem_4_7_points">Problem 4: 7 points</a></li><li><a href="#problem_5_30_points">Problem 5: 30 points</a></li></ol>
+        <p><strong>Due: Thursday, Sept 19. Written portion by 2pm, programming by noon</strong></p>
+
+<p>This assignment is based on problems 1-5 of <a href='http://www.cs.jhu.edu/~jason/'>Jason Eisner</a>&#8217;s <a href='https://18d120ec-a-e22e9223-s-sites.googlegroups.com/a/utcompling.com/nlp-s11/assignments/homework-1/eisner_lm_homework.pdf?attachauth=ANoY7crnvOj8DTMuEPniMbpaM6TsNW7G1t807GXUnn8-rZO14f7G_L8KTzU4c0c5E5rhcL0WVmS_yyfTN5B045b9SyrXABL8vTbH9ydSWRFcO8PbwlgbDqSbmYKa6VQk4evqMOfM12ArQ9VzhWd-SeHA6xkhiMFxULD7bAUkY5_bb3yIMj10NSm5lnUo_xIpoJy9kv8v6C2lh3sztweVkqhRJy0XfT0rCNbU8lJfp5RayzYAx0yLMDKeLfTrVQBYRoEnBaFwzr_P&amp;attredirects=0'>language modeling homework</a> plus a small programming problem (problem 5). Many thanks to Jason E. for making this and other materials for teaching NLP available!</p>
+
+<ul>
+<li>Answers to problems 1-4 should be hand-written or printed and handed in before class.</li>
+
+<li>Problem 5 should be turned in via GitHub.</li>
+</ul>
+
+<p>You are welcome to consult books that cover probability theory, such as DeGroot and Schervish or the appendices of <a href='http://www.amazon.com/Introduction-Algorithms-Thomas-H-Cormen/dp/0262032937'>Cormen et al</a>, as well as the slides on probability from Dickinson, Eisner and Martin. Also, usage of Wikipedia in conjunction with the course readings, notes and assignments is acceptable (especially if you learn something from it). For this assignment, it may be helpful to consult the following: <a href='http://en.wikipedia.org/wiki/Algebra_of_sets'>Algebra of sets</a> (especially if you&#8217;re rusty on set theory) and <a href='http://en.wikipedia.org/wiki/Bayes%27_theorem'>Bayes&#8217; theorem</a> which is not extensively discussed in Jurafsy &amp; Martin.</p>
+
+<p>There are 100 points total in this assignment. Point values for each problem/sub-problem are given below.</p>
+
+<h2 id='overview'>Overview</h2>
+
+<p>The programming portion of this assignment is meant to help you work with computing probabilities and to put in place code that you will use in subsequent assignments.</p>
+
+<p>In the root of your repository, create a file called <code>Assignment1_README.md</code> that contains:</p>
+
+<ul>
+<li>A short overview of what you&#8217;ve done</li>
+
+<li>A list of files relevant to this assignment</li>
+
+<li>Any commands needed to demonstrate your programs</li>
+</ul>
+
+<p>We will grade whatever code is pushed to your GitHub repository at noon on the due date. If your assignment will be late, please send an email by noon to both me (dhg@cs.utexas.edu) and Lewis (lewfish@cs.utexas.edu) or else we will simply grade what is there.</p>
+
+<h2 id='problem_1_33_points'>Problem 1: 33 points</h2>
+
+<p>(3 points per subproblem)</p>
+
+<p>These short problems will help you get the hang of manipulating probabilities. Let <code>\( \mathcal{E} \neq \emptyset \)</code> denote the event space (it&#8217;s just a set, also known as the sample space), and <code>\( p \)</code> be a function that assigns a real number in <code>\( [0,1] \)</code> to any subset of <code>\( \mathcal{E} \)</code>. This number is called the probability of the subset.</p>
+
+<p>You are told that <code>\( p \)</code> satisfies the following two axioms:&#160; <code>\( p(\mathcal{E})=1 \)</code>.&#160;&#160; <code>\( p(X \cup Y) = p(X) + p(Y) \)</code> provided that <code>\( X \cap Y = \emptyset \)</code>.</p>
+
+<p>As a matter of notation, remember that the <strong>conditional probability</strong>&#160; <code>\( p(X \mid Z) \stackrel{\tiny{\mbox{def}}}{=} \frac{p(X \cap Z)}{p(Z)} \)</code>. For example, singing in the rain is one of my favorite rainy-day activities: so my ratio <code>\( p(\text{singing} \mid \text{rainy}) = \frac{p(\text{singing}~AND~\text{rainy})}{p(\text{rainy})} \)</code> is high. Here the predicate &#8220;singing&#8221; picks out the set of singing events in <code>\( \mathcal{E} \)</code>, &#8220;rainy&#8221; picks out the set of rainy events, and the conjoined predicate &#8220;singing AND rainy&#8221; picks out the interesction of these two sets&#8212;that is, all the vents that are both singing AND rainy.</p>
+
+<ol>
+<li>
+<p>Prove from the axioms that if <code>\( Y \subseteq Z \)</code>, then <code>\( p(Y) \leq p(Z) \)</code>.</p>
+
+<p>You may use any and all set manipulations you like. Remember that <code>\( p(A) = 0 \)</code> does not imply that <code>\( A = \emptyset \)</code> (why not?), and similarly, that <code>\( p(B) = p(C) \)</code> does not imply that <code>\( B = C \)</code> (even if <code>\( B \subseteq C \)</code>).</p>
+</li>
+
+<li>
+<p>Use the above fact to prove that conditional probabilities <code>\( p(X \mid Z) \)</code>, just like ordinary probabilities, always fall in the range <code>\( [0,1] \)</code>.</p>
+</li>
+
+<li>
+<p>Prove from the axioms that <code>\( p(\emptyset) = 0 \)</code>.</p>
+</li>
+
+<li>
+<p>Let <code>\( \bar{X} \)</code> denote <code>\( \mathcal{E} - X \)</code>. Prove from the axioms that <code>\( p(X) = 1-p(\bar{X}) \)</code>. For example, <code>\( p(\text{singing}) = 1 - p(\text{NOT singing}) \)</code>.</p>
+</li>
+
+<li>
+<p>Prove from the axioms that <code>\( p(\text{singing AND rainy} \mid \text{rainy}) = p(\text{singing} \mid \text{rainy}) \)</code>.</p>
+</li>
+
+<li>
+<p>Prove from the axioms that <code>\( p(X \mid Y) = 1 - p(\bar{X} \mid Y) \)</code>. For example, <code>\( p(\text{singing} \mid \text{rainy}) = 1 - p(\text{NOT singing} \mid \text{rainy}) \)</code>. This is a generalization of (1.4).</p>
+</li>
+
+<li>
+<p>Simplify: <code>\( (p(X \mid Y) \cdot p(Y) + p(X \mid \bar{Y}) \cdot p(\bar{Y})) \cdot p(\bar{Z} \mid X) / p(\bar{Z}) \)</code></p>
+</li>
+
+<li>
+<p>Under what conditions is it true that <code>\( p(\text{singing OR rainy} = p(\text{singing}) + p(\text{rainy}) \)</code>?</p>
+</li>
+
+<li>
+<p>Under what conditions is it true that <code>\( p(\text{singing AND rainy} = p(\text{singing}) \cdot p(\text{rainy}) \)</code>?</p>
+</li>
+
+<li>
+<p>Suppose you know that <code>\( p(X \mid Y) = 0 \)</code>. Prove that <code>\( p(X \mid Y,Z) = 0 \)</code>.</p>
+</li>
+
+<li>
+<p>Suppose you know that <code>\( p(W \mid Y) = 1 \)</code>. Prove that <code>\( p(W \mid Y,Z) = 1 \)</code>.</p>
+</li>
+</ol>
+
+<h2 id='problem_2_15_points'>Problem 2: 15 points</h2>
+
+<p>All cars are either red or blue. The witness claimed the car that hit the pedestrian was blue. Witnesses are bleieved to be about 80% reliable in reporting car color (regardless of the actual car color). But only 10% of all cars are blue.</p>
+
+<ol>
+<li>
+<p>(1 point) Write an equation relating the following quantities and perhaps other quantities.</p>
+
+<p><code>\[
+     \begin{align}
+     &amp; p(true = \text{blue})  \\
+     &amp; p(true = \text{blue} \mid claimed = \text{blue})  \\
+     &amp; p(claimed = \text{blue} \mid true = \text{blue})  
+     \end{align}
+ \]</code></p>
+
+<p>Reminder: Here, <em>claimed</em> and <em>true</em> are <em>random variables</em>, which means that they are functions over some outcome space. For example, the probability that <em>claimed</em> = blue really means the probability of getting an outcome <em>x</em> such that <em>claimed</em>(x) = blue. We are implicitly assuming that the space of outcomes <em>x</em> is something like the set of witnessed car accidents.</p>
+</li>
+
+<li>
+<p>(1 point) Match the three probabilites above with the following terms: <em>prior probablity</em>, <em>likelihood of the evidence</em>, <em>posterior probability</em>.</p>
+</li>
+
+<li>
+<p>(4 points) Give the values of all three probabilities. (Hint: Use Bayes&#8217; Theorem.) Which probability should the judge care about?</p>
+</li>
+
+<li>
+<p>(4 points) Let&#8217;s suppose the numbers 80% and 10% are specific to Baltimore. So in the previous problem, you were implicitly using the following more general version of Bayes&#8217; Theorem:</p>
+
+<p><code>\[
+ p(A \mid B,Y) = \frac{
+     p(B \mid A,Y) \cdot p(A \mid Y)
+ }{
+     p(B \mid Y)
+ }
+ \]</code></p>
+
+<p>where <em>Y</em> is <em>city</em> = Baltimore. Just as (1.6) generalized (1.4), by adding a &#8220;background&#8221; condition <em>Y</em>, this version generalizes Bayes&#8217; Theorem. Carefully prove it.</p>
+</li>
+
+<li>
+<p>(4 points) Now prove the more detailed version</p>
+
+<p><code>\[
+ p(A \mid B,Y) = \frac{
+     p(B \mid A,Y) \cdot p(A \mid Y)
+ }{
+     p(B \mid A,Y) \cdot p(A \mid Y) + p(B \mid \bar{A},Y) \cdot p(\bar{A} \mid Y)
+ }
+ \]</code></p>
+</li>
+
+<li>
+<p>(1 point) Write out the equation given in question (2.5) with <em>A</em>, <em>B</em>, and <em>Y</em> replaced by specific propositions from the red-and-blue car problem. For example, <em>Y</em> is &#8221;<em>city</em> = Baltimore&#8221; (or just &#8220;Baltimore&#8221; for short). Now replace the probabilities with actual numbers from the problem, such as 0.8.</p>
+
+<p>Yeah, it&#8217;s a mickeymouse problem, but I promise that writing out a real case of this important formula won&#8217;t kill you, and may even be good for you (like, on an exam).</p>
+</li>
+</ol>
+
+<h2 id='problem_3_15_points'>Problem 3: 15 points</h2>
+
+<p>Beavers can make three cries (and only three cries), which they use to communicate. <code>bwa</code> and <code>bwee</code> usually mean something like &#8220;come&#8221; and &#8220;go&#8221; respectively, and are used during dam maintenance. <code>kiki</code> means &#8220;watch out!&#8221; The following <strong>conditional probability table</strong> shows the probability of the various cries in different situations.</p>
+<table style='width: 60%;' class='simple'>
+    <tr>
+        <td><i>p</i>( <i>cry</i> | <i>situation</i> )</td>
+        <td>Predator!</td>
+        <td>Timber!</td>
+        <td>I need help!</td>
+    </tr>
+    <tr>
+        <td style='text-align: right'><i>bwa</i></td>
+        <td>0</td>
+        <td>0.1</td>
+        <td>0.8</td>
+    </tr>
+    <tr>
+        <td style='text-align: right'><i>bwee</i></td>
+        <td>0</td>
+        <td>0.6</td>
+        <td>0.1</td>
+    </tr>
+    <tr>
+        <td style='text-align: right'><i>kiki</i></td>
+        <td>1.0</td>
+        <td>0.3</td>
+        <td>0.1</td>
+    </tr>
+</table>
+<ol>
+<li>
+<p>(1 point) Notice that each column of the above table sums to 1. Write an equation stating this, in the form <code>\( \sum_{variable} p(\cdots) = 1 \)</code></p>
+</li>
+
+<li>
+<p>(4 point) A certain colony of beavers has already cut down all the trees around their dam. As there are no more to chew, <em>p(timber)</em> = 0. Getting rid of the trees has also reduced <em>p(predator)</em> to 0.2. These facts are shown in the following <strong>joint probability table</strong>. Assuming that the three given situtation are the only possible situations in which the cries might occur, fill in the rest of the table, using the previous table and the laws of probability. (Note that the meaning of each table is given in its top left cell.)</p>
+<table style='width: 80%;' class='simple'>
+     <tr>
+         <td><i>p</i>( <i>cry</i>, <i>situation</i> )</td>
+         <td>Predator!</td>
+         <td>Timber!</td>
+         <td>I need help!</td>
+         <td>TOTAL</td>
+     </tr>
+     <tr>
+         <td style='text-align: right'><i>bwa</i></td>
+         <td />
+         <td />
+         <td />
+         <td />
+     </tr>
+     <tr>
+         <td style='text-align: right'><i>bwee</i></td>
+         <td />
+         <td />
+         <td />
+         <td />
+     </tr>
+     <tr>
+         <td style='text-align: right'><i>kiki</i></td>
+         <td />
+         <td />
+         <td />
+         <td />
+     </tr>
+     <tr>
+         <td style='text-align: '>TOTAL</td>
+         <td>0.2</td>
+         <td>0</td>
+         <td />
+         <td />
+     </tr>
+ </table></li>
+
+<li>
+<p>(10 point, 2 pts per subproblem) A beaver in this colony cries <code>kiki</code>. Given this cry, other beavers try to figure out the probability that there is a predator</p>
+
+<p>i. This probability is written as: <em>p</em>(_________)<br /> ii. It can be rewritten without the | symbol as: _________<br /> iii. Using the above tables, its value is: _________<br /> iv. Alternatively, Bayes&#8217; Theorem allows you to express this probability as: <code>\[ \frac{
+         p(\_\_\_\_) \cdot p(\_\_\_\_)
+     }{
+         p(\_\_\_\_) \cdot p(\_\_\_\_) + p(\_\_\_\_) \cdot p(\_\_\_\_) + p(\_\_\_\_) \cdot p(\_\_\_\_)
+     }
+ \]</code><br /> v. Using the above tables, the value of this is:<br /> <code>\[ \frac{
+         p(\_\_\_\_) \cdot p(\_\_\_\_)
+     }{
+         p(\_\_\_\_) \cdot p(\_\_\_\_) + p(\_\_\_\_) \cdot p(\_\_\_\_) + p(\_\_\_\_) \cdot p(\_\_\_\_)
+     }
+ \]</code><br /> This should give the same result as in part iii., and it should be clear that they are really the same computation&#8212;by constructing table (b) and doing part iii., you were <em>implicitly</em> using Bayes&#8217; Theorem. (I told you it was a trivial theorem!)</p>
+</li>
+</ol>
+
+<h2 id='problem_4_7_points'>Problem 4: 7 points</h2>
+
+<p>1. <code>\( p(\neg \text{shoe} \mid \neg \text{nail}) = 1 \)</code>&#160;&#160; <em>For want of a nail the shoe was lost</em>,<br />2. <code>\( p(\neg \text{horse} \mid \neg \text{shoe}) = 1 \)</code>&#160;&#160; <em>For want of a shoe the horse was lost</em>,<br />3. <code>\( p(\neg \text{race} \mid \neg \text{horse}) = 1 \)</code>&#160;&#160; <em>For want of a horse the race was lost</em>,<br />4. <code>\( p(\neg \text{fortune} \mid \neg \text{race}) = 1 \)</code>&#160;&#160; <em>For want of a race the fortune was lost</em>,<br />5. <code>\( p(\neg \text{fortune} \mid \neg \text{nail}) = 1 \)</code> And all for the want of a horseshoe nail.</p>
+
+<p>Show carefully that (5) follows from (1)&#8211;(4). Hint: Consider <code>\[
+    p(\neg \text{fortune}, \neg \text{race}, \neg \text{horse}, \neg \text{shoe} \mid \neg \text{nail}),
+\]</code> as well as the &#8220;chain rule&#8221; and problems (1.1), (1.2), and (1.11).</p>
+
+<p><em>Note:</em> The <code>\( \neg \)</code> symbol denotes the boolean operator NOT.</p>
+
+<p><em>Note:</em> This problem is supposed to convince you that logic is just a special case of probability theory.</p>
+
+<p><em>Note:</em> Be glad I didn&#8217;t ask you to prove the correct operation of the pencil sharpener!</p>
+
+<h2 id='problem_5_30_points'>Problem 5: 30 points</h2>
+
+<p>This problem builds on the work done in <a href='a0programming.html#part_6_reading_a_data_file'>Assingment 0, Part 6</a>. For that problem we read a file containing features and labels and computed both label counts and feature counts. In this problem we will write code that computes probability distributions.</p>
+
+<p>For this task, you will implement two classes that that will represent a probability distribution and a conditional probability distribution.</p>
+
+<p>The classes will extend traits that are found version <strong>0002</strong> of the <code>nlpclass-fall2013</code> dependency. In order to get these updates, you will need to edit your root <code>build.sbt</code> file and update the version of the dependency:</p>
+
+<pre><code>libraryDependencies += &quot;com.utcompling&quot; % &quot;nlpclass-fall2013_2.10&quot; % &quot;0002&quot; changing()</code></pre>
+
+<p>If you use Eclipse, then after you modify the dependency you will once again have to run <code>sbt &quot;eclipse with-source=true&quot;</code> and refresh your project in Eclipse.</p>
+
+<p>The discrete probability distribution classes to implement are as follows:</p>
+
+<ol>
+<li>A class that represents a probability distribution:</li>
+</ol>
+<div class='highlight'><pre><code class='scala'><span class='k'>package</span> <span class='nn'>nlp.a1</span>
+
+<span class='k'>import</span> <span class='nn'>nlpclass.ProbabilityDistributionToImplement</span>
+
+<span class='k'>class</span> <span class='nc'>ProbabilityDistribution</span><span class='o'>[</span><span class='kt'>B</span><span class='o'>](...)</span> <span class='k'>extends</span> <span class='nc'>ProbabilityDistributionToImplement</span><span class='o'>[</span><span class='kt'>B</span><span class='o'>]</span> <span class='o'>{</span>
+  <span class='k'>override</span> <span class='k'>def</span> <span class='n'>apply</span><span class='o'>(</span><span class='n'>x</span><span class='k'>:</span> <span class='kt'>B</span><span class='o'>)</span><span class='k'>:</span> <span class='kt'>Double</span> <span class='o'>=</span> <span class='o'>???</span>
+  <span class='k'>override</span> <span class='k'>def</span> <span class='n'>sample</span><span class='o'>()</span><span class='k'>:</span> <span class='kt'>B</span> <span class='o'>=</span> <span class='o'>???</span>
+<span class='o'>}</span>
+</code></pre></div>
+<ol>
+<li>A class that represents a conditional probability distribution:</li>
+</ol>
+<div class='highlight'><pre><code class='scala'><span class='k'>package</span> <span class='nn'>nlp.a1</span>
+
+<span class='k'>import</span> <span class='nn'>nlpclass.ConditionalProbabilityDistributionToImplement</span>
+
+<span class='k'>class</span> <span class='nc'>ConditionalProbabilityDistribution</span><span class='o'>[</span><span class='kt'>A</span>,<span class='kt'>B</span><span class='o'>](...)</span> <span class='k'>extends</span> <span class='nc'>ConditionalProbabilityDistributionToImplement</span><span class='o'>[</span><span class='kt'>A</span>,<span class='kt'>B</span><span class='o'>]</span> <span class='o'>{</span>
+  <span class='k'>override</span> <span class='k'>def</span> <span class='n'>apply</span><span class='o'>(</span><span class='n'>x</span><span class='k'>:</span> <span class='kt'>B</span><span class='o'>,</span> <span class='n'>given</span><span class='k'>:</span> <span class='kt'>A</span><span class='o'>)</span><span class='k'>:</span> <span class='kt'>Double</span> <span class='o'>=</span> <span class='o'>???</span>
+  <span class='k'>override</span> <span class='k'>def</span> <span class='n'>sample</span><span class='o'>(</span><span class='n'>given</span><span class='k'>:</span> <span class='kt'>A</span><span class='o'>)</span><span class='k'>:</span> <span class='kt'>B</span> <span class='o'>=</span> <span class='o'>???</span>
+<span class='o'>}</span>
+</code></pre></div>
+<p>Each of these classes must store relevant training data extracted from a file of features and labels. Each class has two methods: <code>apply</code> and <code>sample</code>. The <code>apply</code> method takes an item and returns its probability according to the distribution. The <code>sample</code> method returns an item from the distribution with likelihood according to its probability. These classes will allow us to interact with the probability distributions is a simple way.</p>
+
+<p>Note that both of these classes are <em>generic</em> in that they are written so that they can work with any type of data, not simply Strings. Your code should also be generic. This will allow you to work with probability distributions over various types like integers, characters, Vectors, or anything else. This will be useful in later assignments.</p>
+
+<h3 id='the__method'>The <code>apply</code> method</h3>
+
+<p>The <code>apply</code> method for each discrete distribution class should return a probability derived from the training data. For this assignment, these probabilites should be computed from the relative frequencies of labels and features given in an input file.</p>
+
+<p><em>Remember:</em> A method named <code>apply</code> is special in that it can be called as <code>x.apply(y)</code> or simply <code>x(y)</code>.</p>
+
+<p>For example, if the training data contained 10 labels, 6 of which were &#8220;Yes&#8221;, then a <code>ProbabilityDistribution</code> trained on that data might work like this:</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>import</span> <span class='nn'>nlp.a1.ProbabilityDistribution</span> 
+<span class='k'>val</span> <span class='n'>pd</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>ProbabilityDistribution</span><span class='o'>[</span><span class='kt'>String</span><span class='o'>](...</span><span class='n'>something</span><span class='o'>...)</span>
+<span class='n'>pd</span><span class='o'>(</span><span class='s'>&quot;Yes&quot;</span><span class='o'>)</span>  <span class='c1'>// 0.6, since p(Yes) = 0.6</span>
+</code></pre></div>
+<p>Similarly, if the training data contained</p>
+
+<ul>
+<li>10 instances labeled &#8220;Yes&#8221;, 7 of which had value &#8220;hello&#8221; and 3 &#8220;goodbye&#8221;</li>
+
+<li>5 instances labeled &#8220;No&#8221;, 2 of which had value &#8220;hello&#8221;, and 3 &#8220;goodbye&#8221;</li>
+</ul>
+
+<p>then a <code>ConditionalProbabilityDistribution</code> trained on that data might work like this:</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>import</span> <span class='nn'>nlp.a1.ConditionalProbabilityDistribution</span> 
+<span class='k'>val</span> <span class='n'>cpd</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>ConditionalProbabilityDistribution</span><span class='o'>[</span><span class='kt'>String</span>, <span class='kt'>String</span><span class='o'>](...)</span>
+<span class='n'>cpd</span><span class='o'>(</span><span class='s'>&quot;hello&quot;</span><span class='o'>,</span> <span class='s'>&quot;Yes&quot;</span><span class='o'>)</span>  <span class='c1'>// 0.7, since p(hello | Yes) = 0.7</span>
+</code></pre></div>
+<p>Make sure that the method returns 0.0 for items that were never seen in the data:</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>pd</span><span class='o'>(</span><span class='s'>&quot;unknown&quot;</span><span class='o'>)</span>            <span class='c1'>// 0.0</span>
+<span class='n'>cpd</span><span class='o'>(</span><span class='s'>&quot;unknown&quot;</span><span class='o'>,</span> <span class='s'>&quot;Yes&quot;</span><span class='o'>)</span>    <span class='c1'>// 0.0</span>
+<span class='n'>cpd</span><span class='o'>(</span><span class='s'>&quot;hello&quot;</span><span class='o'>,</span> <span class='s'>&quot;unknown&quot;</span><span class='o'>)</span>  <span class='c1'>// 0.0</span>
+</code></pre></div>
+<h3 id='the__method'>The <code>sample</code> method</h3>
+
+<p>In order to be able to generate random data for a model, it is useful to have a way to randomly sample items from a probability distribution. Therefore, you should implement a <code>sample</code> method on each discrete distribution class.</p>
+
+<p>It is important that your <code>sample</code> method not simply pick an item uniformally; it should choose items with frequencies determined by the distribution. For example, if the training data described above was used, then we might get results similar to this work like this:</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>import</span> <span class='nn'>dhg.util.CollectionUtil._</span>
+<span class='nc'>Vector</span><span class='o'>.</span><span class='n'>fill</span><span class='o'>(</span><span class='mi'>1000</span><span class='o'>)(</span><span class='n'>pd</span><span class='o'>.</span><span class='n'>sample</span><span class='o'>).</span><span class='n'>counts</span>         
+<span class='c1'>// Map(No -&gt; 393, Yes -&gt; 607)</span>
+<span class='nc'>Vector</span><span class='o'>.</span><span class='n'>fill</span><span class='o'>(</span><span class='mi'>1000</span><span class='o'>)(</span><span class='n'>cpd</span><span class='o'>.</span><span class='n'>sample</span><span class='o'>(</span><span class='s'>&quot;Yes&quot;</span><span class='o'>)).</span><span class='n'>counts</span> 
+<span class='c1'>// Map(goodbye -&gt; 296, hello -&gt; 704)</span>
+<span class='nc'>Vector</span><span class='o'>.</span><span class='n'>fill</span><span class='o'>(</span><span class='mi'>1000</span><span class='o'>)(</span><span class='n'>cpd</span><span class='o'>.</span><span class='n'>sample</span><span class='o'>(</span><span class='s'>&quot;No&quot;</span><span class='o'>)).</span><span class='n'>counts</span>  
+<span class='c1'>// Map(goodbye -&gt; 597, hello -&gt; 403)</span>
+</code></pre></div>
+<p>The conditional version works similarly, but requires a parameter for the conditioning item.</p>
+
+<p><em>Note:</em> You are unlikely to get <em>exactly</em> these numbers since the sampling is, after all, random.</p>
+
+<p>Sampling from a probability distribution can easily be accomplished with the following algorithm:</p>
+
+<ol>
+<li>Generate a random number between 0 and 1 (<code>scala.util.Random.nextDouble</code>)</li>
+
+<li>Iterate over each item and its probability.</li>
+
+<li>Keep a running sum of all the item probabilities.</li>
+
+<li>When the sum exceeds the random number, return the current item.</li>
+</ol>
+
+<p>This algorithm can be made more efficient by first sorting the items by their probabilities, largest to smallest. This will help the algorithm to traverse a smaller number of elements during each call to <code>sample</code>.</p>
+
+<h3 id='executing_the_code'>Executing the code</h3>
+
+<p>In order to make it easy for me to test your code, you will also need to implement an <code>object</code> for building these representations from a feature file:</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>package</span> <span class='nn'>nlp.a1</span>
+
+<span class='k'>import</span> <span class='nn'>nlpclass.FeatureFileAsDistributionsToImplement</span>
+
+<span class='k'>object</span> <span class='nc'>FeatureFileAsDistributions</span> <span class='k'>extends</span> <span class='nc'>FeatureFileAsDistributionsToImplement</span>
+</code></pre></div>
+<p>This <code>object</code> will require a method <code>fromFile(filename: String)</code> to be implemented that reads a file of features and labels (as was done for <a href='a0programming.html#part_6_reading_a_data_file'>Assingment 0, Part 6</a>) and produce three things:</p>
+
+<ol>
+<li>A set of labels</li>
+
+<li>A probability distribution over labels</li>
+
+<li>A <code>Map</code> from features to conditional probability distribution over feature values given labels.</li>
+</ol>
+
+<p>The source code for the traits can be <a href='https://github.com/utcompling/nlpclass-fall2013/blob/master/src/main/scala/nlpclass/AssignmentTraits.scala#L21'>viewed</a> in the class GitHub repository.</p>
+
+<p>So, given a file <code>data2.txt</code>:</p>
+
+<pre><code>word=loved,word=film,word=loved,word=actor,pos=loved,pos=loved,positive
+word=film,word=bad,word=plot,word=worst,neg=bad,neg=worst,negative
+word=worst,word=film,word=dumb,word=film,neg=worst,neg=dumb,negative
+word=car,word=chase,word=fight,word=scene,word=film,neutral
+word=great,word=plot,word=best,word=film,pos=great,pos=best,positive
+word=best,word=actor,word=bad,word=plot,pos=best,neg=bad,negative
+word=hated,word=terrible,word=film,neg=hated,neg=terrible,negative</code></pre>
+
+<p>I should be able to do:</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>import</span> <span class='nn'>nlp.a1.FeatureFileAsDistributions</span> 
+<span class='k'>val</span> <span class='o'>(</span><span class='n'>labels</span><span class='o'>,</span> <span class='n'>pLabel</span><span class='o'>,</span> <span class='n'>pFeatureValueGivenLabelByFeature</span><span class='o'>)</span> <span class='k'>=</span> <span class='nc'>FeatureFileAsDistributions</span><span class='o'>.</span><span class='n'>fromFile</span><span class='o'>(</span><span class='s'>&quot;data2.txt&quot;</span><span class='o'>)</span>
+
+<span class='n'>println</span><span class='o'>(</span><span class='n'>labels</span><span class='o'>)</span> <span class='c1'>// Set(neutral, negative, positive)</span>
+
+<span class='n'>println</span><span class='o'>(</span><span class='n'>f</span><span class='s'>&quot;p(label=negative) = ${pLabel(&quot;</span><span class='n'>negative</span><span class='s'>&quot;)}%.2f&quot;</span><span class='o'>)</span> <span class='c1'>// 0.57</span>
+<span class='n'>println</span><span class='o'>(</span><span class='n'>f</span><span class='s'>&quot;p(label=neutral)  = ${pLabel(&quot;</span><span class='n'>neutral</span><span class='s'>&quot;)}%.2f&quot;</span><span class='o'>)</span>  <span class='c1'>// 0.14</span>
+<span class='n'>println</span><span class='o'>(</span><span class='n'>f</span><span class='s'>&quot;p(label=positive) = ${pLabel(&quot;</span><span class='n'>positive</span><span class='s'>&quot;)}%.2f&quot;</span><span class='o'>)</span> <span class='c1'>// 0.29</span>
+
+<span class='k'>val</span> <span class='n'>featureNeg</span> <span class='k'>=</span> <span class='n'>pFeatureValueGivenLabelByFeature</span><span class='o'>(</span><span class='s'>&quot;neg&quot;</span><span class='o'>)</span>
+<span class='n'>println</span><span class='o'>(</span><span class='n'>f</span><span class='s'>&quot;p(neg=bad | label=negative) = ${featureNeg(&quot;</span><span class='n'>bad</span><span class='s'>&quot;, &quot;</span><span class='n'>negative</span><span class='s'>&quot;)}%.2f&quot;</span><span class='o'>)</span> <span class='c1'>// 0.29</span>
+
+<span class='k'>val</span> <span class='n'>featurePos</span> <span class='k'>=</span> <span class='n'>pFeatureValueGivenLabelByFeature</span><span class='o'>(</span><span class='s'>&quot;pos&quot;</span><span class='o'>)</span>
+<span class='n'>println</span><span class='o'>(</span><span class='n'>f</span><span class='s'>&quot;p(pos=best | label=negative) = ${featurePos(&quot;</span><span class='n'>best</span><span class='s'>&quot;, &quot;</span><span class='n'>negative</span><span class='s'>&quot;)}%.2f&quot;</span><span class='o'>)</span> <span class='c1'>// 1.00</span>
+<span class='n'>println</span><span class='o'>(</span><span class='n'>f</span><span class='s'>&quot;p(pos=best | label=positive) = ${featurePos(&quot;</span><span class='n'>best</span><span class='s'>&quot;, &quot;</span><span class='n'>positive</span><span class='s'>&quot;)}%.2f&quot;</span><span class='o'>)</span> <span class='c1'>// 0.25</span>
+
+<span class='k'>val</span> <span class='n'>featureWord</span> <span class='k'>=</span> <span class='n'>pFeatureValueGivenLabelByFeature</span><span class='o'>(</span><span class='s'>&quot;word&quot;</span><span class='o'>)</span>
+<span class='n'>println</span><span class='o'>(</span><span class='n'>f</span><span class='s'>&quot;${featureWord(&quot;</span><span class='n'>best</span><span class='s'>&quot;, &quot;</span><span class='n'>negative</span><span class='s'>&quot;)}%.2f&quot;</span><span class='o'>)</span> <span class='c1'>// p(word=best | label=negative) = 0.07</span>
+<span class='n'>println</span><span class='o'>(</span><span class='n'>f</span><span class='s'>&quot;${featureWord(&quot;</span><span class='n'>best</span><span class='s'>&quot;, &quot;</span><span class='n'>positive</span><span class='s'>&quot;)}%.2f&quot;</span><span class='o'>)</span> <span class='c1'>// p(word=best | label=positive) = 0.13</span>
+</code></pre></div>
+      </div>
+      <div id='footer'></div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,288 @@
+<html>
+  <head>
+    <meta content='text/html;charset=UTF-8' http-equiv='Content-Type'/>
+    <title>NLP &mdash; Scala Environment Setup</title>
+    <style type='text/css'>
+      @import '../css/default.css';
+      @import '../css/syntax.css';
+    </style>
+    <link rel="shortcut icon" href="../favicon.ico" />
+    <meta content='Natural Language Processing Class' name='subject'/>
+    <!--<link href='images/favicon.png' rel='shortcut icon'>-->
+
+    <!-- MathJax Section -->
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script>
+      MathJax.Hub.Config({
+        tex2jax: {
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+        }
+      });
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+
+  </head>
+  <body>
+    <div id='wrap'>
+      <div id='header'>
+        <img height="100" alt='NLP Class' src='../images/utexas.png'/>
+        <div class='tagline'>Natural Language Processing: Fall 2013</div>
+      </div>
+      <div id='pages'>
+        <ol class='toc'>
+          <li>NLP Class
+            <ol class="toc">
+              <li><a href='../index.html'>Home</a></li>
+              <li><a href='../syllabus.html'>Syllabus</a></li>
+              <li><a href='../schedule.html'>Schedule</a></li>
+              <li><a href='../notes'>Notes</a></li>
+              <li><a href='../requirements.html'>Assignment Requirements</a></li>
+              <li><a href='../links.html'>Links</a></li>
+            </ol>
+          </li>
+          <li>Useful Information
+            <ol class="toc">
+              <li><a href='../scala'>Scala</a></li>
+            </ol>
+          </li>
+          <li>Assignments
+            <ol class="toc">
+              <li><a href='../assignments/a0programming.html'>#0 - Programming</a></li>
+              <li><a href='../assignments/a1prob.html'>#1 - Probability</a></li>
+              <li><a href='../assignments/a2classification.html'>#2 - Classification</a></li>
+              <li><a href='../assignments/a3ngrams.html'>#3 - N-Grams</a></li>
+              <li><a href='../assignments/a4hmm.html'>#4 - HMMs</a></li>
+              <li><a href='../assignments/a5maxent.html'>#5 - MaxEnt</a></li>
+              <li><a href='../assignments/a6parsing.html'>#6 - Parsing</a></li>
+            </ol>
+          </li>
+          <li>External Links
+            <ol class="toc">
+              <li><a href='http://www.utcompling.com'>UTCL Main site</a></li>
+              <li><a href='https://courses.utexas.edu/webapps/portal/frameset.jsp?tab_tab_group_id=_11_1&url=%2Fwebapps%2Fblackboard%2Fexecute%2Flauncher%3Ftype%3DCourse%26id%3D_159651_1%26url%3D'>Blackboard</a></li>
+            </ol>
+          </li>
+        </ol>
+      </div>
+      <div id='content'>
+        <h1>Scala Environment Setup</h1>
+        <ol class="toc"><li><a href="#overview">Overview</a></li><li><a href="#download_and_install_scala">Download and Install Scala</a></li><li><a href="#download_and_install_sbt">Download and Install SBT</a></li><li><a href="#creating_a_scala_project">Creating a Scala project</a></li><li><a href="#ides">IDEs</a></li></ol>
+        <h2 id='overview'>Overview</h2>
+
+<p>This page explains how to set up your environment for using Scala.</p>
+
+<h2 id='download_and_install_scala'>Download and Install Scala</h2>
+
+<p>Scala has both a compiler (<code>scalac</code>) and an interactive environment called the REPL (&#8220;read-evaluate-print loop&#8221;) (<code>scala</code>).</p>
+
+<ol>
+<li>Go here: <a href='http://www.scala-lang.org/downloads'>scala-lang.org/downloads</a></li>
+
+<li>Download the current stable release (2.10.3 as of this writing).</li>
+
+<li>Install it according to the instructions.</li>
+</ol>
+
+<p>Now you should be able to run <code>scala</code> from the command line to get into the REPL.</p>
+<div class='highlight'><pre><code class='text'>$ scala
+Welcome to Scala version 2.10.3 (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_43).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala&gt; 
+</code></pre></div>
+<p>This provides you an interactive environment for running Scala code:</p>
+<div class='highlight'><pre><code class='text'>scala&gt; 3 + 4
+res0: Int = 7
+</code></pre></div>
+<p>You will probably never call the compiler (<code>scalac</code>) directly. See below.</p>
+
+<h2 id='download_and_install_sbt'>Download and Install SBT</h2>
+
+<p>SBT is a build tool, dependency manager, and more that makes a lot of tasks very easy. You should use it.</p>
+
+<p>Download and install most current package from <a href='http://www.scala-sbt.org/release/docs/Getting-Started/Setup.html#installing-sbt'>here</a>.</p>
+
+<h2 id='creating_a_scala_project'>Creating a Scala project</h2>
+
+<h3 id='create_the_project_structure'>Create the project structure</h3>
+
+<ol>
+<li>
+<p>Create a directory for your project. For example:</p>
+<div class='highlight'><pre><code class='text'> mkdir project-name
+</code></pre></div></li>
+
+<li>
+<p>Create a file <code>project-name/build.sbt</code> that contains these exact contents:</p>
+<div class='highlight'><pre><code class='text'>import com.typesafe.sbt.SbtStartScript
+ 
+name := &quot;project-name&quot;
+ 
+version := &quot;0.0.1&quot;
+ 
+organization := &quot;something&quot;
+ 
+scalaVersion := &quot;2.10.3&quot;
+ 
+libraryDependencies ++= Seq(
+&quot;com.typesafe&quot; % &quot;scalalogging-log4j_2.10&quot; % &quot;1.0.1&quot;,
+&quot;org.apache.logging.log4j&quot; % &quot;log4j-core&quot; % &quot;2.0-beta3&quot;,
+&quot;junit&quot; % &quot;junit&quot; % &quot;4.10&quot; % &quot;test&quot;,
+&quot;com.novocode&quot; % &quot;junit-interface&quot; % &quot;0.8&quot; % &quot;test-&gt;default&quot;
+)
+ 
+seq(SbtStartScript.startScriptForClassesSettings: _*)
+ 
+SbtStartScript.stage in Compile := Unit
+ 
+scalacOptions ++= Seq(&quot;-deprecation&quot;)
+</code></pre></div></li>
+
+<li>
+<p>Create a file <code>project-name/project/plugins.sbt</code> that contains these exact contents:</p>
+<div class='highlight'><pre><code class='text'>addSbtPlugin(&quot;com.typesafe.sbt&quot; % &quot;sbt-start-script&quot; % &quot;0.10.0&quot;)
+</code></pre></div></li>
+</ol>
+
+<h3 id='add_some_code'>Add some code</h3>
+
+<p>Create a file <code>project-name/src/main/scala/mypkg/First.scala</code>.</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>package</span> <span class='nn'>mypkg</span>
+
+<span class='k'>object</span> <span class='nc'>First</span> <span class='o'>{</span>
+  <span class='k'>val</span> <span class='n'>something</span> <span class='k'>=</span> <span class='s'>&quot;this is a string&quot;</span>
+
+  <span class='k'>def</span> <span class='n'>main</span><span class='o'>(</span><span class='n'>args</span><span class='k'>:</span> <span class='kt'>Array</span><span class='o'>[</span><span class='kt'>String</span><span class='o'>])</span> <span class='o'>{</span>
+    <span class='n'>println</span><span class='o'>(</span><span class='s'>&quot;Running the First application.&quot;</span><span class='o'>)</span>
+  <span class='o'>}</span>
+<span class='o'>}</span>
+</code></pre></div>
+<p>This defines a very simple application.</p>
+
+<p>In your own code, you will create your own package structure and use it in place of <code>mypkg</code>.</p>
+
+<h3 id='interacting_with_your_code'>Interacting with your code</h3>
+
+<p>There are several ways interact with your code using SBT. All of the examples below assume that you are in your project root directory (the directory that we called <code>project-name</code> above).</p>
+
+<p>You can compile it (which will only re-compile modified portions of code):</p>
+<div class='highlight'><pre><code class='text'>$ sbt compile
+[...]
+[success] Total time: 0 s, completed [...]
+</code></pre></div>
+<p>You can run the application (which will automatically compile portions of code that have been modified, so you don&#8217;t have to separately call <code>compile</code>):</p>
+<div class='highlight'><pre><code class='text'>$ sbt &quot;run-main mypkg.First&quot;
+[...]
+Running the First application.
+[success] Total time: 0 s, completed [...]
+</code></pre></div>
+<p>You can interact with your code from the REPL. Instead of just running <code>scala</code>, you&#8217;ll need to start the REPL via SBT so that your code is (re-compiled and) loaded:</p>
+<div class='highlight'><pre><code class='text'>$ sbt console
+[...]
+Welcome to Scala version 2.10.3 (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_43).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala&gt; import mypkg.First
+import mypkg.First
+
+scala&gt; First.something
+res0: String = this is a string
+</code></pre></div>
+<p>You can generate a script for running you code. This will re-compile any modified files, and create (or re-create) a script (<code>target/start</code>) that allows you to run your code without going through SBT. This is nice since running through SBT is slow because it has to load the SBT environment and check whether recompilation is necessary. Further, you do not need to rerun <code>start-script</code> after each re-compilation; you only need to regenerate the script if your dependencies change.</p>
+<div class='highlight'><pre><code class='text'>$ sbt start-script
+[...]
+Running the First application.
+[success] Total time: 0 s, completed [...]
+$ target/start mypkg.First
+Running the First application.
+</code></pre></div>
+<h3 id='testing_your_code'>Testing your code</h3>
+
+<p>Create a test file <code>project-name/src/test/scala/mypkg/FirstTests.scala</code>:</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>package</span> <span class='nn'>mypkg</span>
+
+<span class='k'>import</span> <span class='nn'>org.junit.Assert._</span>
+<span class='k'>import</span> <span class='nn'>org.junit.Test</span>
+
+<span class='k'>class</span> <span class='nc'>FirstTests</span> <span class='o'>{</span>
+
+  <span class='nd'>@Test</span>
+  <span class='k'>def</span> <span class='n'>testSomething</span> <span class='o'>{</span>
+    <span class='n'>assertEquals</span><span class='o'>(</span><span class='s'>&quot;this is a string&quot;</span><span class='o'>,</span> <span class='nc'>First</span><span class='o'>.</span><span class='n'>something</span><span class='o'>)</span>
+  <span class='o'>}</span>
+
+<span class='o'>}</span>
+</code></pre></div>
+<p>Run the test class:</p>
+<div class='highlight'><pre><code class='text'>$ sbt &quot;test-only mypkg.FirstTests&quot;
+[...]
+[info] Passed: : Total 1, Failed 0, Errors 0, Passed 1, Skipped 0
+[success] Total time: 0 s, completed [...]
+</code></pre></div>
+<p>Or run all the tests in the project (assuming you had additional test classes):</p>
+<div class='highlight'><pre><code class='text'>$ sbt test
+[...]
+[info] Passed: : Total 1, Failed 0, Errors 0, Passed 1, Skipped 0
+[success] Total time: 0 s, completed [...]
+</code></pre></div>
+<h2 id='ides'>IDEs</h2>
+
+<p>You can use any text editor you want to develop your Scala code. Use whatever you are most comfortable with.</p>
+
+<p>If you want to use Eclipse, here are some instructions:</p>
+
+<h3 id='eclipse_scalaide'>Eclipse Scala-IDE</h3>
+
+<p>The Scala developers have created an official plugin for Eclipse that has a lot of nice features. This is what I use for Scala development. If you are interested in using this, read on. If you don&#8217;t want to use it, that&#8217;s fine too.</p>
+
+<ol>
+<li>
+<p>Download <a href='http://www.eclipse.org/'>Eclipse</a>. The most recent version as of this writing is 4.3 (Kepler). Use the package called &#8220;Eclipse IDE for Java Developers&#8221;. Install it.</p>
+</li>
+
+<li>
+<p>Edit the file <code>eclipse.ini</code> in the installation directory (or in the application bundle if you are on a Mac) to increase the amount memory allocated to Eclipse. Choose an decent amount.</p>
+<div class='highlight'><pre><code class='text'>-Xmx4096m
+</code></pre></div></li>
+
+<li>
+<p>Start Eclipse</p>
+</li>
+
+<li>
+<p>Go to <code>Help</code> <code>-&gt;</code> <code>Install New Software...</code> and add the following site (as seen here: <a href='http://scala-ide.org/download/current.html'>scala-ide.org/download/current.html</a>). Then hit <code>Next</code> and follow the instruction to install the plugin.</p>
+<div class='highlight'><pre><code class='text'>http://download.scala-ide.org/sdk/e38/scala210/stable/site
+</code></pre></div></li>
+
+<li>
+<p>Install the SBT plugin for generating Eclipse projects. Add the following to <code>~/.sbt/0.13/plugins/plugins.sbt</code>:</p>
+<div class='highlight'><pre><code class='text'>resolvers += Classpaths.typesafeResolver
+  
+addSbtPlugin(&quot;com.typesafe.sbteclipse&quot; % &quot;sbteclipse-plugin&quot; % &quot;2.4.0&quot;)
+</code></pre></div></li>
+
+<li>
+<p>In your project directory, generate an Eclipse project:</p>
+<div class='highlight'><pre><code class='text'>$ sbt &quot;eclipse with-source=true&quot;
+</code></pre></div></li>
+
+<li>
+<p>In Eclipse, do <code>File</code> <code>-&gt;</code> <code>Import...</code> <code>-&gt;</code> <code>Existing Project into Workspace</code> and find your project directory. Import it.</p>
+</li>
+
+<li>
+<p>IF YOUR PROJECT IS ON GITHUB. Right-click on the project on the left side of the window. Do <code>Team</code> <code>-&gt;</code> <code>Share Project</code> <code>-&gt;</code> <code>Git</code> and check <code>Use or create repository in parent folder of project</code> and click <code>Finish</code>.</p>
+</li>
+</ol>
+      </div>
+      <div id='footer'></div>
+    </div>
+  </body>
+</html>

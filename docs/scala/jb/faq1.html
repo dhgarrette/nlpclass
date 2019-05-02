@@ -1,0 +1,694 @@
+<html>
+  <head>
+    <meta content='text/html;charset=UTF-8' http-equiv='Content-Type'/>
+    <title>NLP &mdash; Questions from Students 1</title>
+    <style type='text/css'>
+      @import '../../css/default.css';
+      @import '../../css/syntax.css';
+    </style>
+    <link rel="shortcut icon" href="../../favicon.ico" />
+    <meta content='Natural Language Processing Class' name='subject'/>
+    <!--<link href='images/favicon.png' rel='shortcut icon'>-->
+
+    <!-- MathJax Section -->
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script>
+      MathJax.Hub.Config({
+        tex2jax: {
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+        }
+      });
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+
+  </head>
+  <body>
+    <div id='wrap'>
+      <div id='header'>
+        <img height="100" alt='NLP Class' src='../../images/utexas.png'/>
+        <div class='tagline'>Natural Language Processing: Fall 2013</div>
+      </div>
+      <div id='pages'>
+        <ol class='toc'>
+          <li>NLP Class
+            <ol class="toc">
+              <li><a href='../../index.html'>Home</a></li>
+              <li><a href='../../syllabus.html'>Syllabus</a></li>
+              <li><a href='../../schedule.html'>Schedule</a></li>
+              <li><a href='../../notes'>Notes</a></li>
+              <li><a href='../../requirements.html'>Assignment Requirements</a></li>
+              <li><a href='../../links.html'>Links</a></li>
+            </ol>
+          </li>
+          <li>Useful Information
+            <ol class="toc">
+              <li><a href='../../scala'>Scala</a></li>
+            </ol>
+          </li>
+          <li>Assignments
+            <ol class="toc">
+              <li><a href='../../assignments/a0programming.html'>#0 - Programming</a></li>
+              <li><a href='../../assignments/a1prob.html'>#1 - Probability</a></li>
+              <li><a href='../../assignments/a2classification.html'>#2 - Classification</a></li>
+              <li><a href='../../assignments/a3ngrams.html'>#3 - N-Grams</a></li>
+              <li><a href='../../assignments/a4hmm.html'>#4 - HMMs</a></li>
+              <li><a href='../../assignments/a5maxent.html'>#5 - MaxEnt</a></li>
+              <li><a href='../../assignments/a6parsing.html'>#6 - Parsing</a></li>
+            </ol>
+          </li>
+          <li>External Links
+            <ol class="toc">
+              <li><a href='http://www.utcompling.com'>UTCL Main site</a></li>
+              <li><a href='https://courses.utexas.edu/webapps/portal/frameset.jsp?tab_tab_group_id=_11_1&url=%2Fwebapps%2Fblackboard%2Fexecute%2Flauncher%3Ftype%3DCourse%26id%3D_159651_1%26url%3D'>Blackboard</a></li>
+            </ol>
+          </li>
+        </ol>
+      </div>
+      <div id='content'>
+        <h1>Questions from Students 1</h1>
+        <ol class="toc"><li><a href="#preface">Preface</a></li><li><a href="#basic_questions">Basic Questions</a></li><li><a href="#intermediate_questions">Intermediate questions</a></li></ol>
+        <h2 id='preface'>Preface</h2>
+
+<p>I’m currently teaching a course on Applied Text Analysis and am using Scala as the programming language taught and used in the course. Rather than creating more tutorials, I figured I’d take a page from Brian Dunning’s playbook on his Skeptoid podcast (highly recommended) when he takes student questions. So, I had the students in the course submit questions about Scala that they had, based on the readings and assignments thus far. This post covers over half of them — the rest will be covered in a follow up post.</p>
+
+<p>I start with some of the more basic questions, and the questions and/or answers progressively get into more intermediate level topics. Suggestions and comments to improve any of the answers are very welcome!</p>
+
+<h2 id='basic_questions'>Basic Questions</h2>
+
+<p><strong>Q. Concerning addressing parts of variables: To address individual parts of lists, the numbering of the items is (List 0,1,2 etc.) That is, the first element is called “0″. It seems to be the same for Arrays and Maps, but not for Tuples- to get the first element of a Tuple, I need to use Tuple._1. Why is that?</strong></p>
+
+<p>The most important thing to remember here is that tuples are <em>not</em> sequences, and, thus, do not need to have the same conventions. Tuples have used a 1-based index in other languages like Haskell, and it seems that Scala has adopted the same convention/tradition. See:</p>
+
+<p><a href='http://stackoverflow.com/questions/6241464/why-are-the-indexes-of-scala-tuples-1-based'>http://stackoverflow.com/questions/6241464/why-are-the-indexes-of-scala-tuples-1-based</a></p>
+
+<p><strong>Q. It seems that Scala doesn’t recognize the “b” boundary character as a regular expression. Is there something similar in Scala?</strong></p>
+
+<p>Scala does recognize boundary characters. For example, the following REPL session declares a regex that finds “the” with boundaries, and successfully retrieves the three tokens of “the” in the example sentence.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='nc'>TheRE</span> <span class='k'>=</span> <span class='s'>&quot;&quot;&quot;\bthe\b&quot;&quot;&quot;</span><span class='o'>.</span><span class='n'>r</span>
+<span class='nc'>TheRE</span><span class='k'>:</span> <span class='kt'>scala.util.matching.Regex</span> <span class='o'>=</span> <span class='o'>\</span><span class='n'>bthe</span><span class='o'>\</span><span class='n'>b</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>sentence</span> <span class='k'>=</span> <span class='s'>&quot;She think the man is a stick-in-the-mud, but the man disagrees.&quot;</span>
+<span class='n'>sentence</span><span class='k'>:</span> <span class='kt'>java.lang.String</span> <span class='o'>=</span> <span class='nc'>She</span> <span class='n'>think</span> <span class='n'>the</span> <span class='n'>man</span> <span class='n'>is</span> <span class='n'>a</span> <span class='n'>stick</span><span class='o'>-</span><span class='n'>in</span><span class='o'>-</span><span class='n'>the</span><span class='o'>-</span><span class='n'>mud</span><span class='o'>,</span> <span class='n'>but</span> <span class='n'>the</span> <span class='n'>man</span> <span class='n'>disagrees</span><span class='o'>.</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='nc'>TheRE</span><span class='o'>.</span><span class='n'>findAllIn</span><span class='o'>(</span><span class='n'>sentence</span><span class='o'>).</span><span class='n'>toList</span>
+<span class='n'>res1</span><span class='k'>:</span> <span class='kt'>List</span><span class='o'>[</span><span class='kt'>String</span><span class='o'>]</span> <span class='k'>=</span> <span class='nc'>List</span><span class='o'>(</span><span class='n'>the</span><span class='o'>,</span> <span class='n'>the</span><span class='o'>,</span> <span class='n'>the</span><span class='o'>)</span>
+</code></pre></div>
+<p><strong>Q. Why doesn’t the method “split” work on args? Example: val arg = args.split(” “). Args are strings right, so split should work?</strong></p>
+
+<p>The <code>args</code> variable is an Array, so split doesn’t work on them. Arrays are, in effect, already split.</p>
+
+<p><strong>Q. What is the major difference between foo.mapValues(x=&gt;x.length) and foo.map(x=&gt;x.length). Some places one works and one does not.</strong></p>
+
+<p>The <code>map</code> method works on all sequence types, including Seqs and Maps (note that Maps can be seen as sequences of Tuple2s). The <code>mapValues</code> method, however, only works on collections of <code>Tuple2</code> (such as <code>Map</code>). It is essentially a convenience function. As an example, let’s start with a simple Map from Ints to Ints.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>foo</span> <span class='k'>=</span> <span class='nc'>List</span><span class='o'>((</span><span class='mi'>1</span><span class='o'>,</span><span class='mi'>2</span><span class='o'>),(</span><span class='mi'>3</span><span class='o'>,</span><span class='mi'>4</span><span class='o'>)).</span><span class='n'>toMap</span>
+<span class='n'>foo</span><span class='k'>:</span> <span class='kt'>scala.collection.immutable.Map</span><span class='o'>[</span><span class='kt'>Int</span>,<span class='kt'>Int</span><span class='o'>]</span> <span class='k'>=</span> <span class='nc'>Map</span><span class='o'>(</span><span class='mi'>1</span> <span class='o'>-&gt;</span> <span class='mi'>2</span><span class='o'>,</span> <span class='mi'>3</span> <span class='o'>-&gt;</span> <span class='mi'>4</span><span class='o'>)</span>
+</code></pre></div>
+<p>Now consider the task of adding 2 to each value in the Map. This can be done with the <code>map</code> method as follows.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>foo</span><span class='o'>.</span><span class='n'>map</span> <span class='o'>{</span> <span class='k'>case</span><span class='o'>(</span><span class='n'>key</span><span class='o'>,</span><span class='n'>value</span><span class='o'>)</span> <span class='k'>=&gt;</span> <span class='o'>(</span><span class='n'>key</span><span class='o'>,</span><span class='n'>value</span><span class='o'>+</span><span class='mi'>2</span><span class='o'>)</span> <span class='o'>}</span>
+<span class='n'>res5</span><span class='k'>:</span> <span class='kt'>scala.collection.immutable.Map</span><span class='o'>[</span><span class='kt'>Int</span>,<span class='kt'>Int</span><span class='o'>]</span> <span class='k'>=</span> <span class='nc'>Map</span><span class='o'>(</span><span class='mi'>1</span> <span class='o'>-&gt;</span> <span class='mi'>4</span><span class='o'>,</span> <span class='mi'>3</span> <span class='o'>-&gt;</span> <span class='mi'>6</span><span class='o'>)</span>
+</code></pre></div>
+<p>So, the <code>map</code> method iterates over key/value pairs. We need to match both of them, and then output the key and the changed value to create the new Map. The <code>mapValues</code> method makes this quite a bit easier.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>foo</span><span class='o'>.</span><span class='n'>mapValues</span><span class='o'>(</span><span class='mi'>2</span><span class='o'>+)</span>
+<span class='n'>res6</span><span class='k'>:</span> <span class='kt'>scala.collection.immutable.Map</span><span class='o'>[</span><span class='kt'>Int</span>,<span class='kt'>Int</span><span class='o'>]</span> <span class='k'>=</span> <span class='nc'>Map</span><span class='o'>(</span><span class='mi'>1</span> <span class='o'>-&gt;</span> <span class='mi'>4</span><span class='o'>,</span> <span class='mi'>3</span> <span class='o'>-&gt;</span> <span class='mi'>6</span><span class='o'>)</span>
+</code></pre></div>
+<p>Returning to the question about computing the length using <code>mapValues</code> or <code>map</code> — then it is just a question of which values you are transforming, as in the following examples.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>sentence</span> <span class='k'>=</span> <span class='s'>&quot;here is a sentence with some words&quot;</span><span class='o'>.</span><span class='n'>split</span><span class='o'>(</span><span class='s'>&quot; &quot;</span><span class='o'>).</span><span class='n'>toList</span>
+<span class='n'>sentence</span><span class='k'>:</span> <span class='kt'>List</span><span class='o'>[</span><span class='kt'>java.lang.String</span><span class='o'>]</span> <span class='k'>=</span> <span class='nc'>List</span><span class='o'>(</span><span class='n'>here</span><span class='o'>,</span> <span class='n'>is</span><span class='o'>,</span> <span class='n'>a</span><span class='o'>,</span> <span class='n'>sentence</span><span class='o'>,</span> <span class='k'>with</span><span class='o'>,</span> <span class='n'>some</span><span class='o'>,</span> <span class='n'>words</span><span class='o'>)</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>sentence</span><span class='o'>.</span><span class='n'>map</span><span class='o'>(</span><span class='k'>_</span><span class='o'>.</span><span class='n'>length</span><span class='o'>)</span>
+<span class='n'>res7</span><span class='k'>:</span> <span class='kt'>List</span><span class='o'>[</span><span class='kt'>Int</span><span class='o'>]</span> <span class='k'>=</span> <span class='nc'>List</span><span class='o'>(</span><span class='mi'>4</span><span class='o'>,</span> <span class='mi'>2</span><span class='o'>,</span> <span class='mi'>1</span><span class='o'>,</span> <span class='mi'>8</span><span class='o'>,</span> <span class='mi'>4</span><span class='o'>,</span> <span class='mi'>4</span><span class='o'>,</span> <span class='mi'>5</span><span class='o'>)</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>firstCharTokens</span> <span class='k'>=</span> <span class='n'>sentence</span><span class='o'>.</span><span class='n'>groupBy</span><span class='o'>(</span><span class='n'>x</span><span class='k'>=&gt;</span><span class='n'>x</span><span class='o'>(</span><span class='mi'>0</span><span class='o'>))</span>
+<span class='n'>firstCharTokens</span><span class='k'>:</span> <span class='kt'>scala.collection.immutable.Map</span><span class='o'>[</span><span class='kt'>Char</span>,<span class='kt'>List</span><span class='o'>[</span><span class='kt'>java.lang.String</span><span class='o'>]]</span> <span class='k'>=</span> <span class='nc'>Map</span><span class='o'>(</span><span class='n'>s</span> <span class='o'>-&gt;</span> <span class='nc'>List</span><span class='o'>(</span><span class='n'>sentence</span><span class='o'>,</span> <span class='n'>some</span><span class='o'>),</span> <span class='n'>a</span> <span class='o'>-&gt;</span> <span class='nc'>List</span><span class='o'>(</span><span class='n'>a</span><span class='o'>),</span> <span class='n'>i</span> <span class='o'>-&gt;</span> <span class='nc'>List</span><span class='o'>(</span><span class='n'>is</span><span class='o'>),</span> <span class='n'>h</span> <span class='o'>-&gt;</span> <span class='nc'>List</span><span class='o'>(</span><span class='n'>here</span><span class='o'>),</span> <span class='n'>w</span> <span class='o'>-&gt;</span> <span class='nc'>List</span><span class='o'>(</span><span class='k'>with</span><span class='o'>,</span> <span class='n'>words</span><span class='o'>))</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>firstCharTokens</span><span class='o'>.</span><span class='n'>mapValues</span><span class='o'>(</span><span class='k'>_</span><span class='o'>.</span><span class='n'>length</span><span class='o'>)</span>
+<span class='n'>res9</span><span class='k'>:</span> <span class='kt'>scala.collection.immutable.Map</span><span class='o'>[</span><span class='kt'>Char</span>,<span class='kt'>Int</span><span class='o'>]</span> <span class='k'>=</span> <span class='nc'>Map</span><span class='o'>(</span><span class='n'>s</span> <span class='o'>-&gt;</span> <span class='mi'>2</span><span class='o'>,</span> <span class='n'>a</span> <span class='o'>-&gt;</span> <span class='mi'>1</span><span class='o'>,</span> <span class='n'>i</span> <span class='o'>-&gt;</span> <span class='mi'>1</span><span class='o'>,</span> <span class='n'>h</span> <span class='o'>-&gt;</span> <span class='mi'>1</span><span class='o'>,</span> <span class='n'>w</span> <span class='o'>-&gt;</span> <span class='mi'>2</span><span class='o'>)</span>
+</code></pre></div>
+<p><strong>Q. Is there any function that splits a list into two lists with the elements in the alternating positions of the original list? For example,</strong></p>
+
+<p><strong>MainList =(1,2,3,4,5,6)</strong></p>
+
+<p><strong>List1 = (1,3,5)</strong><br /><strong>List2 = (2,4,6)</strong></p>
+
+<p>Given the exact main list you provided, one can use the partition function and use the modulo operation to see whether the value is divisible evenly by 2 or not.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>mainList</span> <span class='k'>=</span> <span class='nc'>List</span><span class='o'>(</span><span class='mi'>1</span><span class='o'>,</span><span class='mi'>2</span><span class='o'>,</span><span class='mi'>3</span><span class='o'>,</span><span class='mi'>4</span><span class='o'>,</span><span class='mi'>5</span><span class='o'>,</span><span class='mi'>6</span><span class='o'>)</span>
+<span class='n'>mainList</span><span class='k'>:</span> <span class='kt'>List</span><span class='o'>[</span><span class='kt'>Int</span><span class='o'>]</span> <span class='k'>=</span> <span class='nc'>List</span><span class='o'>(</span><span class='mi'>1</span><span class='o'>,</span> <span class='mi'>2</span><span class='o'>,</span> <span class='mi'>3</span><span class='o'>,</span> <span class='mi'>4</span><span class='o'>,</span> <span class='mi'>5</span><span class='o'>,</span> <span class='mi'>6</span><span class='o'>)</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>mainList</span><span class='o'>.</span><span class='n'>partition</span><span class='o'>(</span><span class='k'>_</span> <span class='o'>%</span> <span class='mi'>2</span> <span class='o'>==</span> <span class='mi'>0</span><span class='o'>)</span>
+<span class='n'>res0</span><span class='k'>:</span> <span class='o'>(</span><span class='kt'>List</span><span class='o'>[</span><span class='kt'>Int</span><span class='o'>],</span> <span class='nc'>List</span><span class='o'>[</span><span class='kt'>Int</span><span class='o'>])</span> <span class='k'>=</span> <span class='o'>(</span><span class='nc'>List</span><span class='o'>(</span><span class='mi'>2</span><span class='o'>,</span> <span class='mi'>4</span><span class='o'>,</span> <span class='mi'>6</span><span class='o'>),</span><span class='nc'>List</span><span class='o'>(</span><span class='mi'>1</span><span class='o'>,</span> <span class='mi'>3</span><span class='o'>,</span> <span class='mi'>5</span><span class='o'>))</span>
+</code></pre></div>
+<p>So, partition returns a pair of Lists. The first has all the elements that match the condition and the second has all the ones that do not.</p>
+
+<p>Of course, this wouldn’t work in general for Lists that have Strings, or that don’t have Ints in order, etc.</p>
+
+<p>For sequences of abitrarily-typed items, we can use the <code>grouped</code> and <code>unzip</code> methods:</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>unordered</span> <span class='k'>=</span> <span class='nc'>List</span><span class='o'>(</span><span class='s'>&quot;b&quot;</span><span class='o'>,</span><span class='s'>&quot;2&quot;</span><span class='o'>,</span><span class='s'>&quot;a&quot;</span><span class='o'>,</span><span class='s'>&quot;4&quot;</span><span class='o'>,</span><span class='s'>&quot;z&quot;</span><span class='o'>,</span><span class='s'>&quot;8&quot;</span><span class='o'>)</span>
+<span class='n'>unordered</span><span class='k'>:</span> <span class='kt'>List</span><span class='o'>[</span><span class='kt'>java.lang.String</span><span class='o'>]</span> <span class='k'>=</span> <span class='nc'>List</span><span class='o'>(</span><span class='n'>b</span><span class='o'>,</span> <span class='mi'>2</span><span class='o'>,</span> <span class='n'>a</span><span class='o'>,</span> <span class='mi'>4</span><span class='o'>,</span> <span class='n'>z</span><span class='o'>,</span> <span class='mi'>8</span><span class='o'>)</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>unordered</span><span class='o'>.</span><span class='n'>grouped</span><span class='o'>(</span><span class='mi'>2</span><span class='o'>).</span><span class='n'>toVector</span>
+<span class='n'>res1</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[</span><span class='kt'>List</span><span class='o'>[</span><span class='kt'>String</span><span class='o'>]]</span> <span class='k'>=</span> <span class='nc'>Vector</span><span class='o'>(</span><span class='nc'>List</span><span class='o'>(</span><span class='n'>b</span><span class='o'>,</span> <span class='mi'>2</span><span class='o'>),</span> <span class='nc'>List</span><span class='o'>(</span><span class='n'>a</span><span class='o'>,</span> <span class='mi'>4</span><span class='o'>),</span> <span class='nc'>List</span><span class='o'>(</span><span class='n'>z</span><span class='o'>,</span> <span class='mi'>8</span><span class='o'>))</span>
+
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>unordered</span><span class='o'>.</span><span class='n'>grouped</span><span class='o'>(</span><span class='mi'>2</span><span class='o'>).</span><span class='n'>map</span> <span class='o'>{</span> <span class='k'>case</span> <span class='nc'>Seq</span><span class='o'>(</span><span class='n'>a</span><span class='o'>,</span><span class='n'>b</span><span class='o'>)</span> <span class='k'>=&gt;</span> <span class='o'>(</span><span class='n'>a</span><span class='o'>,</span><span class='n'>b</span><span class='o'>)</span> <span class='o'>}.</span><span class='n'>toVector</span>
+<span class='n'>res2</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[(</span><span class='kt'>String</span>, <span class='kt'>String</span><span class='o'>)]</span> <span class='k'>=</span> <span class='nc'>Vector</span><span class='o'>((</span><span class='n'>b</span><span class='o'>,</span><span class='mi'>2</span><span class='o'>),</span> <span class='o'>(</span><span class='n'>a</span><span class='o'>,</span><span class='mi'>4</span><span class='o'>),</span> <span class='o'>(</span><span class='n'>z</span><span class='o'>,</span><span class='mi'>8</span><span class='o'>))</span> 
+
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='o'>(</span><span class='n'>odds</span><span class='o'>,</span> <span class='n'>evens</span><span class='o'>)</span> <span class='k'>=</span> <span class='n'>unordered</span><span class='o'>.</span><span class='n'>grouped</span><span class='o'>(</span><span class='mi'>2</span><span class='o'>).</span><span class='n'>map</span> <span class='o'>{</span> <span class='k'>case</span> <span class='nc'>Seq</span><span class='o'>(</span><span class='n'>a</span><span class='o'>,</span><span class='n'>b</span><span class='o'>)</span> <span class='k'>=&gt;</span> <span class='o'>(</span><span class='n'>a</span><span class='o'>,</span><span class='n'>b</span><span class='o'>)</span> <span class='o'>}.</span><span class='n'>toVector</span><span class='o'>.</span><span class='n'>unzip</span>
+<span class='n'>odds</span><span class='k'>:</span> <span class='kt'>scala.collection.immutable.Vector</span><span class='o'>[</span><span class='kt'>String</span><span class='o'>]</span> <span class='k'>=</span> <span class='nc'>Vector</span><span class='o'>(</span><span class='n'>b</span><span class='o'>,</span> <span class='n'>a</span><span class='o'>,</span> <span class='n'>z</span><span class='o'>)</span>
+<span class='n'>evens</span><span class='k'>:</span> <span class='kt'>scala.collection.immutable.Vector</span><span class='o'>[</span><span class='kt'>String</span><span class='o'>]</span> <span class='k'>=</span> <span class='nc'>Vector</span><span class='o'>(</span><span class='mi'>2</span><span class='o'>,</span> <span class='mi'>4</span><span class='o'>,</span> <span class='mi'>8</span><span class='o'>)</span>
+</code></pre></div>
+<p><strong>Q. How to convert a List to a Vector and vice-versa?</strong></p>
+
+<p>Use <code>toVector</code> and <code>toList</code>.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>foo</span> <span class='k'>=</span> <span class='nc'>List</span><span class='o'>(</span><span class='mi'>1</span><span class='o'>,</span><span class='mi'>2</span><span class='o'>,</span><span class='mi'>3</span><span class='o'>,</span><span class='mi'>4</span><span class='o'>)</span>
+<span class='n'>foo</span><span class='k'>:</span> <span class='kt'>List</span><span class='o'>[</span><span class='kt'>Int</span><span class='o'>]</span> <span class='k'>=</span> <span class='nc'>List</span><span class='o'>(</span><span class='mi'>1</span><span class='o'>,</span> <span class='mi'>2</span><span class='o'>,</span> <span class='mi'>3</span><span class='o'>,</span> <span class='mi'>4</span><span class='o'>)</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>bar</span> <span class='k'>=</span> <span class='n'>foo</span><span class='o'>.</span><span class='n'>toVector</span>
+<span class='n'>bar</span><span class='k'>:</span> <span class='kt'>scala.collection.immutable.Vector</span><span class='o'>[</span><span class='kt'>Int</span><span class='o'>]</span> <span class='k'>=</span> <span class='nc'>Vector</span><span class='o'>(</span><span class='mi'>1</span><span class='o'>,</span> <span class='mi'>2</span><span class='o'>,</span> <span class='mi'>3</span><span class='o'>,</span> <span class='mi'>4</span><span class='o'>)</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>baz</span> <span class='k'>=</span> <span class='n'>bar</span><span class='o'>.</span><span class='n'>toList</span>
+<span class='n'>baz</span><span class='k'>:</span> <span class='kt'>List</span><span class='o'>[</span><span class='kt'>Int</span><span class='o'>]</span> <span class='k'>=</span> <span class='nc'>List</span><span class='o'>(</span><span class='mi'>1</span><span class='o'>,</span> <span class='mi'>2</span><span class='o'>,</span> <span class='mi'>3</span><span class='o'>,</span> <span class='mi'>4</span><span class='o'>)</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>foo</span> <span class='o'>==</span> <span class='n'>baz</span>
+<span class='n'>res0</span><span class='k'>:</span> <span class='kt'>Boolean</span> <span class='o'>=</span> <span class='kc'>true</span>
+</code></pre></div>
+<p><strong>Q. The advantage of a vector over a list is the constant time look-up. What is the advantage of using a list over a vector?</strong></p>
+
+<p>A List is slightly faster for operations at the head (front) of the sequence, so if all you are doing is doing a traversal (accessing each element in order, e.g. when mapping), then Lists are perfectly adequate and may be more efficient. They also have some nice pattern matching behavior for case statements.</p>
+
+<p>However, common wisdom seems to be that you should default to using Vectors. See Daniel Spiewak’s nice answer on Stackoverflow:</p>
+
+<p><a href='http://stackoverflow.com/questions/6928327/when-should-i-choose-vector-in-scala'>http://stackoverflow.com/questions/6928327/when-should-i-choose-vector-in-scala</a></p>
+
+<p><strong>Q. With splitting strings, holmes.split(“\s”) – \n and \t just requires a single ‘\’ to recognize its special functionality but why two ‘\’s are required for white space character?</strong></p>
+
+<p>That’s because <code>\n</code> and <code>\t</code> actually mean something in a String.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>println</span><span class='o'>(</span><span class='s'>&quot;Here is a line with a tab\tor\ttwo, followed by\na new line.&quot;</span><span class='o'>)</span>
+<span class='nc'>Here</span> <span class='n'>is</span> <span class='n'>a</span> <span class='n'>line</span> <span class='k'>with</span> <span class='n'>a</span> <span class='n'>tab</span>    <span class='n'>or</span>    <span class='n'>two</span><span class='o'>,</span> <span class='n'>followed</span> <span class='n'>by</span>
+<span class='n'>a</span> <span class='k'>new</span> <span class='n'>line</span><span class='o'>.</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>println</span><span class='o'>(</span><span class='s'>&quot;This will break\s.&quot;</span><span class='o'>)</span>
+<span class='o'>&lt;</span><span class='n'>console</span><span class='k'>&gt;:</span><span class='mi'>1</span><span class='k'>:</span> <span class='kt'>error:</span> <span class='kt'>invalid</span> <span class='kt'>escape</span> <span class='kt'>character</span>
+<span class='n'>println</span><span class='o'>(</span><span class='s'>&quot;This will break\s.&quot;</span><span class='o'>)</span>
+</code></pre></div>
+<p>So, you are supplying a String argument to split, and it uses that to construct a regular expression. Given that \s is not a string character, but is a regex metacharacter, you need to escape it. You can of course use <code>split(“”&quot;\s”&quot;”)</code>, though that isn’t exactly better in this case.</p>
+
+<p><strong>Q. I have long been programming in C++ and Java. Therefore, I put semicolon at the end of the line unconsciously. It seems that the standard coding style of Scala doesn’t recommend to use semicolons. However, I saw that there are some cases that require semicolons as you showed last class. Is there any specific reason why semicolon loses its role in Scala?</strong></p>
+
+<p>The main reason is to improve readability since the semicolon is rarely needed when writing standard code in editors (as opposed to one liners in the REPL). However, when you want to do something in a single line, like handling multiple cases, you need the semicolons.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>foo</span> <span class='k'>=</span> <span class='nc'>List</span><span class='o'>(</span><span class='s'>&quot;a&quot;</span><span class='o'>,</span><span class='mi'>1</span><span class='o'>,</span><span class='s'>&quot;b&quot;</span><span class='o'>,</span><span class='mi'>2</span><span class='o'>)</span>
+<span class='n'>foo</span><span class='k'>:</span> <span class='kt'>List</span><span class='o'>[</span><span class='kt'>Any</span><span class='o'>]</span> <span class='k'>=</span> <span class='nc'>List</span><span class='o'>(</span><span class='n'>a</span><span class='o'>,</span> <span class='mi'>1</span><span class='o'>,</span> <span class='n'>b</span><span class='o'>,</span> <span class='mi'>2</span><span class='o'>)</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>foo</span><span class='o'>.</span><span class='n'>map</span> <span class='o'>{</span> <span class='k'>case</span><span class='o'>(</span><span class='n'>x</span><span class='k'>:</span> <span class='kt'>String</span><span class='o'>)</span> <span class='k'>=&gt;</span> <span class='n'>x</span><span class='o'>;</span> <span class='k'>case</span><span class='o'>(</span><span class='n'>x</span><span class='k'>:</span> <span class='kt'>Int</span><span class='o'>)</span> <span class='k'>=&gt;</span> <span class='n'>x</span><span class='o'>.</span><span class='n'>toString</span> <span class='o'>}</span>
+<span class='n'>res5</span><span class='k'>:</span> <span class='kt'>List</span><span class='o'>[</span><span class='kt'>String</span><span class='o'>]</span> <span class='k'>=</span> <span class='nc'>List</span><span class='o'>(</span><span class='n'>a</span><span class='o'>,</span> <span class='mi'>1</span><span class='o'>,</span> <span class='n'>b</span><span class='o'>,</span> <span class='mi'>2</span><span class='o'>)</span>
+</code></pre></div>
+<p>But, in general, it’s best to just split these cases over multiple lines in any actual code.</p>
+
+<p><strong>Q. Is there no way to use _ in map like methods for collections that consist of pairs? For example, List((1,1),(2,2)).map(e =&gt; e._1 + e._2) works, but List((1,1),(2,2)).map(_._1 + <em>.</em>2) does not work.</strong></p>
+
+<p>The scope in which the <code>_</code> remains unanambigious runs out past its first invocation, so you only get to use it once. It is better anyway to use a case statement that makes it clear what the members of the pairs are.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span>  <span class='nc'>List</span><span class='o'>((</span><span class='mi'>1</span><span class='o'>,</span><span class='mi'>1</span><span class='o'>),(</span><span class='mi'>2</span><span class='o'>,</span><span class='mi'>2</span><span class='o'>)).</span><span class='n'>map</span> <span class='o'>{</span> <span class='k'>case</span><span class='o'>(</span><span class='n'>num1</span><span class='o'>,</span> <span class='n'>num2</span><span class='o'>)</span> <span class='k'>=&gt;</span> <span class='n'>num1</span><span class='o'>+</span><span class='n'>num2</span> <span class='o'>}</span>
+<span class='n'>res6</span><span class='k'>:</span> <span class='kt'>List</span><span class='o'>[</span><span class='kt'>Int</span><span class='o'>]</span> <span class='k'>=</span> <span class='nc'>List</span><span class='o'>(</span><span class='mi'>2</span><span class='o'>,</span> <span class='mi'>4</span><span class='o'>)</span>
+</code></pre></div>
+<p><strong>Q. I am unsure about the exact meaning of and the difference between “=&gt;” and “-&gt;”. They both seem to mean something like “apply X to Y” and I see that each is used in a particular context, but what is the logic behind that?</strong></p>
+
+<p>The use of -&gt; simply constructs a Tuple2, as is pretty clear in the following snippet.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>foo</span> <span class='k'>=</span> <span class='o'>(</span><span class='mi'>1</span><span class='o'>,</span><span class='mi'>2</span><span class='o'>)</span>
+<span class='n'>foo</span><span class='k'>:</span> <span class='o'>(</span><span class='kt'>Int</span><span class='o'>,</span> <span class='kt'>Int</span><span class='o'>)</span> <span class='k'>=</span> <span class='o'>(</span><span class='mi'>1</span><span class='o'>,</span><span class='mi'>2</span><span class='o'>)</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>bar</span> <span class='k'>=</span> <span class='mi'>1</span><span class='o'>-&gt;</span><span class='mi'>2</span>
+<span class='n'>bar</span><span class='k'>:</span> <span class='o'>(</span><span class='kt'>Int</span><span class='o'>,</span> <span class='kt'>Int</span><span class='o'>)</span> <span class='k'>=</span> <span class='o'>(</span><span class='mi'>1</span><span class='o'>,</span><span class='mi'>2</span><span class='o'>)</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>foo</span> <span class='o'>==</span> <span class='n'>bar</span>
+<span class='n'>res11</span><span class='k'>:</span> <span class='kt'>Boolean</span> <span class='o'>=</span> <span class='kc'>true</span>
+</code></pre></div>
+<p>Primarily, it is syntactic sugar that provides an intuitive symbol for creating elements of a a Map. Compare the following two ways of declaring the same Map.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='nc'>Map</span><span class='o'>((</span><span class='s'>&quot;a&quot;</span><span class='o'>,</span><span class='mi'>1</span><span class='o'>),(</span><span class='s'>&quot;b&quot;</span><span class='o'>,</span><span class='mi'>2</span><span class='o'>))</span>
+<span class='n'>res9</span><span class='k'>:</span> <span class='kt'>scala.collection.immutable.Map</span><span class='o'>[</span><span class='kt'>java.lang.String</span>,<span class='kt'>Int</span><span class='o'>]</span> <span class='k'>=</span> <span class='nc'>Map</span><span class='o'>(</span><span class='n'>a</span> <span class='o'>-&gt;</span> <span class='mi'>1</span><span class='o'>,</span> <span class='n'>b</span> <span class='o'>-&gt;</span> <span class='mi'>2</span><span class='o'>)</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='nc'>Map</span><span class='o'>(</span><span class='s'>&quot;a&quot;</span><span class='o'>-&gt;</span><span class='mi'>1</span><span class='o'>,</span><span class='s'>&quot;b&quot;</span><span class='o'>-&gt;</span><span class='mi'>2</span><span class='o'>)</span>
+<span class='n'>res10</span><span class='k'>:</span> <span class='kt'>scala.collection.immutable.Map</span><span class='o'>[</span><span class='kt'>java.lang.String</span>,<span class='kt'>Int</span><span class='o'>]</span> <span class='k'>=</span> <span class='nc'>Map</span><span class='o'>(</span><span class='n'>a</span> <span class='o'>-&gt;</span> <span class='mi'>1</span><span class='o'>,</span> <span class='n'>b</span> <span class='o'>-&gt;</span> <span class='mi'>2</span><span class='o'>)</span>
+<span class='nc'>The</span> <span class='n'>second</span> <span class='n'>seems</span> <span class='n'>more</span> <span class='n'>readable</span> <span class='n'>to</span> <span class='n'>me</span><span class='o'>.</span>
+</code></pre></div>
+<p>The use of =&gt; indicates that you are defining a function. The basic form is ARGUMENTS =&gt; RESULT.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>addOne</span> <span class='k'>=</span> <span class='o'>(</span><span class='n'>x</span><span class='k'>:</span> <span class='kt'>Int</span><span class='o'>)</span> <span class='k'>=&gt;</span> <span class='n'>x</span><span class='o'>+</span><span class='mi'>1</span>
+<span class='n'>addOne</span><span class='k'>:</span> <span class='kt'>Int</span> <span class='o'>=&gt;</span> <span class='nc'>Int</span> <span class='k'>=</span> <span class='o'>&lt;</span><span class='n'>function1</span><span class='o'>&gt;</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>addOne</span><span class='o'>(</span><span class='mi'>2</span><span class='o'>)</span>
+<span class='n'>res7</span><span class='k'>:</span> <span class='kt'>Int</span> <span class='o'>=</span> <span class='mi'>3</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>addTwoNumbers</span> <span class='k'>=</span> <span class='o'>(</span><span class='n'>num1</span><span class='k'>:</span> <span class='kt'>Int</span><span class='o'>,</span> <span class='n'>num2</span><span class='k'>:</span> <span class='kt'>Int</span><span class='o'>)</span> <span class='k'>=&gt;</span> <span class='n'>num1</span><span class='o'>+</span><span class='n'>num2</span>
+<span class='n'>addTwoNumbers</span><span class='k'>:</span> <span class='o'>(</span><span class='kt'>Int</span><span class='o'>,</span> <span class='kt'>Int</span><span class='o'>)</span> <span class='k'>=&gt;</span> <span class='nc'>Int</span> <span class='k'>=</span> <span class='o'>&lt;</span><span class='n'>function2</span><span class='o'>&gt;</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>addTwoNumbers</span><span class='o'>(</span><span class='mi'>3</span><span class='o'>,</span><span class='mi'>5</span><span class='o'>)</span>
+<span class='n'>res8</span><span class='k'>:</span> <span class='kt'>Int</span> <span class='o'>=</span> <span class='mi'>8</span>
+</code></pre></div>
+<p>Normally, you use it in defining anonymous functions as arguments to functions like <code>map</code>, <code>filter</code>, and such.</p>
+
+<p><strong>Q. Is there a more convenient way of expressing vowels as <span>AEIOUaeiou</span> and consonants as <span>BCDFGHJKLMNPQRSTVWXYZbcdfghjklmnpqrstvwxyz</span> in RegExes?</strong></p>
+
+<p>You can use Strings when defining regexes, so you can have a variable for vowels and one for consonants.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>vowel</span> <span class='k'>=</span> <span class='s'>&quot;[AEIOUaeiou]&quot;</span>
+<span class='n'>vowel</span><span class='k'>:</span> <span class='kt'>java.lang.String</span> <span class='o'>=</span> <span class='o'>[</span><span class='kt'>AEIOUaeiou</span><span class='o'>]</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>consonant</span> <span class='k'>=</span> <span class='s'>&quot;[BCDFGHJKLMNPQRSTVWXYZbcdfghjklmnpqrstvwxyz]&quot;</span>
+<span class='n'>consonant</span><span class='k'>:</span> <span class='kt'>java.lang.String</span> <span class='o'>=</span> <span class='o'>[</span><span class='kt'>BCDFGHJKLMNPQRSTVWXYZbcdfghjklmnpqrstvwxyz</span><span class='o'>]</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='nc'>MyRE</span> <span class='k'>=</span> <span class='o'>(</span><span class='s'>&quot;(&quot;</span><span class='o'>+</span><span class='n'>vowel</span><span class='o'>+</span><span class='s'>&quot;)(&quot;</span><span class='o'>+</span><span class='n'>consonant</span><span class='o'>+</span><span class='s'>&quot;)(&quot;</span><span class='o'>+</span><span class='n'>vowel</span><span class='o'>+</span><span class='s'>&quot;)&quot;</span><span class='o'>).</span><span class='n'>r</span>
+<span class='nc'>MyRE</span><span class='k'>:</span> <span class='kt'>scala.util.matching.Regex</span> <span class='o'>=</span> <span class='o'>([</span><span class='kt'>AEIOUaeiou</span><span class='o'>])([</span><span class='kt'>BCDFGHJKLMNPQRSTVWXYZbcdfghjklmnpqrstvwxyz</span><span class='o'>])([</span><span class='kt'>AEIOUaeiou</span><span class='o'>])</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='nc'>MyRE</span><span class='o'>(</span><span class='n'>x</span><span class='o'>,</span><span class='n'>y</span><span class='o'>,</span><span class='n'>z</span><span class='o'>)</span> <span class='k'>=</span> <span class='s'>&quot;aJE&quot;</span>
+<span class='n'>x</span><span class='k'>:</span> <span class='kt'>String</span> <span class='o'>=</span> <span class='n'>a</span>
+<span class='n'>y</span><span class='k'>:</span> <span class='kt'>String</span> <span class='o'>=</span> <span class='n'>J</span>
+<span class='n'>z</span><span class='k'>:</span> <span class='kt'>String</span> <span class='o'>=</span> <span class='n'>E</span>
+</code></pre></div>
+<p><strong>Q. The “\b” in RegExes marks a boundary, right? So, it also captures the “-”. But if I have a single string “sdnfeorgn”, it does NOT capture the boundaries of that, is that correct? And if so, why doesn’t it?</strong></p>
+
+<p>Because there are no boundaries in that string!</p>
+
+<h2 id='intermediate_questions'>Intermediate questions</h2>
+
+<p><strong>Q. The flatMap function takes lists of lists and merges them to single list. But in the example:</strong></p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='o'>(</span><span class='mi'>1</span> <span class='n'>to</span> <span class='mi'>10</span><span class='o'>).</span><span class='n'>toList</span><span class='o'>.</span><span class='n'>map</span><span class='o'>(</span><span class='n'>x</span><span class='k'>=&gt;</span><span class='n'>squareOddNumber</span><span class='o'>(</span><span class='n'>x</span><span class='o'>))</span>
+<span class='n'>res16</span><span class='k'>:</span> <span class='kt'>List</span><span class='o'>[</span><span class='kt'>Option</span><span class='o'>[</span><span class='kt'>Int</span><span class='o'>]]</span> <span class='k'>=</span> <span class='nc'>List</span><span class='o'>(</span><span class='nc'>Some</span><span class='o'>(</span><span class='mi'>1</span><span class='o'>),</span> <span class='nc'>None</span><span class='o'>,</span> <span class='nc'>Some</span><span class='o'>(</span><span class='mi'>9</span><span class='o'>),</span> <span class='nc'>None</span><span class='o'>,</span> <span class='nc'>Some</span><span class='o'>(</span><span class='mi'>25</span><span class='o'>),</span> <span class='nc'>None</span><span class='o'>,</span> <span class='nc'>Some</span><span class='o'>(</span><span class='mi'>49</span><span class='o'>),</span> <span class='nc'>None</span><span class='o'>,</span> <span class='nc'>Some</span><span class='o'>(</span><span class='mi'>81</span><span class='o'>),</span> <span class='nc'>None</span><span class='o'>)</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='o'>(</span><span class='mi'>1</span> <span class='n'>to</span> <span class='mi'>10</span><span class='o'>).</span><span class='n'>toList</span><span class='o'>.</span><span class='n'>flatMap</span><span class='o'>(</span><span class='n'>x</span><span class='k'>=&gt;</span><span class='n'>squareOddNumber</span><span class='o'>(</span><span class='n'>x</span><span class='o'>))</span>
+<span class='n'>res17</span><span class='k'>:</span> <span class='kt'>List</span><span class='o'>[</span><span class='kt'>Int</span><span class='o'>]</span> <span class='k'>=</span> <span class='nc'>List</span><span class='o'>(</span><span class='mi'>1</span><span class='o'>,</span> <span class='mi'>9</span><span class='o'>,</span> <span class='mi'>25</span><span class='o'>,</span> <span class='mi'>49</span><span class='o'>,</span> <span class='mi'>81</span><span class='o'>)</span>
+</code></pre></div>
+<p><strong>Here it is not list of list but just a list. In this case it expects the list to be Option list.</strong></p>
+
+<p><strong>I tried running the code with function returning just number or None. It showed error. So is there any way to use flatmap without Option lists and just list. For example, List(1, None, 9, None, 25) should be returned as List(1, 9, 25).</strong></p>
+
+<p>A. No, this won’t work because <code>List(1, None, 9, None, 25)</code> mixes <code>Option</code> with <code>Int</code> items.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>mixedup</span> <span class='k'>=</span> <span class='nc'>List</span><span class='o'>(</span><span class='mi'>1</span><span class='o'>,</span> <span class='nc'>None</span><span class='o'>,</span> <span class='mi'>9</span><span class='o'>,</span> <span class='nc'>None</span><span class='o'>,</span> <span class='mi'>25</span><span class='o'>)</span>
+<span class='n'>mixedup</span><span class='k'>:</span> <span class='kt'>List</span><span class='o'>[</span><span class='kt'>Any</span><span class='o'>]</span> <span class='k'>=</span> <span class='nc'>List</span><span class='o'>(</span><span class='mi'>1</span><span class='o'>,</span> <span class='nc'>None</span><span class='o'>,</span> <span class='mi'>9</span><span class='o'>,</span> <span class='nc'>None</span><span class='o'>,</span> <span class='mi'>25</span><span class='o'>)</span>
+</code></pre></div>
+<p>So, you should have your function return an <code>Option</code> which means returning <code>Some</code> or <code>None</code>. Then <code>flatMap</code> will work happily.</p>
+
+<p>One way of think of <code>Option</code> is that they are like <code>List</code> with zero or one element, as can be noted by the parallels in the following snippet.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>foo</span> <span class='k'>=</span> <span class='nc'>List</span><span class='o'>(</span><span class='nc'>List</span><span class='o'>(</span><span class='mi'>1</span><span class='o'>),</span> <span class='nc'>Nil</span><span class='o'>,</span> <span class='nc'>List</span><span class='o'>(</span><span class='mi'>3</span><span class='o'>),</span> <span class='nc'>List</span><span class='o'>(</span><span class='mi'>6</span><span class='o'>),</span> <span class='nc'>Nil</span><span class='o'>)</span>
+<span class='n'>foo</span><span class='k'>:</span> <span class='kt'>List</span><span class='o'>[</span><span class='kt'>List</span><span class='o'>[</span><span class='kt'>Int</span><span class='o'>]]</span> <span class='k'>=</span> <span class='nc'>List</span><span class='o'>(</span><span class='nc'>List</span><span class='o'>(</span><span class='mi'>1</span><span class='o'>),</span> <span class='nc'>List</span><span class='o'>(),</span> <span class='nc'>List</span><span class='o'>(</span><span class='mi'>3</span><span class='o'>),</span> <span class='nc'>List</span><span class='o'>(</span><span class='mi'>6</span><span class='o'>),</span> <span class='nc'>List</span><span class='o'>())</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>foo</span><span class='o'>.</span><span class='n'>flatten</span>
+<span class='n'>res12</span><span class='k'>:</span> <span class='kt'>List</span><span class='o'>[</span><span class='kt'>Int</span><span class='o'>]</span> <span class='k'>=</span> <span class='nc'>List</span><span class='o'>(</span><span class='mi'>1</span><span class='o'>,</span> <span class='mi'>3</span><span class='o'>,</span> <span class='mi'>6</span><span class='o'>)</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>bar</span> <span class='k'>=</span> <span class='nc'>List</span><span class='o'>(</span><span class='nc'>Option</span><span class='o'>(</span><span class='mi'>1</span><span class='o'>),</span> <span class='nc'>None</span><span class='o'>,</span> <span class='nc'>Option</span><span class='o'>(</span><span class='mi'>3</span><span class='o'>),</span> <span class='nc'>Option</span><span class='o'>(</span><span class='mi'>6</span><span class='o'>),</span> <span class='nc'>None</span><span class='o'>)</span>
+<span class='n'>bar</span><span class='k'>:</span> <span class='kt'>List</span><span class='o'>[</span><span class='kt'>Option</span><span class='o'>[</span><span class='kt'>Int</span><span class='o'>]]</span> <span class='k'>=</span> <span class='nc'>List</span><span class='o'>(</span><span class='nc'>Some</span><span class='o'>(</span><span class='mi'>1</span><span class='o'>),</span> <span class='nc'>None</span><span class='o'>,</span> <span class='nc'>Some</span><span class='o'>(</span><span class='mi'>3</span><span class='o'>),</span> <span class='nc'>Some</span><span class='o'>(</span><span class='mi'>6</span><span class='o'>),</span> <span class='nc'>None</span><span class='o'>)</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>bar</span><span class='o'>.</span><span class='n'>flatten</span>
+<span class='n'>res13</span><span class='k'>:</span> <span class='kt'>List</span><span class='o'>[</span><span class='kt'>Int</span><span class='o'>]</span> <span class='k'>=</span> <span class='nc'>List</span><span class='o'>(</span><span class='mi'>1</span><span class='o'>,</span> <span class='mi'>3</span><span class='o'>,</span> <span class='mi'>6</span><span class='o'>)</span>
+</code></pre></div>
+<p><strong>Q. Does scala have generic templates (like C++, Java)? Is that possible in scala? If so, how?</strong></p>
+
+<p>Yes, every collection type is parameterized. Notice that each of the following variables is parameterized by the type of the elements they are initialized with.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>foo</span> <span class='k'>=</span> <span class='nc'>List</span><span class='o'>(</span><span class='mi'>1</span><span class='o'>,</span><span class='mi'>2</span><span class='o'>,</span><span class='mi'>3</span><span class='o'>)</span>
+<span class='n'>foo</span><span class='k'>:</span> <span class='kt'>List</span><span class='o'>[</span><span class='kt'>Int</span><span class='o'>]</span> <span class='k'>=</span> <span class='nc'>List</span><span class='o'>(</span><span class='mi'>1</span><span class='o'>,</span> <span class='mi'>2</span><span class='o'>,</span> <span class='mi'>3</span><span class='o'>)</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>bar</span> <span class='k'>=</span> <span class='nc'>List</span><span class='o'>(</span><span class='s'>&quot;a&quot;</span><span class='o'>,</span><span class='s'>&quot;b&quot;</span><span class='o'>,</span><span class='s'>&quot;c&quot;</span><span class='o'>)</span>
+<span class='n'>bar</span><span class='k'>:</span> <span class='kt'>List</span><span class='o'>[</span><span class='kt'>java.lang.String</span><span class='o'>]</span> <span class='k'>=</span> <span class='nc'>List</span><span class='o'>(</span><span class='n'>a</span><span class='o'>,</span> <span class='n'>b</span><span class='o'>,</span> <span class='n'>c</span><span class='o'>)</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>baz</span> <span class='k'>=</span> <span class='nc'>List</span><span class='o'>(</span><span class='kc'>true</span><span class='o'>,</span> <span class='kc'>false</span><span class='o'>,</span> <span class='kc'>true</span><span class='o'>)</span>
+<span class='n'>baz</span><span class='k'>:</span> <span class='kt'>List</span><span class='o'>[</span><span class='kt'>Boolean</span><span class='o'>]</span> <span class='k'>=</span> <span class='nc'>List</span><span class='o'>(</span><span class='kc'>true</span><span class='o'>,</span> <span class='kc'>false</span><span class='o'>,</span> <span class='kc'>true</span><span class='o'>)</span>
+</code></pre></div>
+<p>You can create your own parameterized classes straightforwardly.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>class</span> <span class='nc'>Flexible</span><span class='o'>[</span><span class='kt'>T</span><span class='o'>]</span> <span class='o'>(</span><span class='k'>val</span> <span class='n'>data</span><span class='k'>:</span> <span class='kt'>T</span><span class='o'>)</span>
+<span class='n'>defined</span> <span class='k'>class</span> <span class='nc'>Flexible</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>foo</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>Flexible</span><span class='o'>(</span><span class='mi'>1</span><span class='o'>)</span>
+<span class='n'>foo</span><span class='k'>:</span> <span class='kt'>Flexible</span><span class='o'>[</span><span class='kt'>Int</span><span class='o'>]</span> <span class='k'>=</span> <span class='nc'>Flexible</span><span class='k'>@</span><span class='mi'>7</span><span class='n'>cd0570e</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>bar</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>Flexible</span><span class='o'>(</span><span class='s'>&quot;a&quot;</span><span class='o'>)</span>
+<span class='n'>bar</span><span class='k'>:</span> <span class='kt'>Flexible</span><span class='o'>[</span><span class='kt'>java.lang.String</span><span class='o'>]</span> <span class='k'>=</span> <span class='nc'>Flexible</span><span class='k'>@</span><span class='mi'>31</span><span class='n'>b6956f</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>baz</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>Flexible</span><span class='o'>(</span><span class='kc'>true</span><span class='o'>)</span>
+<span class='n'>baz</span><span class='k'>:</span> <span class='kt'>Flexible</span><span class='o'>[</span><span class='kt'>Boolean</span><span class='o'>]</span> <span class='k'>=</span> <span class='nc'>Flexible</span><span class='k'>@</span><span class='mi'>5</span><span class='n'>b58539f</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>foo</span><span class='o'>.</span><span class='n'>data</span>
+<span class='n'>res0</span><span class='k'>:</span> <span class='kt'>Int</span> <span class='o'>=</span> <span class='mi'>1</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>bar</span><span class='o'>.</span><span class='n'>data</span>
+<span class='n'>res1</span><span class='k'>:</span> <span class='kt'>java.lang.String</span> <span class='o'>=</span> <span class='n'>a</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>baz</span><span class='o'>.</span><span class='n'>data</span>
+<span class='n'>res2</span><span class='k'>:</span> <span class='kt'>Boolean</span> <span class='o'>=</span> <span class='kc'>true</span>
+</code></pre></div>
+<p><strong>Q. How can we easily create, initialize and work with multi-dimensional arrays (and dictionaries)?</strong></p>
+
+<p>Use the <code>fill</code> function of the <code>Array</code> object to create them.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='nc'>Array</span><span class='o'>.</span><span class='n'>fill</span><span class='o'>(</span><span class='mi'>2</span><span class='o'>)(</span><span class='mf'>1.0</span><span class='o'>)</span>
+<span class='n'>res8</span><span class='k'>:</span> <span class='kt'>Array</span><span class='o'>[</span><span class='kt'>Double</span><span class='o'>]</span> <span class='k'>=</span> <span class='nc'>Array</span><span class='o'>(</span><span class='mf'>1.0</span><span class='o'>,</span> <span class='mf'>1.0</span><span class='o'>)</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='nc'>Array</span><span class='o'>.</span><span class='n'>fill</span><span class='o'>(</span><span class='mi'>2</span><span class='o'>,</span><span class='mi'>3</span><span class='o'>)(</span><span class='mf'>1.0</span><span class='o'>)</span>
+<span class='n'>res9</span><span class='k'>:</span> <span class='kt'>Array</span><span class='o'>[</span><span class='kt'>Array</span><span class='o'>[</span><span class='kt'>Double</span><span class='o'>]]</span> <span class='k'>=</span> <span class='nc'>Array</span><span class='o'>(</span><span class='nc'>Array</span><span class='o'>(</span><span class='mf'>1.0</span><span class='o'>,</span> <span class='mf'>1.0</span><span class='o'>,</span> <span class='mf'>1.0</span><span class='o'>),</span> <span class='nc'>Array</span><span class='o'>(</span><span class='mf'>1.0</span><span class='o'>,</span> <span class='mf'>1.0</span><span class='o'>,</span> <span class='mf'>1.0</span><span class='o'>))</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='nc'>Array</span><span class='o'>.</span><span class='n'>fill</span><span class='o'>(</span><span class='mi'>2</span><span class='o'>,</span><span class='mi'>3</span><span class='o'>,</span><span class='mi'>2</span><span class='o'>)(</span><span class='mf'>1.0</span><span class='o'>)</span>
+<span class='n'>res10</span><span class='k'>:</span> <span class='kt'>Array</span><span class='o'>[</span><span class='kt'>Array</span><span class='o'>[</span><span class='kt'>Array</span><span class='o'>[</span><span class='kt'>Double</span><span class='o'>]]]</span> <span class='k'>=</span> <span class='nc'>Array</span><span class='o'>(</span><span class='nc'>Array</span><span class='o'>(</span><span class='nc'>Array</span><span class='o'>(</span><span class='mf'>1.0</span><span class='o'>,</span> <span class='mf'>1.0</span><span class='o'>),</span> <span class='nc'>Array</span><span class='o'>(</span><span class='mf'>1.0</span><span class='o'>,</span> <span class='mf'>1.0</span><span class='o'>),</span> <span class='nc'>Array</span><span class='o'>(</span><span class='mf'>1.0</span><span class='o'>,</span> <span class='mf'>1.0</span><span class='o'>)),</span> <span class='nc'>Array</span><span class='o'>(</span><span class='nc'>Array</span><span class='o'>(</span><span class='mf'>1.0</span><span class='o'>,</span> <span class='mf'>1.0</span><span class='o'>),</span> <span class='nc'>Array</span><span class='o'>(</span><span class='mf'>1.0</span><span class='o'>,</span> <span class='mf'>1.0</span><span class='o'>),</span> <span class='nc'>Array</span><span class='o'>(</span><span class='mf'>1.0</span><span class='o'>,</span> <span class='mf'>1.0</span><span class='o'>)))</span>
+</code></pre></div>
+<p>Once you have these in hand, you can iterate over them as usual.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>my2d</span> <span class='k'>=</span> <span class='nc'>Array</span><span class='o'>.</span><span class='n'>fill</span><span class='o'>(</span><span class='mi'>2</span><span class='o'>,</span><span class='mi'>3</span><span class='o'>)(</span><span class='mf'>1.0</span><span class='o'>)</span>
+<span class='n'>my2d</span><span class='k'>:</span> <span class='kt'>Array</span><span class='o'>[</span><span class='kt'>Array</span><span class='o'>[</span><span class='kt'>Double</span><span class='o'>]]</span> <span class='k'>=</span> <span class='nc'>Array</span><span class='o'>(</span><span class='nc'>Array</span><span class='o'>(</span><span class='mf'>1.0</span><span class='o'>,</span> <span class='mf'>1.0</span><span class='o'>,</span> <span class='mf'>1.0</span><span class='o'>),</span> <span class='nc'>Array</span><span class='o'>(</span><span class='mf'>1.0</span><span class='o'>,</span> <span class='mf'>1.0</span><span class='o'>,</span> <span class='mf'>1.0</span><span class='o'>))</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>my2d</span><span class='o'>.</span><span class='n'>map</span><span class='o'>(</span><span class='n'>row</span> <span class='k'>=&gt;</span> <span class='n'>row</span><span class='o'>.</span><span class='n'>map</span><span class='o'>(</span><span class='n'>x</span><span class='k'>=&gt;</span><span class='n'>x</span><span class='o'>+</span><span class='mi'>1</span><span class='o'>))</span>
+<span class='n'>res11</span><span class='k'>:</span> <span class='kt'>Array</span><span class='o'>[</span><span class='kt'>Array</span><span class='o'>[</span><span class='kt'>Double</span><span class='o'>]]</span> <span class='k'>=</span> <span class='nc'>Array</span><span class='o'>(</span><span class='nc'>Array</span><span class='o'>(</span><span class='mf'>2.0</span><span class='o'>,</span> <span class='mf'>2.0</span><span class='o'>,</span> <span class='mf'>2.0</span><span class='o'>),</span> <span class='nc'>Array</span><span class='o'>(</span><span class='mf'>2.0</span><span class='o'>,</span> <span class='mf'>2.0</span><span class='o'>,</span> <span class='mf'>2.0</span><span class='o'>))</span>
+</code></pre></div>
+<p>For dictionaries (Maps), you can use mutable HashMaps to create an empty Map and then add elements to it. For that, see this blog post:</p>
+
+<p><a href='http://bcomposes.wordpress.com/2011/09/19/first-steps-in-scala-for-beginning-programmers-part-8/'>http://bcomposes.wordpress.com/2011/09/19/first-steps-in-scala-for-beginning-programmers-part-8/</a></p>
+
+<p><strong>Q. Is the apply function similar to constructor in C++, Java? Where will the apply function be practically used? Is it for intialising values of attributes?</strong></p>
+
+<p>No, the <code>apply</code> function is like any other function except that it allows you to call it without writing out “apply”. Consider the following class.</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>class</span> <span class='nc'>AddX</span> <span class='o'>(</span><span class='n'>x</span><span class='k'>:</span> <span class='kt'>Int</span><span class='o'>)</span> <span class='o'>{</span>
+  <span class='k'>def</span> <span class='n'>apply</span><span class='o'>(</span><span class='n'>y</span><span class='k'>:</span> <span class='kt'>Int</span><span class='o'>)</span> <span class='k'>=</span> <span class='n'>x</span><span class='o'>+</span><span class='n'>y</span>
+  <span class='k'>override</span> <span class='k'>def</span> <span class='n'>toString</span> <span class='k'>=</span> <span class='s'>&quot;My number is &quot;</span> <span class='o'>+</span> <span class='n'>x</span>
+<span class='o'>}</span>
+</code></pre></div>
+<p>Here’s how we can use it.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>add1</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>AddX</span><span class='o'>(</span><span class='mi'>1</span><span class='o'>)</span>
+<span class='n'>add1</span><span class='k'>:</span> <span class='kt'>AddX</span> <span class='o'>=</span> <span class='nc'>My</span> <span class='n'>number</span> <span class='n'>is</span> <span class='mi'>1</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>add1</span><span class='o'>(</span><span class='mi'>4</span><span class='o'>)</span>
+<span class='n'>res0</span><span class='k'>:</span> <span class='kt'>Int</span> <span class='o'>=</span> <span class='mi'>5</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>add1</span><span class='o'>.</span><span class='n'>apply</span><span class='o'>(</span><span class='mi'>4</span><span class='o'>)</span>
+<span class='n'>res1</span><span class='k'>:</span> <span class='kt'>Int</span> <span class='o'>=</span> <span class='mi'>5</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>add1</span><span class='o'>.</span><span class='n'>toString</span>
+<span class='n'>res2</span><span class='k'>:</span> <span class='kt'>java.lang.String</span> <span class='o'>=</span> <span class='nc'>My</span> <span class='n'>number</span> <span class='n'>is</span> <span class='mi'>1</span>
+</code></pre></div>
+<p>So, the <code>apply</code> method is just (very handy) syntactic sugar that allows you to specify one function as fundamental to a class you have designed (actually, you can have multiple <code>apply</code> methods as long as each one has a unique parameter list). For example, with Lists, the <code>apply</code> method returns the value at the index provided, and for Maps it returns the value associated with the given key.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>foo</span> <span class='k'>=</span> <span class='nc'>List</span><span class='o'>(</span><span class='mi'>1</span><span class='o'>,</span><span class='mi'>2</span><span class='o'>,</span><span class='mi'>3</span><span class='o'>)</span>
+<span class='n'>foo</span><span class='k'>:</span> <span class='kt'>List</span><span class='o'>[</span><span class='kt'>Int</span><span class='o'>]</span> <span class='k'>=</span> <span class='nc'>List</span><span class='o'>(</span><span class='mi'>1</span><span class='o'>,</span> <span class='mi'>2</span><span class='o'>,</span> <span class='mi'>3</span><span class='o'>)</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>foo</span><span class='o'>(</span><span class='mi'>2</span><span class='o'>)</span>
+<span class='n'>res3</span><span class='k'>:</span> <span class='kt'>Int</span> <span class='o'>=</span> <span class='mi'>3</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>foo</span><span class='o'>.</span><span class='n'>apply</span><span class='o'>(</span><span class='mi'>2</span><span class='o'>)</span>
+<span class='n'>res4</span><span class='k'>:</span> <span class='kt'>Int</span> <span class='o'>=</span> <span class='mi'>3</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>bar</span> <span class='k'>=</span> <span class='nc'>Map</span><span class='o'>(</span><span class='mi'>1</span><span class='o'>-&gt;</span><span class='mi'>2</span><span class='o'>,</span><span class='mi'>3</span><span class='o'>-&gt;</span><span class='mi'>4</span><span class='o'>)</span>
+<span class='n'>bar</span><span class='k'>:</span> <span class='kt'>scala.collection.immutable.Map</span><span class='o'>[</span><span class='kt'>Int</span>,<span class='kt'>Int</span><span class='o'>]</span> <span class='k'>=</span> <span class='nc'>Map</span><span class='o'>(</span><span class='mi'>1</span> <span class='o'>-&gt;</span> <span class='mi'>2</span><span class='o'>,</span> <span class='mi'>3</span> <span class='o'>-&gt;</span> <span class='mi'>4</span><span class='o'>)</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>bar</span><span class='o'>(</span><span class='mi'>1</span><span class='o'>)</span>
+<span class='n'>res5</span><span class='k'>:</span> <span class='kt'>Int</span> <span class='o'>=</span> <span class='mi'>2</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>bar</span><span class='o'>.</span><span class='n'>apply</span><span class='o'>(</span><span class='mi'>1</span><span class='o'>)</span>
+<span class='n'>res6</span><span class='k'>:</span> <span class='kt'>Int</span> <span class='o'>=</span> <span class='mi'>2</span>
+</code></pre></div>
+<p><strong>Q. In the SBT tutorial you discuss “Node” and “Value” as being case classes. What is the alternative to a case class?</strong></p>
+
+<p>A normal class. Case classes are the special case. They do two things (and more) for you. The first is that you don’t have to use “new” to create a new object. Consider the following otherwise identical classes.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>class</span> <span class='nc'>NotACaseClass</span> <span class='o'>(</span><span class='k'>val</span> <span class='n'>data</span><span class='k'>:</span> <span class='kt'>Int</span><span class='o'>)</span>
+<span class='n'>defined</span> <span class='k'>class</span> <span class='nc'>NotACaseClass</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>case</span> <span class='k'>class</span> <span class='nc'>IsACaseClass</span> <span class='o'>(</span><span class='k'>val</span> <span class='n'>data</span><span class='k'>:</span> <span class='kt'>Int</span><span class='o'>)</span>
+<span class='n'>defined</span> <span class='k'>class</span> <span class='nc'>IsACaseClass</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>foo</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>NotACaseClass</span><span class='o'>(</span><span class='mi'>4</span><span class='o'>)</span>
+<span class='n'>foo</span><span class='k'>:</span> <span class='kt'>NotACaseClass</span> <span class='o'>=</span> <span class='nc'>NotACaseClass</span><span class='nd'>@a5c0f8f</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>bar</span> <span class='k'>=</span> <span class='nc'>IsACaseClass</span><span class='o'>(</span><span class='mi'>4</span><span class='o'>)</span>
+<span class='n'>bar</span><span class='k'>:</span> <span class='kt'>IsACaseClass</span> <span class='o'>=</span> <span class='nc'>IsACaseClass</span><span class='o'>(</span><span class='mi'>4</span><span class='o'>)</span>
+</code></pre></div>
+<p>That may seem like a little thing, but it can significantly improve code readability. Consider creating Lists within Lists within Lists if you had to use “new” all the time, for example. This is definitely true for <code>Node</code> and <code>Value</code>, which are used to build trees.</p>
+
+<p>Case classes also support matching, as in the following.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='nc'>IsACaseClass</span><span class='o'>(</span><span class='n'>x</span><span class='o'>)</span> <span class='k'>=</span> <span class='n'>bar</span>
+<span class='n'>x</span><span class='k'>:</span> <span class='kt'>Int</span> <span class='o'>=</span> <span class='mi'>4</span>
+</code></pre></div>
+<p>A normal class cannot do this.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='nc'>NotACaseClass</span><span class='o'>(</span><span class='n'>x</span><span class='o'>)</span> <span class='k'>=</span> <span class='n'>foo</span>
+<span class='o'>&lt;</span><span class='n'>console</span><span class='k'>&gt;:</span><span class='mi'>13</span><span class='k'>:</span> <span class='kt'>error:</span> <span class='kt'>not</span> <span class='kt'>found:</span> <span class='kt'>value</span> <span class='kt'>NotACaseClass</span>
+<span class='k'>val</span> <span class='nc'>NotACaseClass</span><span class='o'>(</span><span class='n'>x</span><span class='o'>)</span> <span class='k'>=</span> <span class='n'>foo</span>
+<span class='o'>^</span>
+<span class='o'>&lt;</span><span class='n'>console</span><span class='k'>&gt;:</span><span class='mi'>13</span><span class='k'>:</span> <span class='kt'>error:</span> <span class='kt'>recursive</span> <span class='kt'>value</span> <span class='kt'>x</span> <span class='kt'>needs</span> <span class='k'>type</span>
+<span class='kt'>val</span> <span class='kt'>NotACaseClass</span><span class='o'>(</span><span class='kt'>x</span><span class='o'>)</span> <span class='o'>=</span> <span class='n'>foo</span>
+<span class='o'>^</span>
+</code></pre></div>
+<p>If you mix the case class into a List and map over it, you can match it like you can with other classes, like Lists and Ints. Consider the following heterogeneous List.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>stuff</span> <span class='k'>=</span> <span class='nc'>List</span><span class='o'>(</span><span class='nc'>IsACaseClass</span><span class='o'>(</span><span class='mi'>3</span><span class='o'>),</span> <span class='nc'>List</span><span class='o'>(</span><span class='mi'>2</span><span class='o'>,</span><span class='mi'>3</span><span class='o'>),</span> <span class='nc'>IsACaseClass</span><span class='o'>(</span><span class='mi'>5</span><span class='o'>),</span> <span class='mi'>4</span><span class='o'>)</span>
+<span class='n'>stuff</span><span class='k'>:</span> <span class='kt'>List</span><span class='o'>[</span><span class='kt'>Any</span><span class='o'>]</span> <span class='k'>=</span> <span class='nc'>List</span><span class='o'>(</span><span class='nc'>IsACaseClass</span><span class='o'>(</span><span class='mi'>3</span><span class='o'>),</span> <span class='nc'>List</span><span class='o'>(</span><span class='mi'>2</span><span class='o'>,</span> <span class='mi'>3</span><span class='o'>),</span> <span class='nc'>IsACaseClass</span><span class='o'>(</span><span class='mi'>5</span><span class='o'>),</span> <span class='mi'>4</span><span class='o'>)</span>
+</code></pre></div>
+<p>We can convert this to a List of Ints by processing each element according to its type by matching.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>stuff</span><span class='o'>.</span><span class='n'>map</span> <span class='o'>{</span> <span class='k'>case</span> <span class='nc'>List</span><span class='o'>(</span><span class='n'>x</span><span class='o'>,</span><span class='n'>y</span><span class='o'>)</span> <span class='k'>=&gt;</span> <span class='n'>x</span><span class='o'>;</span> <span class='k'>case</span> <span class='nc'>IsACaseClass</span><span class='o'>(</span><span class='n'>x</span><span class='o'>)</span> <span class='k'>=&gt;</span> <span class='n'>x</span><span class='o'>;</span> <span class='k'>case</span> <span class='n'>x</span><span class='k'>:</span> <span class='kt'>Int</span> <span class='o'>=&gt;</span> <span class='n'>x</span> <span class='o'>}</span>
+<span class='o'>&lt;</span><span class='n'>console</span><span class='k'>&gt;:</span><span class='mi'>13</span><span class='k'>:</span> <span class='kt'>warning:</span> <span class='kt'>match</span> <span class='kt'>is</span> <span class='kt'>not</span> <span class='kt'>exhaustive!</span>
+<span class='n'>missing</span> <span class='n'>combination</span>              <span class='o'>*</span>           <span class='nc'>Nil</span>             <span class='o'>*</span>             <span class='o'>*</span>
+ 
+<span class='n'>stuff</span><span class='o'>.</span><span class='n'>map</span> <span class='o'>{</span> <span class='k'>case</span> <span class='nc'>List</span><span class='o'>(</span><span class='n'>x</span><span class='o'>,</span><span class='n'>y</span><span class='o'>)</span> <span class='k'>=&gt;</span> <span class='n'>x</span><span class='o'>;</span> <span class='k'>case</span> <span class='nc'>IsACaseClass</span><span class='o'>(</span><span class='n'>x</span><span class='o'>)</span> <span class='k'>=&gt;</span> <span class='n'>x</span><span class='o'>;</span> <span class='k'>case</span> <span class='n'>x</span><span class='k'>:</span> <span class='kt'>Int</span> <span class='o'>=&gt;</span> <span class='n'>x</span> <span class='o'>}</span>
+<span class='o'>^</span>
+ 
+<span class='n'>warning</span><span class='k'>:</span> <span class='kt'>there</span> <span class='kt'>were</span> <span class='err'>1</span> <span class='kt'>unchecked</span> <span class='kt'>warnings</span><span class='o'>;</span> <span class='n'>re</span><span class='o'>-</span><span class='n'>run</span> <span class='k'>with</span> <span class='o'>-</span><span class='n'>unchecked</span> <span class='k'>for</span> <span class='n'>details</span>
+<span class='n'>res10</span><span class='k'>:</span> <span class='kt'>List</span><span class='o'>[</span><span class='kt'>Any</span><span class='o'>]</span> <span class='k'>=</span> <span class='nc'>List</span><span class='o'>(</span><span class='mi'>3</span><span class='o'>,</span> <span class='mi'>2</span><span class='o'>,</span> <span class='mi'>5</span><span class='o'>,</span> <span class='mi'>4</span><span class='o'>)</span>
+</code></pre></div>
+<p>If you don’t want to see the warning in the REPL, add a case for things that don’t match that throws a MatchError.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>stuff</span><span class='o'>.</span><span class='n'>map</span> <span class='o'>{</span> <span class='k'>case</span> <span class='nc'>List</span><span class='o'>(</span><span class='n'>x</span><span class='o'>,</span><span class='n'>y</span><span class='o'>)</span> <span class='k'>=&gt;</span> <span class='n'>x</span><span class='o'>;</span> <span class='k'>case</span> <span class='nc'>IsACaseClass</span><span class='o'>(</span><span class='n'>x</span><span class='o'>)</span> <span class='k'>=&gt;</span> <span class='n'>x</span><span class='o'>;</span> <span class='k'>case</span> <span class='n'>x</span><span class='k'>:</span> <span class='kt'>Int</span> <span class='o'>=&gt;</span> <span class='n'>x</span><span class='o'>;</span> <span class='k'>case</span> <span class='k'>_</span> <span class='k'>=&gt;</span> <span class='k'>throw</span> <span class='k'>new</span> <span class='nc'>MatchError</span> <span class='o'>}</span>
+<span class='n'>warning</span><span class='k'>:</span> <span class='kt'>there</span> <span class='kt'>were</span> <span class='err'>1</span> <span class='kt'>unchecked</span> <span class='kt'>warnings</span><span class='o'>;</span> <span class='n'>re</span><span class='o'>-</span><span class='n'>run</span> <span class='k'>with</span> <span class='o'>-</span><span class='n'>unchecked</span> <span class='k'>for</span> <span class='n'>details</span>
+<span class='n'>res13</span><span class='k'>:</span> <span class='kt'>List</span><span class='o'>[</span><span class='kt'>Any</span><span class='o'>]</span> <span class='k'>=</span> <span class='nc'>List</span><span class='o'>(</span><span class='mi'>3</span><span class='o'>,</span> <span class='mi'>2</span><span class='o'>,</span> <span class='mi'>5</span><span class='o'>,</span> <span class='mi'>4</span><span class='o'>)</span>
+</code></pre></div>
+<p>Better yet, return Options (using None for the unmatched case) and flatMapping instead.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>stuff</span><span class='o'>.</span><span class='n'>flatMap</span> <span class='o'>{</span> <span class='k'>case</span> <span class='nc'>List</span><span class='o'>(</span><span class='n'>x</span><span class='o'>,</span><span class='n'>y</span><span class='o'>)</span> <span class='k'>=&gt;</span> <span class='nc'>Some</span><span class='o'>(</span><span class='n'>x</span><span class='o'>);</span> <span class='k'>case</span> <span class='nc'>IsACaseClass</span><span class='o'>(</span><span class='n'>x</span><span class='o'>)</span> <span class='k'>=&gt;</span> <span class='nc'>Some</span><span class='o'>(</span><span class='n'>x</span><span class='o'>);</span> <span class='k'>case</span> <span class='n'>x</span><span class='k'>:</span> <span class='kt'>Int</span> <span class='o'>=&gt;</span> <span class='nc'>Some</span><span class='o'>(</span><span class='n'>x</span><span class='o'>);</span> <span class='k'>case</span> <span class='k'>_</span> <span class='k'>=&gt;</span> <span class='nc'>None</span> <span class='o'>}</span>
+<span class='n'>warning</span><span class='k'>:</span> <span class='kt'>there</span> <span class='kt'>were</span> <span class='err'>1</span> <span class='kt'>unchecked</span> <span class='kt'>warnings</span><span class='o'>;</span> <span class='n'>re</span><span class='o'>-</span><span class='n'>run</span> <span class='k'>with</span> <span class='o'>-</span><span class='n'>unchecked</span> <span class='k'>for</span> <span class='n'>details</span>
+<span class='n'>res14</span><span class='k'>:</span> <span class='kt'>List</span><span class='o'>[</span><span class='kt'>Any</span><span class='o'>]</span> <span class='k'>=</span> <span class='nc'>List</span><span class='o'>(</span><span class='mi'>3</span><span class='o'>,</span> <span class='mi'>2</span><span class='o'>,</span> <span class='mi'>5</span><span class='o'>,</span> <span class='mi'>4</span><span class='o'>)</span>
+</code></pre></div>
+<p><strong>Q. In C++ the default access specifier is private; in Java one needs to specify private or public for each class member where as in Scala the default access specifier for a class is public. What could be the design motivation behind this when one of the purpose of the class is data hiding?</strong></p>
+
+<p>The reason is that Scala has a much more refined access specification scheme than Java that makes <code>public</code> the rational choice. See the discussion here:</p>
+
+<p><a href='http://stackoverflow.com/questions/4656698/default-public-access-in-scala'>http://stackoverflow.com/questions/4656698/default-public-access-in-scala</a></p>
+
+<p>Another key aspecte of this is that the general emphasis in Scala is on using immutable data structures, so there isn’t any danger of someone changing the internal state of your objects if you have designed them in this way. This in turn gets rid of the ridiculous getter and setter methods that breed and multiply in Java programs. See “Why getters and setters are evil” for more discussion:</p>
+
+<p><a href='http://www.javaworld.com/javaworld/jw-09-2003/jw-0905-toolbox.html'>http://www.javaworld.com/javaworld/jw-09-2003/jw-0905-toolbox.html</a></p>
+
+<p>After you get used to programming in Scala, the whole getter/setter thing that is so common in Java code is pretty much gag worthy.</p>
+
+<p>In general, it is still a good idea to use <code>private[this]</code> as a modifier to methods and variables whenever they are only needed by an object itself.</p>
+
+<p><strong>Q. How do we define overloaded constructors in Scala?</strong></p>
+
+<p><strong>Q. The way a class is defined in Scala introduced in the tutorial, seems to have only one constructor. Is there any way to provide multiple constructors like Java?</strong></p>
+
+<p>You can add additional constructors with <code>this</code> declarations.</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>class</span> <span class='nc'>SimpleTriple</span> <span class='o'>(</span><span class='n'>x</span><span class='k'>:</span> <span class='kt'>Int</span><span class='o'>,</span> <span class='n'>y</span><span class='k'>:</span> <span class='kt'>Int</span><span class='o'>,</span> <span class='n'>z</span><span class='k'>:</span> <span class='kt'>String</span><span class='o'>)</span> <span class='o'>{</span>
+  <span class='k'>def</span> <span class='k'>this</span> <span class='o'>(</span><span class='n'>x</span><span class='k'>:</span> <span class='kt'>Int</span><span class='o'>,</span> <span class='n'>z</span><span class='k'>:</span> <span class='kt'>String</span><span class='o'>)</span> <span class='k'>=</span> <span class='k'>this</span><span class='o'>(</span><span class='n'>x</span><span class='o'>,</span><span class='mi'>0</span><span class='o'>,</span><span class='n'>z</span><span class='o'>)</span>
+  <span class='k'>def</span> <span class='k'>this</span> <span class='o'>(</span><span class='n'>x</span><span class='k'>:</span> <span class='kt'>Int</span><span class='o'>,</span> <span class='n'>y</span><span class='k'>:</span> <span class='kt'>Int</span><span class='o'>)</span> <span class='k'>=</span> <span class='k'>this</span><span class='o'>(</span><span class='n'>x</span><span class='o'>,</span><span class='n'>y</span><span class='o'>,</span><span class='s'>&quot;a&quot;</span><span class='o'>)</span>
+  <span class='k'>override</span> <span class='k'>def</span> <span class='n'>toString</span> <span class='k'>=</span> <span class='n'>x</span> <span class='o'>+</span> <span class='s'>&quot;:&quot;</span> <span class='o'>+</span> <span class='n'>y</span> <span class='o'>+</span> <span class='s'>&quot;:&quot;</span> <span class='o'>+</span> <span class='n'>z</span>
+<span class='o'>}</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>foo</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>SimpleTriple</span><span class='o'>(</span><span class='mi'>1</span><span class='o'>,</span><span class='mi'>2</span><span class='o'>,</span><span class='s'>&quot;hello&quot;</span><span class='o'>)</span>
+<span class='n'>foo</span><span class='k'>:</span> <span class='kt'>SimpleTriple</span> <span class='o'>=</span> <span class='mi'>1</span><span class='k'>:</span><span class='err'>2</span><span class='kt'>:hello</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>bar</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>SimpleTriple</span><span class='o'>(</span><span class='mi'>1</span><span class='o'>,</span><span class='s'>&quot;goodbye&quot;</span><span class='o'>)</span>
+<span class='n'>bar</span><span class='k'>:</span> <span class='kt'>SimpleTriple</span> <span class='o'>=</span> <span class='mi'>1</span><span class='k'>:</span><span class='err'>0</span><span class='kt'>:goodbye</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>baz</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>SimpleTriple</span><span class='o'>(</span><span class='mi'>1</span><span class='o'>,</span><span class='mi'>3</span><span class='o'>)</span>
+<span class='n'>baz</span><span class='k'>:</span> <span class='kt'>SimpleTriple</span> <span class='o'>=</span> <span class='mi'>1</span><span class='k'>:</span><span class='err'>3</span><span class='kt'>:a</span>
+</code></pre></div>
+<p>Notice that you must supply an initial value for every one of the parameters of the class. This contrasts with Java, which allows you to leave some fields uninitialized (and which tends to lead to nasty bugs and bad design).</p>
+
+<p>Note that you can also provide defaults to parameters.</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>class</span> <span class='nc'>SimpleTripleWithDefaults</span> <span class='o'>(</span><span class='n'>x</span><span class='k'>:</span> <span class='kt'>Int</span><span class='o'>,</span> <span class='n'>y</span><span class='k'>:</span> <span class='kt'>Int</span> <span class='o'>=</span> <span class='mi'>0</span><span class='o'>,</span> <span class='n'>z</span><span class='k'>:</span> <span class='kt'>String</span> <span class='o'>=</span> <span class='s'>&quot;a&quot;</span><span class='o'>)</span> <span class='o'>{</span>
+  <span class='k'>override</span> <span class='k'>def</span> <span class='n'>toString</span> <span class='k'>=</span> <span class='n'>x</span> <span class='o'>+</span> <span class='s'>&quot;:&quot;</span> <span class='o'>+</span> <span class='n'>y</span> <span class='o'>+</span> <span class='s'>&quot;:&quot;</span> <span class='o'>+</span> <span class='n'>z</span>
+<span class='o'>}</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>foo</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>SimpleTripleWithDefaults</span><span class='o'>(</span><span class='mi'>1</span><span class='o'>)</span>
+<span class='n'>foo</span><span class='k'>:</span> <span class='kt'>SimpleTripleWithDefaults</span> <span class='o'>=</span> <span class='mi'>1</span><span class='k'>:</span><span class='err'>0</span><span class='kt'>:a</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>bar</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>SimpleTripleWithDefaults</span><span class='o'>(</span><span class='mi'>1</span><span class='o'>,</span><span class='mi'>2</span><span class='o'>)</span>
+<span class='n'>bar</span><span class='k'>:</span> <span class='kt'>SimpleTripleWithDefaults</span> <span class='o'>=</span> <span class='mi'>1</span><span class='k'>:</span><span class='err'>2</span><span class='kt'>:a</span>
+</code></pre></div>
+<p>However, you can’t omit a middle parameter while specifying the last one.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>foo</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>SimpleTripleWithDefaults</span><span class='o'>(</span><span class='mi'>1</span><span class='o'>,</span><span class='s'>&quot;xyz&quot;</span><span class='o'>)</span>
+<span class='o'>&lt;</span><span class='n'>console</span><span class='k'>&gt;:</span><span class='mi'>12</span><span class='k'>:</span> <span class='kt'>error:</span> <span class='k'>type</span> <span class='kt'>mismatch</span><span class='o'>;</span>
+<span class='n'>found</span>   <span class='k'>:</span> <span class='kt'>java.lang.String</span><span class='o'>(</span><span class='err'>&quot;</span><span class='kt'>xyz</span><span class='err'>&quot;</span><span class='o'>)</span>
+<span class='kt'>required:</span> <span class='kt'>Int</span>
+<span class='nc'>Error</span> <span class='n'>occurred</span> <span class='n'>in</span> <span class='n'>an</span> <span class='n'>application</span> <span class='n'>involving</span> <span class='n'>default</span> <span class='n'>arguments</span><span class='o'>.</span>
+<span class='k'>val</span> <span class='n'>foo</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>SimpleTripleWithDefaults</span><span class='o'>(</span><span class='mi'>1</span><span class='o'>,</span><span class='s'>&quot;xyz&quot;</span><span class='o'>)</span>
+<span class='o'>^</span>
+</code></pre></div>
+<p>But, you can name the parameters in the initialization if you want to be able to do this.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>foo</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>SimpleTripleWithDefaults</span><span class='o'>(</span><span class='mi'>1</span><span class='o'>,</span><span class='n'>z</span><span class='o'>=</span><span class='s'>&quot;xyz&quot;</span><span class='o'>)</span>
+<span class='n'>foo</span><span class='k'>:</span> <span class='kt'>SimpleTripleWithDefaults</span> <span class='o'>=</span> <span class='mi'>1</span><span class='k'>:</span><span class='err'>0</span><span class='kt'>:xyz</span>
+</code></pre></div>
+<p>You then have complete freedom to change the parameters around.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>foo</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>SimpleTripleWithDefaults</span><span class='o'>(</span><span class='n'>z</span><span class='o'>=</span><span class='s'>&quot;xyz&quot;</span><span class='o'>,</span><span class='n'>x</span><span class='k'>=</span><span class='mi'>42</span><span class='o'>,</span><span class='n'>y</span><span class='k'>=</span><span class='mi'>3</span><span class='o'>)</span>
+<span class='n'>foo</span><span class='k'>:</span> <span class='kt'>SimpleTripleWithDefaults</span> <span class='o'>=</span> <span class='mi'>42</span><span class='k'>:</span><span class='err'>3</span><span class='kt'>:xyz</span>
+</code></pre></div>
+<p><strong>Q. I’m still not clear on the difference between classes and traits. I guess I see a conceptual difference but I don’t really understand what the functional difference is — how is creating a “trait” different from creating a class with maybe fewer methods associated with it?</strong></p>
+
+<p>Yes, they are different. First off, traits are abstract, which means you cannot create any members. Consider the following contrast.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>class</span> <span class='nc'>FooClass</span>
+<span class='n'>defined</span> <span class='k'>class</span> <span class='nc'>FooClass</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>trait</span> <span class='nc'>FooTrait</span>
+<span class='n'>defined</span> <span class='k'>trait</span> <span class='nc'>FooTrait</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>fclass</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>FooClass</span>
+<span class='n'>class</span><span class='k'>:</span> <span class='kt'>FooClass</span> <span class='o'>=</span> <span class='nc'>FooClass</span><span class='k'>@</span><span class='mi'>1</span><span class='n'>b499616</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>ftrait</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>FooTrait</span>
+<span class='o'>&lt;</span><span class='n'>console</span><span class='k'>&gt;:</span><span class='mi'>8</span><span class='k'>:</span> <span class='kt'>error:</span> <span class='kt'>trait</span> <span class='kt'>FooTrait</span> <span class='kt'>is</span> <span class='kt'>abstract</span><span class='o'>;</span> <span class='n'>cannot</span> <span class='n'>be</span> <span class='n'>instantiated</span>
+<span class='k'>val</span> <span class='n'>ftrait</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>FooTrait</span>
+<span class='o'>^</span>
+</code></pre></div>
+<p>You can extend a trait to make a concrete class, however.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>class</span> <span class='nc'>FooTraitExtender</span> <span class='k'>extends</span> <span class='nc'>FooTrait</span>
+<span class='n'>defined</span> <span class='k'>class</span> <span class='nc'>FooTraitExtender</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>ftraitExtender</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>FooTraitExtender</span>
+<span class='n'>ftraitExtender</span><span class='k'>:</span> <span class='kt'>FooTraitExtender</span> <span class='o'>=</span> <span class='nc'>FooTraitExtender</span><span class='k'>@</span><span class='mi'>53</span><span class='n'>d26552</span>
+</code></pre></div>
+<p>This gets more interesting if the trait has some methods, of course. Here’s a trait, <code>Animal</code>, that declares two abstract methods, <code>makeNoise</code> and <code>doBehavior</code>.</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>trait</span> <span class='nc'>Animal</span> <span class='o'>{</span>
+  <span class='k'>def</span> <span class='n'>makeNoise</span><span class='k'>:</span> <span class='kt'>String</span>
+  <span class='k'>def</span> <span class='n'>doBehavior</span> <span class='o'>(</span><span class='n'>other</span><span class='k'>:</span> <span class='kt'>Animal</span><span class='o'>)</span><span class='k'>:</span> <span class='kt'>String</span>
+<span class='o'>}</span>
+</code></pre></div>
+<p>We can extend this trait with new class definitions; each extending class must implement both of these methods (or else be declared abstract).</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>case</span> <span class='k'>class</span> <span class='nc'>Bear</span> <span class='o'>(</span><span class='n'>name</span><span class='k'>:</span> <span class='kt'>String</span><span class='o'>,</span> <span class='n'>defaultBehavior</span><span class='k'>:</span> <span class='kt'>String</span> <span class='o'>=</span> <span class='s'>&quot;Regard warily...&quot;</span><span class='o'>)</span> <span class='k'>extends</span> <span class='nc'>Animal</span> <span class='o'>{</span>
+  <span class='k'>def</span> <span class='n'>makeNoise</span> <span class='k'>=</span> <span class='s'>&quot;ROAR!&quot;</span>
+  <span class='k'>def</span> <span class='n'>doBehavior</span> <span class='o'>(</span><span class='n'>other</span><span class='k'>:</span> <span class='kt'>Animal</span><span class='o'>)</span> <span class='k'>=</span> <span class='n'>other</span> <span class='k'>match</span> <span class='o'>{</span>
+    <span class='k'>case</span> <span class='n'>b</span><span class='k'>:</span> <span class='kt'>Bear</span> <span class='o'>=&gt;</span> <span class='n'>makeNoise</span> <span class='o'>+</span> <span class='s'>&quot; I&#39;m &quot;</span> <span class='o'>+</span> <span class='n'>name</span> <span class='o'>+</span> <span class='s'>&quot;.&quot;</span>
+    <span class='k'>case</span> <span class='n'>m</span><span class='k'>:</span> <span class='kt'>Mouse</span> <span class='o'>=&gt;</span> <span class='s'>&quot;Eat it!&quot;</span>
+    <span class='k'>case</span> <span class='k'>_</span> <span class='k'>=&gt;</span> <span class='n'>defaultBehavior</span>
+  <span class='o'>}</span>
+  <span class='k'>override</span> <span class='k'>def</span> <span class='n'>toString</span> <span class='k'>=</span> <span class='n'>name</span>
+<span class='o'>}</span>
+ 
+<span class='k'>case</span> <span class='k'>class</span> <span class='nc'>Mouse</span> <span class='o'>(</span><span class='n'>name</span><span class='k'>:</span> <span class='kt'>String</span><span class='o'>)</span> <span class='k'>extends</span> <span class='nc'>Animal</span> <span class='o'>{</span>
+  <span class='k'>def</span> <span class='n'>makeNoise</span> <span class='k'>=</span> <span class='s'>&quot;Squeak?&quot;</span>
+  <span class='k'>def</span> <span class='n'>doBehavior</span> <span class='o'>(</span><span class='n'>other</span><span class='k'>:</span> <span class='kt'>Animal</span><span class='o'>)</span> <span class='k'>=</span> <span class='n'>other</span> <span class='k'>match</span> <span class='o'>{</span>
+    <span class='k'>case</span> <span class='n'>b</span><span class='k'>:</span> <span class='kt'>Bear</span> <span class='o'>=&gt;</span> <span class='s'>&quot;Run!!!&quot;</span>
+    <span class='k'>case</span> <span class='n'>m</span><span class='k'>:</span> <span class='kt'>Mouse</span> <span class='o'>=&gt;</span> <span class='n'>makeNoise</span> <span class='o'>+</span> <span class='s'>&quot; I&#39;m &quot;</span> <span class='o'>+</span> <span class='n'>name</span> <span class='o'>+</span> <span class='s'>&quot;.&quot;</span>
+    <span class='k'>case</span> <span class='k'>_</span> <span class='k'>=&gt;</span> <span class='s'>&quot;Hide!&quot;</span>
+  <span class='o'>}</span>
+  <span class='k'>override</span> <span class='k'>def</span> <span class='n'>toString</span> <span class='k'>=</span> <span class='n'>name</span>
+<span class='o'>}</span>
+</code></pre></div>
+<p>Notice that Bear and Mouse have different parameter lists, but both can be Animals because they fully implement the Animal trait. We can now start creating objects of the Bear and Mouse classes and have them interact. We don’t need to use “new” because they are case classes (and this also allowed them to be used in the match statements of the <code>doBehavior</code> methods).</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>val</span> <span class='n'>yogi</span> <span class='k'>=</span> <span class='nc'>Bear</span><span class='o'>(</span><span class='s'>&quot;Yogi&quot;</span><span class='o'>,</span> <span class='s'>&quot;Hello!&quot;</span><span class='o'>)</span>
+<span class='k'>val</span> <span class='n'>baloo</span> <span class='k'>=</span> <span class='nc'>Bear</span><span class='o'>(</span><span class='s'>&quot;Baloo&quot;</span><span class='o'>,</span> <span class='s'>&quot;Yawn...&quot;</span><span class='o'>)</span>
+<span class='k'>val</span> <span class='n'>grizzly</span> <span class='k'>=</span> <span class='nc'>Bear</span><span class='o'>(</span><span class='s'>&quot;Grizzly&quot;</span><span class='o'>)</span>
+<span class='k'>val</span> <span class='n'>stuart</span> <span class='k'>=</span> <span class='nc'>Mouse</span><span class='o'>(</span><span class='s'>&quot;Stuart&quot;</span><span class='o'>)</span>
+ 
+<span class='n'>println</span><span class='o'>(</span><span class='n'>yogi</span> <span class='o'>+</span> <span class='s'>&quot;: &quot;</span> <span class='o'>+</span> <span class='n'>yogi</span><span class='o'>.</span><span class='n'>makeNoise</span><span class='o'>)</span>
+<span class='n'>println</span><span class='o'>(</span><span class='n'>stuart</span> <span class='o'>+</span> <span class='s'>&quot;: &quot;</span> <span class='o'>+</span> <span class='n'>stuart</span><span class='o'>.</span><span class='n'>makeNoise</span><span class='o'>)</span>
+<span class='n'>println</span><span class='o'>(</span><span class='s'>&quot;Grizzly to Stuart: &quot;</span> <span class='o'>+</span> <span class='n'>grizzly</span><span class='o'>.</span><span class='n'>doBehavior</span><span class='o'>(</span><span class='n'>stuart</span><span class='o'>))</span>
+</code></pre></div>
+<p>We can also create a singleton object that is of the <code>Animal</code> type by using the following declaration.</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>object</span> <span class='nc'>John</span> <span class='k'>extends</span> <span class='nc'>Animal</span> <span class='o'>{</span>
+  <span class='k'>def</span> <span class='n'>makeNoise</span> <span class='k'>=</span> <span class='s'>&quot;Hullo!&quot;</span>
+  <span class='k'>def</span> <span class='n'>doBehavior</span> <span class='o'>(</span><span class='n'>other</span><span class='k'>:</span> <span class='kt'>Animal</span><span class='o'>)</span> <span class='k'>=</span> <span class='n'>other</span> <span class='k'>match</span> <span class='o'>{</span>
+    <span class='k'>case</span> <span class='n'>b</span><span class='k'>:</span> <span class='kt'>Bear</span> <span class='o'>=&gt;</span> <span class='s'>&quot;Nice bear... nice bear...&quot;</span>
+    <span class='k'>case</span> <span class='k'>_</span> <span class='k'>=&gt;</span> <span class='n'>makeNoise</span>
+  <span class='o'>}</span>
+  <span class='k'>override</span> <span class='k'>def</span> <span class='n'>toString</span> <span class='k'>=</span> <span class='s'>&quot;John&quot;</span>
+<span class='o'>}</span>
+</code></pre></div>
+<p>Here, John is an object, not a class. Because this object implements the Animal trait, it successfully extends it and can act as an <code>Animal</code>. This means that a <code>Bear</code> like <code>baloo</code> can interact with <code>John</code>.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>println</span><span class='o'>(</span><span class='s'>&quot;Baloo to John: &quot;</span> <span class='o'>+</span> <span class='n'>baloo</span><span class='o'>.</span><span class='n'>doBehavior</span><span class='o'>(</span><span class='nc'>John</span><span class='o'>))</span>
+</code></pre></div>
+<p>The output of the above code when run as a script is the following.</p>
+
+<pre><code>Yogi: ROAR!  
+Stuart: Squeak?  
+Grizzly to Stuart: Eat it!  
+Baloo to John: Yawn…  </code></pre>
+
+<p>The closer distinction is between traits and abstract classes. In fact, everything shown above could have been done with <code>Animal</code> as an abstract class rather than as a trait. One difference is that an abstract class can have a constructor while traits cannot. Another key difference between them is that traits can be used to support limited multiple inheritance, as shown in the next question/answer.</p>
+
+<p><strong>Q. Does Scala support multiple inheritance?</strong></p>
+
+<p>Yes, via traits with implementations of some methods. Here’s an example, with a trait <code>Clickable</code> that has an abstract (unimplemented) method <code>getMessage</code>, an implemented method click, and a private, reassignable variable <code>numTimesClicked</code> (the latter two show clearly that traits are different from Java interfaces).</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>trait</span> <span class='nc'>Clickable</span> <span class='o'>{</span>
+  <span class='k'>private</span> <span class='k'>var</span> <span class='n'>numTimesClicked</span> <span class='k'>=</span> <span class='mi'>0</span>
+  <span class='k'>def</span> <span class='n'>getMessage</span><span class='k'>:</span> <span class='kt'>String</span>
+  <span class='k'>def</span> <span class='n'>click</span> <span class='k'>=</span> <span class='o'>{</span>
+    <span class='k'>val</span> <span class='n'>output</span> <span class='k'>=</span> <span class='n'>numTimesClicked</span> <span class='o'>+</span> <span class='s'>&quot;: &quot;</span> <span class='o'>+</span> <span class='n'>getMessage</span>
+    <span class='n'>numTimesClicked</span> <span class='o'>+=</span> <span class='mi'>1</span>
+    <span class='n'>output</span>
+  <span class='o'>}</span>
+<span class='o'>}</span>
+</code></pre></div>
+<p>Now let’s say we have a <code>MessageBearer</code> class (that we may have wanted for entirely different reasons having nothing to do with clicking).</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>class</span> <span class='nc'>MessageBearer</span> <span class='o'>(</span><span class='k'>val</span> <span class='n'>message</span><span class='k'>:</span> <span class='kt'>String</span><span class='o'>)</span> <span class='o'>{</span>
+  <span class='k'>override</span> <span class='k'>def</span> <span class='n'>toString</span> <span class='k'>=</span> <span class='n'>message</span>
+<span class='o'>}</span>
+</code></pre></div>
+<p>A new class can be now created by extending <code>MessageBearer</code> and “mixing in” the <code>Clickable</code> trait.</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>class</span> <span class='nc'>ClickableMessageBearer</span><span class='o'>(</span><span class='n'>message</span><span class='k'>:</span> <span class='kt'>String</span><span class='o'>)</span> <span class='k'>extends</span> <span class='nc'>MessageBearer</span><span class='o'>(</span><span class='n'>message</span><span class='o'>)</span> <span class='k'>with</span> <span class='nc'>Clickable</span> <span class='o'>{</span>
+  <span class='k'>def</span> <span class='n'>getMessage</span> <span class='k'>=</span> <span class='n'>message</span>
+<span class='o'>}</span>
+</code></pre></div>
+<p><code>ClickableMessageBearer</code> now has the abilities of both <code>MessageBearers</code> (which is to be able to retrieve its message) and Clickables.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>cmb1</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>ClickableMessageBearer</span><span class='o'>(</span><span class='s'>&quot;I&#39;m number one!&quot;</span><span class='o'>)</span>
+<span class='n'>cmb1</span><span class='k'>:</span> <span class='kt'>ClickableMessageBearer</span> <span class='o'>=</span> <span class='n'>I</span><span class='-Symbol'>&#39;m</span> <span class='n'>number</span> <span class='n'>one</span><span class='o'>!</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>cmb2</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>ClickableMessageBearer</span><span class='o'>(</span><span class='s'>&quot;I&#39;m number two!&quot;</span><span class='o'>)</span>
+<span class='n'>cmb2</span><span class='k'>:</span> <span class='kt'>ClickableMessageBearer</span> <span class='o'>=</span> <span class='n'>I</span><span class='-Symbol'>&#39;m</span> <span class='n'>number</span> <span class='n'>two</span><span class='o'>!</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>cmb1</span><span class='o'>.</span><span class='n'>click</span>
+<span class='n'>res3</span><span class='k'>:</span> <span class='kt'>java.lang.String</span> <span class='o'>=</span> <span class='mi'>0</span><span class='k'>:</span> <span class='kt'>I</span><span class='err'>&#39;</span><span class='kt'>m</span> <span class='kt'>number</span> <span class='kt'>one!</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>cmb1</span><span class='o'>.</span><span class='n'>message</span>
+<span class='n'>res4</span><span class='k'>:</span> <span class='kt'>String</span> <span class='o'>=</span> <span class='n'>I</span><span class='-Symbol'>&#39;m</span> <span class='n'>number</span> <span class='n'>one</span><span class='o'>!</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>cmb1</span><span class='o'>.</span><span class='n'>click</span>
+<span class='n'>res5</span><span class='k'>:</span> <span class='kt'>java.lang.String</span> <span class='o'>=</span> <span class='mi'>1</span><span class='k'>:</span> <span class='kt'>I</span><span class='err'>&#39;</span><span class='kt'>m</span> <span class='kt'>number</span> <span class='kt'>one!</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>cmb2</span><span class='o'>.</span><span class='n'>click</span>
+<span class='n'>res6</span><span class='k'>:</span> <span class='kt'>java.lang.String</span> <span class='o'>=</span> <span class='mi'>0</span><span class='k'>:</span> <span class='kt'>I</span><span class='err'>&#39;</span><span class='kt'>m</span> <span class='kt'>number</span> <span class='kt'>two!</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>cmb1</span><span class='o'>.</span><span class='n'>click</span>
+<span class='n'>res7</span><span class='k'>:</span> <span class='kt'>java.lang.String</span> <span class='o'>=</span> <span class='mi'>2</span><span class='k'>:</span> <span class='kt'>I</span><span class='err'>&#39;</span><span class='kt'>m</span> <span class='kt'>number</span> <span class='kt'>one!</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>cmb2</span><span class='o'>.</span><span class='n'>click</span>
+<span class='n'>res8</span><span class='k'>:</span> <span class='kt'>java.lang.String</span> <span class='o'>=</span> <span class='mi'>1</span><span class='k'>:</span> <span class='kt'>I</span><span class='err'>&#39;</span><span class='kt'>m</span> <span class='kt'>number</span> <span class='kt'>two!</span>
+</code></pre></div>
+<p><strong>Q. Why are there <code>toString</code>, <code>toInt</code>, and <code>toList</code> functions, but there isn’t a <code>toTuple</code> function?</strong></p>
+
+<p>This is a basic question that leads directly to the more advanced topic of implicits. There are a number of reasons behind this. To start with, it is important to realize that there are many types of Tuples, starting with a Tuple with a single element (a Tuple1) up to 22 elements (a Tuple22). Note that when you use (,) to create a tuple, it is implicitly invoking a constructor for the corresponding TupleN of the correct arity.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>b</span> <span class='k'>=</span> <span class='o'>(</span><span class='mi'>1</span><span class='o'>,</span><span class='mi'>2</span><span class='o'>,</span><span class='mi'>3</span><span class='o'>)</span>
+<span class='n'>b</span><span class='k'>:</span> <span class='o'>(</span><span class='kt'>Int</span><span class='o'>,</span> <span class='kt'>Int</span><span class='o'>,</span> <span class='nc'>Int</span><span class='o'>)</span> <span class='k'>=</span> <span class='o'>(</span><span class='mi'>1</span><span class='o'>,</span><span class='mi'>2</span><span class='o'>,</span><span class='mi'>3</span><span class='o'>)</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>c</span> <span class='k'>=</span> <span class='nc'>Tuple3</span><span class='o'>(</span><span class='mi'>1</span><span class='o'>,</span><span class='mi'>2</span><span class='o'>,</span><span class='mi'>3</span><span class='o'>)</span>
+<span class='n'>c</span><span class='k'>:</span> <span class='o'>(</span><span class='kt'>Int</span><span class='o'>,</span> <span class='kt'>Int</span><span class='o'>,</span> <span class='nc'>Int</span><span class='o'>)</span> <span class='k'>=</span> <span class='o'>(</span><span class='mi'>1</span><span class='o'>,</span><span class='mi'>2</span><span class='o'>,</span><span class='mi'>3</span><span class='o'>)</span>
+ 
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>b</span><span class='o'>==</span><span class='n'>c</span>
+<span class='n'>res4</span><span class='k'>:</span> <span class='kt'>Boolean</span> <span class='o'>=</span> <span class='kc'>true</span>
+</code></pre></div>
+<p>Given this, it is obviously not meaningful to have a function <code>toTuple</code> on sequences that are longer than 22. This means there is no generic way to have, say a List or Array, and then call <code>toTuple</code> on it and expect reliable behavior to happen.</p>
+
+<p>However, if you want this functionality (even though limited by the above constraint of 22 elements max), Scala allows you to “add” methods to existing classes by using <strong>implicit classes</strong>. You can find lots of discussions about implicits by search for “scala implicits”. But, here’s an example that shows how it works for this particular case.</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>val</span> <span class='n'>foo</span> <span class='k'>=</span> <span class='nc'>List</span><span class='o'>(</span><span class='mi'>1</span><span class='o'>,</span><span class='mi'>2</span><span class='o'>)</span>
+<span class='k'>val</span> <span class='n'>bar</span> <span class='k'>=</span> <span class='nc'>List</span><span class='o'>(</span><span class='mi'>3</span><span class='o'>,</span><span class='mi'>4</span><span class='o'>,</span><span class='mi'>5</span><span class='o'>)</span>
+ 
+<span class='n'>foo</span><span class='o'>.</span><span class='n'>toTuple2</span>
+ 
+<span class='k'>implicit</span> <span class='k'>class</span> <span class='nc'>TupleAble</span><span class='o'>[</span><span class='kt'>T</span><span class='o'>](</span><span class='k'>val</span> <span class='n'>elements</span><span class='k'>:</span> <span class='kt'>Seq</span><span class='o'>[</span><span class='kt'>T</span><span class='o'>])</span> <span class='k'>extends</span> <span class='nc'>AnyVal</span> <span class='o'>{</span>
+  <span class='k'>def</span> <span class='n'>toTuple2</span> <span class='k'>=</span> <span class='n'>elements</span> <span class='k'>match</span> <span class='o'>{</span> <span class='k'>case</span> <span class='nc'>Seq</span><span class='o'>(</span><span class='n'>a</span><span class='o'>,</span> <span class='n'>b</span><span class='o'>)</span> <span class='k'>=&gt;</span> <span class='o'>(</span><span class='n'>a</span><span class='o'>,</span> <span class='n'>b</span><span class='o'>)</span> <span class='o'>}</span>
+  <span class='k'>def</span> <span class='n'>toTuple3</span> <span class='k'>=</span> <span class='n'>elements</span> <span class='k'>match</span> <span class='o'>{</span> <span class='k'>case</span> <span class='nc'>Seq</span><span class='o'>(</span><span class='n'>a</span><span class='o'>,</span> <span class='n'>b</span><span class='o'>,</span> <span class='n'>c</span><span class='o'>)</span> <span class='k'>=&gt;</span> <span class='o'>(</span><span class='n'>a</span><span class='o'>,</span> <span class='n'>b</span><span class='o'>,</span> <span class='n'>c</span><span class='o'>)</span> <span class='o'>}</span>
+<span class='o'>}</span>
+ 
+<span class='n'>foo</span><span class='o'>.</span><span class='n'>toTuple2</span>
+<span class='n'>bar</span><span class='o'>.</span><span class='n'>toTuple3</span>
+</code></pre></div>
+<p>If you put this into the Scala REPL, you’ll see that the first invocation of <code>foo.toTuple</code> gets an error:</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>foo</span><span class='o'>.</span><span class='n'>toTuple2</span>
+<span class='o'>&lt;</span><span class='n'>console</span><span class='k'>&gt;:</span><span class='mi'>9</span><span class='k'>:</span> <span class='kt'>error:</span> <span class='kt'>value</span> <span class='kt'>toTuple</span> <span class='kt'>is</span> <span class='kt'>not</span> <span class='kt'>a</span> <span class='kt'>member</span> <span class='kt'>of</span> <span class='kt'>List</span><span class='o'>[</span><span class='kt'>Int</span><span class='o'>]</span>
+<span class='n'>foo</span><span class='o'>.</span><span class='n'>toTuple</span>
+<span class='o'>^</span>
+</code></pre></div>
+<p>Note that class <code>TupleAble</code> takes a Seq in its constructor and then provides the method <code>toTuple</code>, using that Seq. It is able to do so for Seqs with 1, 2 or 3 elements, and above that it throws an exception. (We could of course keeping listing more cases out and go up to 22 element tuples, but this shows the point.)</p>
+
+<p>The implicit class tells Scala that when it finds a call to <code>toTuple2</code> on an instance of <code>Seq</code>, then it should call the method on <code>TupleAble</code>. Additionally, since we have declared this class to be a <strong>value class</strong> with <code>extends AnyVal</code>, Scala will rewrite our code at compile-time to make the call to <code>toTuple2</code> a static function call instead of actually doing the wrapping.</p>
+
+<p>Note that the reason we have to have <code>toTuple2</code> and not <code>toTuple</code> is that since tuples are not collections, and each tuple size has its own class, the return type of <code>toTuple</code> would have to be the union of all TupleN types, which is <code>Product with Serializable</code>, which is pretty much uselessly vague. So no single single function that adapts based on the situation can have the correct return type based on the input length.</p>
+      </div>
+      <div id='footer'></div>
+    </div>
+  </body>
+</html>

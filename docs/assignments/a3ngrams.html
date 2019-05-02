@@ -1,0 +1,755 @@
+<html>
+  <head>
+    <meta content='text/html;charset=UTF-8' http-equiv='Content-Type'/>
+    <title>NLP &mdash; Assignment 3 - N-Grams</title>
+    <style type='text/css'>
+      @import '../css/default.css';
+      @import '../css/syntax.css';
+    </style>
+    <link rel="shortcut icon" href="../favicon.ico" />
+    <meta content='Natural Language Processing Class' name='subject'/>
+    <!--<link href='images/favicon.png' rel='shortcut icon'>-->
+
+    <!-- MathJax Section -->
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script>
+      MathJax.Hub.Config({
+        tex2jax: {
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+        }
+      });
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+
+  </head>
+  <body>
+    <div id='wrap'>
+      <div id='header'>
+        <img height="100" alt='NLP Class' src='../images/utexas.png'/>
+        <div class='tagline'>Natural Language Processing: Fall 2013</div>
+      </div>
+      <div id='pages'>
+        <ol class='toc'>
+          <li>NLP Class
+            <ol class="toc">
+              <li><a href='../index.html'>Home</a></li>
+              <li><a href='../syllabus.html'>Syllabus</a></li>
+              <li><a href='../schedule.html'>Schedule</a></li>
+              <li><a href='../notes'>Notes</a></li>
+              <li><a href='../requirements.html'>Assignment Requirements</a></li>
+              <li><a href='../links.html'>Links</a></li>
+            </ol>
+          </li>
+          <li>Useful Information
+            <ol class="toc">
+              <li><a href='../scala'>Scala</a></li>
+            </ol>
+          </li>
+          <li>Assignments
+            <ol class="toc">
+              <li><a href='../assignments/a0programming.html'>#0 - Programming</a></li>
+              <li><a href='../assignments/a1prob.html'>#1 - Probability</a></li>
+              <li><a href='../assignments/a2classification.html'>#2 - Classification</a></li>
+              <li><a href='../assignments/a3ngrams.html'>#3 - N-Grams</a></li>
+              <li><a href='../assignments/a4hmm.html'>#4 - HMMs</a></li>
+              <li><a href='../assignments/a5maxent.html'>#5 - MaxEnt</a></li>
+              <li><a href='../assignments/a6parsing.html'>#6 - Parsing</a></li>
+            </ol>
+          </li>
+          <li>External Links
+            <ol class="toc">
+              <li><a href='http://www.utcompling.com'>UTCL Main site</a></li>
+              <li><a href='https://courses.utexas.edu/webapps/portal/frameset.jsp?tab_tab_group_id=_11_1&url=%2Fwebapps%2Fblackboard%2Fexecute%2Flauncher%3Ftype%3DCourse%26id%3D_159651_1%26url%3D'>Blackboard</a></li>
+            </ol>
+          </li>
+        </ol>
+      </div>
+      <div id='content'>
+        <h1>Assignment 3 - N-Grams</h1>
+        <ol class="toc"><li><a href="#introduction">Introduction</a></li><li><a href="#problem_1_ngram_models_15_points">Problem 1: N-Gram Models (15 points)</a></li><li><a href="#problem_2_ngram_model_implementation_30_points">Problem 2: N-Gram Model Implementation (30 points)</a></li><li><a href="#problem_3_add_smoothed_ngrammodeltrainer_20_points">Problem 3: Add-λ Smoothed NgramModelTrainer (20 points)</a></li><li><a href="#problem_4_interpolation_20_points">Problem 4: Interpolation (20 points)</a></li><li><a href="#problem_5_decipherment_15_points">Problem 5: Decipherment (15 points)</a></li></ol>
+        <p><strong>Due: Tuesday, October 15. Programming at noon. Written portions at 2pm.</strong></p>
+
+<p>This assignment is based in part on on problems from <a href='http://www.cs.jhu.edu/~jason/'>Jason Eisner</a>&#8217;s <a href='https://18d120ec-a-e22e9223-s-sites.googlegroups.com/a/utcompling.com/nlp-s11/assignments/homework-1/eisner_lm_homework.pdf?attachauth=ANoY7crnvOj8DTMuEPniMbpaM6TsNW7G1t807GXUnn8-rZO14f7G_L8KTzU4c0c5E5rhcL0WVmS_yyfTN5B045b9SyrXABL8vTbH9ydSWRFcO8PbwlgbDqSbmYKa6VQk4evqMOfM12ArQ9VzhWd-SeHA6xkhiMFxULD7bAUkY5_bb3yIMj10NSm5lnUo_xIpoJy9kv8v6C2lh3sztweVkqhRJy0XfT0rCNbU8lJfp5RayzYAx0yLMDKeLfTrVQBYRoEnBaFwzr_P&amp;attredirects=0'>language modeling homework</a>. Many thanks to Jason E. for making this and other materials for teaching NLP available!</p>
+
+<ul>
+<li>Written portions are found throughout the assignment, and are clearly marked.</li>
+
+<li>Coding portions must be turned in via GitHub using the tag <code>a3</code>.</li>
+</ul>
+
+<h2 id='introduction'>Introduction</h2>
+
+<p>This assignment will guide you though the implementation of an ngram language model with various approaches to handling sparse data. You will also apply your model to the task of decipherment.</p>
+
+<p>To complete the homework, use the interfaces and stub program found in the class GitHub repository.</p>
+
+<ul>
+<li>Your written answers should be hand-written or printed and handed in before class. The problem descriptions clearly state where a written answer is expected.</li>
+
+<li>Programming portions should be turned in via GitHub by noon on the assignment due date.</li>
+</ul>
+
+<p>There are 100 points total in this assignment. Point values for each problem/sub-problem are given below.</p>
+
+<p>The used here classes will extend traits that are found version <strong>0005</strong> of the <code>nlpclass-fall2013</code> dependency. In order to get these updates, you will need to edit your root <code>build.sbt</code> file and update the version of the dependency:</p>
+
+<pre><code>libraryDependencies += &quot;com.utcompling&quot; % &quot;nlpclass-fall2013_2.10&quot; % &quot;0005&quot; changing()</code></pre>
+
+<p>If you use Eclipse, then after you modify the dependency you will once again have to run <code>sbt &quot;eclipse with-source=true&quot;</code> and refresh your project in Eclipse.</p>
+
+<p><strong>If you have any questions or problems with any of the materials, don&#8217;t hesitate to ask!</strong></p>
+
+<p><strong>Tip:</strong> Look over the entire homework before starting on it. Then read through each problem carefully, in its entirety, before answering questions and doing the implementation.</p>
+
+<p>Finally: if possible, don&#8217;t print this homework out! Just read it online, which ensures you&#8217;ll be looking at the latest version of the homework (in case there are any corrections), you can easily cut-and-paste and follow links, and you won&#8217;t waste paper.</p>
+
+<h2 id='problem_1_ngram_models_15_points'>Problem 1: N-Gram Models (15 points)</h2>
+
+<p>A <strong>language model</strong> is a probability function <em>p</em> that assigns probabilities to word sequences such as <code>\( \vec{w} = \)</code> (<code>i</code>, <code>love</code>, <code>new york</code>). Think of <code>\( p(\vec{w}) \)</code> as the probability that if you turned on a radio at an arbitrary moment, its next four words would be &#8220;i love new york&#8221;&#8212;perhaps in the middle of a longer sentence such as &#8220;the latest bumper sticker says, i love new york more than ever.&#8221; We often want to consider <code>\( p(\vec{w}) \)</code> to decide whether we like <code>\( p(\vec{w}) \)</code> better than an alternative sequence.</p>
+
+<p>Formally, each element <code>\( W \in \mathcal{E} \)</code> of the underlying event space is a possible value of the <em>infinite</em> sequence of words that will come out of the radio after you turn it on. <code>\( p(\vec{w}) \)</code> is really an abbreviation for <code>\( p(\text{prefix}(W,|\vec{w}|) = \vec{w} \)</code>, where <code>\( |\vec{w}|) \)</code> denotes the length of the sequence <code>\( p(\vec{w}) \)</code>. Thus, <em>p</em>(<code>i</code>,<code>love</code>,<code>new</code>,<code>york</code>) is the total probability of all infinite word sequences <em>W</em> that begin &#8220;i love new york &#8230;.&#8221;</p>
+
+<p>Suppose <code>\( p(\vec{w}) = w_1 w_2 \dots w_n \)</code> (a sequence of <em>n</em> words). A <strong>trigram language model</strong> defines <code>\[ 
+  p(\vec{w}) \stackrel{\tiny{\mbox{def}}}{=} p(w_1) \cdot 
+                                             p(w_2 \mid w_1) \cdot 
+                                             p(w_3 \mid w_1~w_2) \cdot 
+                                             p(w_4 \mid w_2~w_3) \cdots
+                                             p(w_n \mid w_{n-2}~w_{n-1})
+\]</code> on the assumption that the sequence was generated in the order <code>\( w_1, w_2, w_3, \dots \)</code> (&#8220;from left to right&#8221;) with each word chosen in a way dependent on the previous two words. (But the first word <code>\( w_1 \)</code> is not dependent on anything, since we turned on the radio at a arbitrary moment.)</p>
+
+<ol>
+<li>
+<p>(4 points) Expand the above definition of <code>\( p(\vec{w}) \)</code> using naive estimates of the parameters, such as <code>\[
+   \begin{align}
+       p(w_4 \mid w_2, w_3) \stackrel{\tiny{\mbox{def}}}{=} &amp; \frac{C(w_2~w_3~w_4)}{C(w_2~w_3)}
+   \end{align}
+ \]</code> where <code>\( C(w_2 w_3 w_4) \)</code> denotes the count of times the trigram <code>\( w_2 w_3 w_4 \)</code> was observed in a training corpus.</p>
+
+<p><em>Remark:</em> Naive parameter estimates of this sort are called &#8220;maximum-likelihood estimates&#8221; (MLE). They have the advantage that they maximize the probability (equivalently, minimize the perplexity) of the training data. But they will generally perform badly on test data, unless the training data were so abundant as to include all possible trigrams many times. This is why we must smooth these estimates in practice.</p>
+</li>
+
+<li>
+<p>(5 points) One could also define a kind of reversed trigram language model <code>\( p_{reversed} \)</code> that instead assumed the words were generated in reverse order (&#8220;from right to left&#8221;): <code>\[ 
+\begin{align}
+p_{reversed}(\vec{w}) \stackrel{\tiny{\mbox{def}}}{=}&amp;p(w_n) \cdot
+                                                     p(w_{n-1} \mid w_n) \cdot
+                                                     p(w_{n-2} \mid w_{n-1} w_n) \cdot
+                                                     p(w_{n-3} \mid w_{n-2} w_{n-1}) \\
+                                                    &amp;\cdots
+                                                     p(w_2 \mid w_3 w_4) \cdot
+                                                     p(w_1 \mid w_2 w_3)
+\end{align}
+\]</code> By manipulating the notation, show that the two models are identical (i.e., <code>\( p(\vec{w}) = p_{reversed}(\vec{w}) \)</code> for any <code>\( \vec{w} \)</code> provided that both models use MLE parameters estimated from the same training data (see problem (1.1) above)).</p>
+</li>
+
+<li>
+<p>(3 points) In the data you will use in questions 6 and 14, sentences are delimited by <code>&lt;S&gt;</code> at the start and <code>&lt;E&gt;</code> at the end. For example, the following data set consists of a sequence of 3 sentences:</p>
+
+<pre><code> &lt;S&gt; do you think so &lt;E&gt; 
+ &lt;S&gt; yes &lt;E&gt; 
+ &lt;S&gt; at least i thought so &lt;E&gt;</code></pre>
+
+<p>Given English training data, the probability of</p>
+
+<pre><code> &lt;S&gt; do you think the &lt;E&gt;</code></pre>
+
+<p>should be extremely low under any good language model. Why? In the case of the trigram model, which parameter or parameters are responsible for making this probability low?</p>
+</li>
+
+<li>
+<p>(3 points)</p>
+
+<p>You turn on the radio as it is broadcasting an interview. Assuming a trigram model, match up expressions (A), (B), (C) with descriptions (1), (2), (3):</p>
+
+<p>The expression</p>
+
+<p>(A)&#160; <code>\( p(\text{Do}) \cdot p(\text{you} \mid \text{Do}) \cdot p(\text{think} \mid \text{Do you}) \)</code><br /> (B)&#160; <code>\( p(\text{Do} \mid \text{&lt;S&gt;}) \cdot p(\text{you} \mid \text{&lt;S&gt; Do}) \cdot p(\text{think} \mid \text{Do you}) \cdot p(\text{&lt;E&gt;} \mid \text{you think}) \)</code><br /> (C)&#160; <code>\( p(\text{Do} \mid \text{&lt;S&gt;}) \cdot p(\text{you} \mid \text{&lt;S&gt; Do}) \cdot p(\text{think} \mid \text{Do you}) \)</code></p>
+
+<p>represents the probability that</p>
+
+<p>(1)&#160; the first complete sentence you hear is <em>Do you think</em> (as in, &#8221;D&#8217;ya think?&#8221;)<br /> (2)&#160; the first 3 words you hear are <em>Do you think</em><br /> (3)&#160; the first complete sentence you hear starts with <em>Do you think</em></p>
+
+<p>Explain your answers briefly. Which quantity is <code>\( p(\vec{w}) \)</code>?</p>
+
+<p><em>Remark:</em> The distinctions matter because &#8220;Do&#8221; is more probable at the start of an English sentence than in the middle, and because (3) describes a larger event set than (1) does.</p>
+</li>
+</ol>
+
+<h2 id='problem_2_ngram_model_implementation_30_points'>Problem 2: N-Gram Model Implementation (30 points)</h2>
+
+<p>An <strong>ngram</strong> is a sequences of <em>n</em> words. Ngrams are useful for modeling the probabilities of sequences of words (i.e., modeling language). With an ngram language model, we want to know the probability of the <em>nth</em> word in a sequence given that the <em>n-1</em> previous words.</p>
+
+<p>Your task for this assignment is to implement an N-Gram model and supervised learning for the model.</p>
+
+<p>To simplify things, we will only be modeling full sentences, not arbitrary sequences of words.</p>
+
+<p>Your task is to implement the traits provided in <a href='https://github.com/utcompling/nlpclass-fall2013/blob/master/src/main/scala/nlpclass/AssignmentTraits.scala'>AssignmentTraits.scala</a>:</p>
+
+<h3 id='ngrammodel'>NgramModel</h3>
+
+<p>First, you will need to implement the following trait</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>trait</span> <span class='nc'>NgramModelToImplement</span> <span class='o'>{</span>
+
+  <span class='cm'>/**</span>
+<span class='cm'>   * The order of the ngram model.</span>
+<span class='cm'>   * </span>
+<span class='cm'>   * This can be implemented as a `val`.</span>
+<span class='cm'>   */</span>
+  <span class='k'>def</span> <span class='n'>n</span><span class='k'>:</span> <span class='kt'>Int</span>
+  
+  <span class='cm'>/**</span>
+<span class='cm'>   * Determine the (log) probability of a full sentence.  Return </span>
+<span class='cm'>   * the probability as the logarithm of the probability.</span>
+<span class='cm'>   *</span>
+<span class='cm'>   * USAGE: </span>
+<span class='cm'>   *    val sent = Vector(&quot;this&quot;, &quot;is&quot;, &quot;a&quot;, &quot;complete&quot;, &quot;sentence&quot;)</span>
+<span class='cm'>   *    ngramModel.sentenceProb(sent)</span>
+<span class='cm'>   */</span>
+  <span class='k'>def</span> <span class='n'>sentenceProb</span><span class='o'>(</span><span class='n'>sentenceTokens</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[</span><span class='kt'>String</span><span class='o'>])</span><span class='k'>:</span> <span class='kt'>Double</span>
+  
+  <span class='cm'>/**</span>
+<span class='cm'>   * Generate a sentence based on the model parameters.</span>
+<span class='cm'>   * </span>
+<span class='cm'>   * Return something like: </span>
+<span class='cm'>   *    Vector(&quot;this&quot;, &quot;is&quot;, &quot;a&quot;, &quot;complete&quot;, &quot;sentence&quot;)</span>
+<span class='cm'>   */</span>
+  <span class='k'>def</span> <span class='n'>generate</span><span class='o'>()</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[</span><span class='kt'>String</span><span class='o'>]</span>
+
+<span class='o'>}</span>
+</code></pre></div>
+<p>Notice that this interface provides a clean way for us to interact with the model. It does not require us to know what <em>n</em> is, nor does it require us to know anything about the special start and end pseudo-words: we simply interact with full sentences.</p>
+
+<p>You maybe implement this class any way you see fit (so long as it conforms to the trait). One suggestion is to do it something like this:</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>class</span> <span class='nc'>NgramModel</span><span class='o'>(</span>
+  <span class='k'>val</span> <span class='n'>n</span><span class='k'>:</span> <span class='kt'>Int</span><span class='o'>,</span>
+  <span class='n'>ngramProbs</span><span class='k'>:</span> <span class='kt'>ConditionalProbabilityDistribution</span><span class='o'>[</span><span class='kt'>Vector</span><span class='o'>[</span><span class='kt'>String</span><span class='o'>]</span>, <span class='kt'>String</span><span class='o'>])</span>
+  <span class='k'>extends</span> <span class='nc'>NgramModelToImplement</span> <span class='o'>{</span>
+
+  <span class='k'>override</span> <span class='k'>def</span> <span class='n'>sentenceProb</span><span class='o'>(</span><span class='n'>sentenceTokens</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[</span><span class='kt'>String</span><span class='o'>])</span><span class='k'>:</span> <span class='kt'>Double</span> <span class='o'>=</span> <span class='o'>{</span>
+    <span class='o'>???</span>
+  <span class='o'>}</span>
+
+  <span class='k'>override</span> <span class='k'>def</span> <span class='n'>generate</span><span class='o'>()</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[</span><span class='kt'>String</span><span class='o'>]</span> <span class='k'>=</span> <span class='o'>{</span>
+    <span class='o'>???</span>
+  <span class='o'>}</span>
+
+<span class='o'>}</span>
+</code></pre></div>
+<p>Notice that we are re-using <code>ConditionalProbabilityDistribution</code> that was written for Assignment 1, but for this assignment we are conditioning on a Vector of Strings (the preceding n-1 words) instead of a single String.</p>
+
+<p>There are two methods that must be implemented:</p>
+
+<ol>
+<li>
+<p><code>sentenceProb</code>, which takes a complete sentence and returns its <em>log</em> probability according to the model. <strong>You must compute this value in log-space and return the logarithm of the sentence probability</strong>. The input to this method might be something like <code>Vector(&quot;this&quot;, &quot;is&quot;, &quot;a&quot;, &quot;complete&quot;, &quot;sentence&quot;)</code>. Remember that in order to assess the probability of a complete sentence, we must append the special start and end symbols to ensure that we are incorporating the probabilities of the words being at the beginning or end of a sentence. However, these sentence boundary markers are not needed for unigram models.</p>
+</li>
+
+<li>
+<p><code>generate</code>, which generates a random sentence with likelihood according to the model. For models with <em>n</em>&gt;1, you should start the generation with <em>n</em>-1 &#8216;begin&#8217; symbols to sample the first word, and then sample each consecutive word using the previous <em>n</em>-1 words, stopping when you draw the &#8216;end&#8217; symbol. (Be sure that you do not include the start and end in the output.) However, for unigram models (<em>n</em>=1), this will not work very well since we don&#8217;t want to have to rely on drawing an &#8216;end&#8217; symbol. Thus, for unigram models, the <code>generate</code> method should simply sample a sequence of 10 words.</p>
+</li>
+</ol>
+
+<p>Learning the parameters for the model will not take place in this class. Instead, separate classes will be used for training.</p>
+
+<blockquote>
+<p><strong>Written Answer (a):</strong> What will happen if you don&#8217;t compute the value in log-space? What will happen if you try to return the result from log-space to a normal probability value? What kinds of sentences will have problems and what kinds will not?</p>
+</blockquote>
+
+<h3 id='unsmoothedngrammodeltrainer'>UnsmoothedNgramModelTrainer</h3>
+
+<p>Like we did for or naive Bayes model implementation, we want to de-couple the actual ngram model from the way that it is trained. Do do this, we will have special &#8216;trainer&#8217; classes for training models. The trainers should implement the following interface, given in <a href='https://github.com/utcompling/nlpclass-fall2013/blob/master/src/main/scala/nlpclass/AssignmentTraits.scala'>AssignmentTraits.scala</a>:</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>trait</span> <span class='nc'>NgramModelTrainerToImplement</span> <span class='o'>{</span>
+
+  <span class='k'>def</span> <span class='n'>train</span><span class='o'>(</span><span class='n'>tokenizedSentences</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[</span><span class='kt'>Vector</span><span class='o'>[</span><span class='kt'>String</span><span class='o'>]])</span><span class='k'>:</span> <span class='kt'>NgramModelToImplement</span>
+
+<span class='o'>}</span>
+</code></pre></div>
+<p>For this portion, you will implement a trainer that doesn&#8217;t do any smoothing:</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>class</span> <span class='nc'>UnsmoothedNgramModelTrainer</span><span class='o'>(</span><span class='n'>n</span><span class='k'>:</span> <span class='kt'>Int</span><span class='o'>)</span> <span class='k'>extends</span> <span class='nc'>NgramModelTrainerToImplement</span> <span class='o'>{</span>
+
+  <span class='k'>override</span> <span class='k'>def</span> <span class='n'>train</span><span class='o'>(</span><span class='n'>tokenizedSentences</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[</span><span class='kt'>Vector</span><span class='o'>[</span><span class='kt'>String</span><span class='o'>]])</span><span class='k'>:</span> <span class='kt'>NgramModelToImplement</span> <span class='o'>=</span> <span class='o'>{</span>
+    <span class='o'>???</span>
+  <span class='o'>}</span>
+
+<span class='o'>}</span>
+</code></pre></div>
+<p>The <code>train</code> method of this class should take a Vector of tokenized training sentences (each as its own Vector) and return a new <code>NgramModel</code> with parameters based on Maximum Likelihood Estimates from the training data.</p>
+
+<p>Since we are modeling full sentences, be sure to make use of the special start and end tokens during training. However, you should not use them for unigram models.</p>
+
+<h3 id='trying_out_the_model'>Trying out the model</h3>
+
+<p>First, we can try the model on a sample dataset:</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>import</span> <span class='nn'>nlp.a3.UnsmoothedNgramModelTrainer</span>
+
+<span class='k'>val</span> <span class='n'>data</span> <span class='k'>=</span>
+  <span class='nc'>Vector</span><span class='o'>(</span>
+    <span class='s'>&quot;the dog runs .&quot;</span><span class='o'>,</span>
+    <span class='s'>&quot;the dog walks .&quot;</span><span class='o'>,</span>
+    <span class='s'>&quot;the man walks .&quot;</span><span class='o'>,</span>
+    <span class='s'>&quot;a man walks the dog .&quot;</span><span class='o'>,</span>
+    <span class='s'>&quot;the cat walks .&quot;</span><span class='o'>,</span>
+    <span class='s'>&quot;the dog chases the cat .&quot;</span><span class='o'>)</span>
+    <span class='o'>.</span><span class='n'>map</span><span class='o'>(</span><span class='k'>_</span><span class='o'>.</span><span class='n'>split</span><span class='o'>(</span><span class='s'>&quot;\\s+&quot;</span><span class='o'>).</span><span class='n'>toVector</span><span class='o'>)</span>
+<span class='k'>val</span> <span class='n'>ngt</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>UnsmoothedNgramModelTrainer</span><span class='o'>(</span><span class='mi'>2</span><span class='o'>)</span>
+<span class='k'>val</span> <span class='n'>ngm</span> <span class='k'>=</span> <span class='n'>ngt</span><span class='o'>.</span><span class='n'>train</span><span class='o'>(</span><span class='n'>data</span><span class='o'>)</span>
+</code></pre></div>
+<p>And check a few probabilities:</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>val</span> <span class='n'>p1</span> <span class='k'>=</span> <span class='n'>ngm</span><span class='o'>.</span><span class='n'>sentenceProb</span><span class='o'>(</span><span class='s'>&quot;the dog walks .&quot;</span><span class='o'>.</span><span class='n'>split</span><span class='o'>(</span><span class='s'>&quot;\\s+&quot;</span><span class='o'>).</span><span class='n'>toVector</span><span class='o'>)</span>
+<span class='n'>println</span><span class='o'>(</span><span class='n'>f</span><span class='s'>&quot;$p1%.4f  ${math.exp(p1)}%.4f&quot;</span><span class='o'>)</span>  <span class='c1'>// -2.4159  0.0893</span>
+
+<span class='k'>val</span> <span class='n'>p2</span> <span class='k'>=</span> <span class='n'>ngm</span><span class='o'>.</span><span class='n'>sentenceProb</span><span class='o'>(</span><span class='s'>&quot;the cat walks the dog .&quot;</span><span class='o'>.</span><span class='n'>split</span><span class='o'>(</span><span class='s'>&quot;\\s+&quot;</span><span class='o'>).</span><span class='n'>toVector</span><span class='o'>)</span>
+<span class='n'>println</span><span class='o'>(</span><span class='n'>f</span><span class='s'>&quot;$p2%.4f  ${math.exp(p2)}%.4f&quot;</span><span class='o'>)</span>  <span class='c1'>// -5.4604  0.0043</span>
+
+<span class='k'>val</span> <span class='n'>p3</span> <span class='k'>=</span> <span class='n'>ngm</span><span class='o'>.</span><span class='n'>sentenceProb</span><span class='o'>(</span><span class='s'>&quot;the cat runs.&quot;</span><span class='o'>.</span><span class='n'>split</span><span class='o'>(</span><span class='s'>&quot;\\s+&quot;</span><span class='o'>).</span><span class='n'>toVector</span><span class='o'>)</span>
+<span class='n'>println</span><span class='o'>(</span><span class='n'>f</span><span class='s'>&quot;$p3%.4f  ${math.exp(p3)}%.4f&quot;</span><span class='o'>)</span>  <span class='c1'>// NaN  NaN</span>
+</code></pre></div>
+<p>Let&#8217;s test out the model on some books. Download these three books from Project Gutenberg and save them with the following names:</p>
+
+<ul>
+<li><code>alice.txt</code>: <a href='http://www.gutenberg.org/cache/epub/11/pg11.txt'>Alice&#8217;s Adventures in Wonderland</a></li>
+
+<li><code>lookingglass.txt</code>: <a href='http://www.gutenberg.org/cache/epub/12/pg12.txt'>Through the Looking-Glass</a></li>
+
+<li><code>sherlock.txt</code>: <a href='http://www.gutenberg.org/cache/epub/1661/pg1661.txt'>The Adventures of Sherlock Holmes</a></li>
+</ul>
+
+<p>To make things easier, I have provided you with an interface to the <a href='http://nlp.stanford.edu/software/corenlp.shtml'>Stanford CoreNLP</a> tokenizer which also segments text into sentences. So calling <code>nlpclass.Tokenize(someText)</code> will return a Vector of sentences, where each sentence is a Vector of Strings for the tokens. You should also lowercase all text (after running it through the tokenizer) to reduce some of the sparsity in the dataset.</p>
+
+<p>You should be able to use this to make a trainer to train ngram models:</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>import</span> <span class='nn'>nlpclass.Tokenize</span>
+<span class='k'>import</span> <span class='nn'>dhg.util.CollectionUtil._</span>
+<span class='k'>import</span> <span class='nn'>dhg.util.FileUtil._</span>
+<span class='k'>import</span> <span class='nn'>nlp.a3.UnsmoothedNgramModelTrainer</span>
+
+<span class='k'>def</span> <span class='n'>fileTokens</span><span class='o'>(</span><span class='n'>filename</span><span class='k'>:</span> <span class='kt'>String</span><span class='o'>)</span> <span class='k'>=</span> <span class='o'>{</span>
+  <span class='nc'>File</span><span class='o'>(</span><span class='n'>filename</span><span class='o'>).</span><span class='n'>readLines</span>
+    <span class='o'>.</span><span class='n'>split</span><span class='o'>(</span><span class='s'>&quot;&quot;</span><span class='o'>)</span>
+    <span class='o'>.</span><span class='n'>flatMap</span><span class='o'>(</span><span class='n'>paragraph</span> <span class='k'>=&gt;</span> <span class='nc'>Tokenize</span><span class='o'>(</span><span class='n'>paragraph</span><span class='o'>.</span><span class='n'>mkString</span><span class='o'>(</span><span class='s'>&quot; &quot;</span><span class='o'>)))</span>
+    <span class='o'>.</span><span class='n'>map</span><span class='o'>(</span><span class='k'>_</span><span class='o'>.</span><span class='n'>map</span><span class='o'>(</span><span class='k'>_</span><span class='o'>.</span><span class='n'>toLowerCase</span><span class='o'>))</span>
+    <span class='o'>.</span><span class='n'>toVector</span>
+<span class='o'>}</span>
+
+<span class='k'>val</span> <span class='n'>trainer</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>UnsmoothedNgramModelTrainer</span><span class='o'>(</span><span class='mi'>2</span><span class='o'>)</span>
+</code></pre></div>
+<p>With a trained model, we can check the probabilities of sentences:</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>val</span> <span class='n'>alice</span> <span class='k'>=</span> <span class='n'>trainer</span><span class='o'>.</span><span class='n'>train</span><span class='o'>(</span><span class='n'>fileTokens</span><span class='o'>(</span><span class='s'>&quot;alice.txt&quot;</span><span class='o'>))</span>
+<span class='n'>alice</span><span class='o'>.</span><span class='n'>sentenceProb</span><span class='o'>(</span><span class='s'>&quot;the last came a little bird , so there was that .&quot;</span><span class='o'>.</span><span class='n'>split</span><span class='o'>(</span><span class='s'>&quot; &quot;</span><span class='o'>).</span><span class='n'>toVector</span><span class='o'>)</span>
+<span class='c1'>// -41.39217559191104</span>
+<span class='n'>alice</span><span class='o'>.</span><span class='n'>sentenceProb</span><span class='o'>(</span><span class='s'>&quot;so there was that .&quot;</span><span class='o'>.</span><span class='n'>split</span><span class='o'>(</span><span class='s'>&quot; &quot;</span><span class='o'>).</span><span class='n'>toVector</span><span class='o'>)</span>
+<span class='c1'>// -19.451400403614677</span>
+<span class='n'>alice</span><span class='o'>.</span><span class='n'>sentenceProb</span><span class='o'>(</span><span class='s'>&quot;the last came a little bird .&quot;</span><span class='o'>.</span><span class='n'>split</span><span class='o'>(</span><span class='s'>&quot; &quot;</span><span class='o'>).</span><span class='n'>toVector</span><span class='o'>)</span>
+<span class='c1'>// -Infinity</span>
+</code></pre></div>
+<blockquote>
+<p><strong>Written Answer (b):</strong> Why is the probability of &#8220;so there was that .&#8221; <strong>higher</strong> than that of &#8220;the last came a little bird , so there was that .&#8221;?</p>
+</blockquote>
+
+<blockquote>
+<p><strong>Written Answer (c):</strong> Why does &#8220;the last came a little bird .&#8221; have a zero probability (negative infinity in log-space)? Why did this zero not drive the probability of &#8220;the last came a little bird , so there was that .&#8221; to zero as well?</p>
+</blockquote>
+
+<p>You can also use your trained models to generate random sentences:</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>val</span> <span class='n'>trigramTrainer</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>UnsmoothedNgramModelTrainer</span><span class='o'>(</span><span class='mi'>3</span><span class='o'>)</span>
+<span class='k'>val</span> <span class='n'>alice</span> <span class='k'>=</span> <span class='n'>trigramTrainer</span><span class='o'>.</span><span class='n'>train</span><span class='o'>(</span><span class='n'>fileTokens</span><span class='o'>(</span><span class='s'>&quot;alice.txt&quot;</span><span class='o'>))</span>
+<span class='n'>println</span><span class='o'>(</span><span class='n'>alice</span><span class='o'>.</span><span class='n'>generate</span><span class='o'>.</span><span class='n'>mkString</span><span class='o'>(</span><span class='s'>&quot; &quot;</span><span class='o'>))</span>
+</code></pre></div>
+<p>This will produce some sentences like:</p>
+
+<ol>
+<li><em>our family always hated cats : nasty , low , and were quite dry again :</em></li>
+
+<li><em>u.s. laws alone swamp our small staff .</em></li>
+
+<li><em>the only things in the distance , and every now and then , &#8217; said the dormouse , without prominently displaying the sentence set forth in section 4 , &#8221; he &#8216;s murdering the time he was going to begin again , to keep back the wandering hair that curled all over with william the conqueror . &#8217;</em></li>
+</ol>
+
+<p>You&#8217;ll see sentences of a variety of lengths since the sentence end is drawn by chance. Some will look mostly normal (1), some will be exact sentences from the text (2), and some will wander between ideas (3). Of course, since we are not cleaning up the files, there will be a mixture of book text and Project Gutenberg legal junk too.</p>
+
+<p>We can see that as we change <em>n</em> we generate very different sentences; small <em>n</em> gives more random sentences, large <em>n</em> takes more directly from the text. Note that since our model is unsmoothed, all sequences of length <em>n</em> (or less) must be found exactly in the text.</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>def</span> <span class='n'>train</span><span class='o'>(</span><span class='n'>n</span><span class='k'>:</span> <span class='kt'>Int</span><span class='o'>)</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>UnsmoothedNgramModelTrainer</span><span class='o'>(</span><span class='n'>n</span><span class='o'>).</span><span class='n'>train</span><span class='o'>(</span><span class='n'>fileTokens</span><span class='o'>(</span><span class='s'>&quot;alice.txt&quot;</span><span class='o'>))</span>
+<span class='n'>println</span><span class='o'>(</span><span class='n'>train</span><span class='o'>(</span><span class='mi'>1</span><span class='o'>).</span><span class='n'>generate</span><span class='o'>.</span><span class='n'>mkString</span><span class='o'>(</span><span class='s'>&quot; &quot;</span><span class='o'>))</span>
+<span class='c1'>// came , a to &#39; turtle near spreading you next</span>
+<span class='n'>println</span><span class='o'>(</span><span class='n'>train</span><span class='o'>(</span><span class='mi'>2</span><span class='o'>).</span><span class='n'>generate</span><span class='o'>.</span><span class='n'>mkString</span><span class='o'>(</span><span class='s'>&quot; &quot;</span><span class='o'>))</span>
+<span class='c1'>// the question , and she said the jury-box , with oh , screamed ` call the list , we do .</span>
+<span class='n'>println</span><span class='o'>(</span><span class='n'>train</span><span class='o'>(</span><span class='mi'>4</span><span class='o'>).</span><span class='n'>generate</span><span class='o'>.</span><span class='n'>mkString</span><span class='o'>(</span><span class='s'>&quot; &quot;</span><span class='o'>))</span>
+<span class='c1'>// ` please would you tell me , &#39; said the duchess : you &#39;d only have to whisper a hint to time , and round goes the clock in a twinkling !</span>
+<span class='n'>println</span><span class='o'>(</span><span class='n'>train</span><span class='o'>(</span><span class='mi'>5</span><span class='o'>).</span><span class='n'>generate</span><span class='o'>.</span><span class='n'>mkString</span><span class='o'>(</span><span class='s'>&quot; &quot;</span><span class='o'>))</span>
+<span class='c1'>// ` in my youth , &#39; said his father , &#39; i took to the law , and argued each case with my wife ; and the muscular strength , which it gave to my jaw , has lasted the rest of my life . &#39;</span>
+</code></pre></div>
+<p>With <em>n</em>=1, words are completely independent. With <em>n</em>=2, pairs of words make sense, but the sentences don&#8217;t. Having <em>n</em>=4 gives us longer spans directly from the text, but that are glued together. And with <em>n</em>=5 the long generated sentence is directly from the text.</p>
+
+<h3 id='perplexityngrammodelevaluator'>PerplexityNgramModelEvaluator</h3>
+
+<p>Create an object</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>nlp</span><span class='o'>.</span><span class='n'>a3</span><span class='o'>.</span><span class='nc'>PerplexityNgramModelEvaluator</span>
+</code></pre></div>
+<p>that extends the trait</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>nlpclass</span><span class='o'>.</span><span class='nc'>NgramModelEvaluator</span>
+</code></pre></div>
+<p>and implements the method:</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>def</span> <span class='n'>apply</span><span class='o'>(</span><span class='n'>model</span><span class='k'>:</span> <span class='kt'>NgramModelToImplement</span><span class='o'>,</span> <span class='n'>tokenizedSentences</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[</span><span class='kt'>Vector</span><span class='o'>[</span><span class='kt'>String</span><span class='o'>]])</span><span class='k'>:</span> <span class='kt'>Double</span>
+</code></pre></div>
+<p>that takes a model and a <em>test</em> corpus of tokenized sentences and outputs the perplexity score given the model. <strong>Your calcuations must be in log-space, but the result should not be.</strong></p>
+
+<p><code>\[ 
+    PP(s_1, s_2, ...) = \sqrt[(\sum_i |s_i|)]{\frac{1}{\prod_i p(s_i)}}
+                      = \exp\left(\frac{-\sum_i \log(p(s_i))}{\sum_i |s_i|}\right)
+\]</code></p>
+
+<p>To test this, you can build a model of <code>alice.txt</code> and measure perplexity on the same text. Note that typically you will measure perplexity on a different text, but without smoothing, we would end up with zero probabilities and perplexity would be infinite.</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>import</span> <span class='nn'>nlp.a3.PerplexityNgramModelEvaluator</span>
+
+<span class='k'>val</span> <span class='n'>aliceText</span> <span class='k'>=</span> <span class='n'>fileTokens</span><span class='o'>(</span><span class='s'>&quot;alice.txt&quot;</span><span class='o'>)</span>
+<span class='k'>val</span> <span class='n'>trainer</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>UnsmoothedNgramModelTrainer</span><span class='o'>(</span><span class='mi'>2</span><span class='o'>)</span>
+<span class='k'>val</span> <span class='n'>aliceModel</span> <span class='k'>=</span> <span class='n'>trainer</span><span class='o'>.</span><span class='n'>train</span><span class='o'>(</span><span class='n'>aliceText</span><span class='o'>)</span>
+<span class='n'>println</span><span class='o'>(</span><span class='nc'>PerplexityNgramModelEvaluator</span><span class='o'>(</span><span class='n'>aliceModel</span><span class='o'>,</span> <span class='n'>aliceText</span><span class='o'>))</span>
+<span class='c1'>// 20.763056026820063</span>
+</code></pre></div>
+<p>Note that this gives us an extremely low perplexity, which we would expect given that we are evaluating on the training data.</p>
+
+<h3 id='commandline_interface'>Command-Line Interface</h3>
+
+<p>In order for us to run your model, you should create an object <code>nlp.a3.Ngrams</code> with a <code>main</code> method that takes three options:</p>
+
+<ul>
+<li><code>--n N</code>: the <em>n</em> to use for the <em>n</em>-gram model</li>
+
+<li><code>--train FILE</code>: The file containing the text to train on</li>
+
+<li><code>--test FILE</code>: The file containing the text to evaluate perplexity on</li>
+</ul>
+
+<p>It should train an <code>NgramModel</code> using the <code>UnsmoothedNgramModelTrainer</code>, compute a perplexity score using <code>PerplexityNgramModelEvaluator</code>, and output the score calculated. When run from the command line, you should see this:</p>
+
+<pre><code>$ sbt &quot;run-main nlp.a3.Ngrams --n 3 --train alice.txt --test alice.txt&quot;
+3.6424244121974905</code></pre>
+
+<h2 id='problem_3_add_smoothed_ngrammodeltrainer_20_points'>Problem 3: Add-λ Smoothed NgramModelTrainer (20 points)</h2>
+
+<p>To improve our ngram model, we will implement add-λ smoothing. You will implement a new <code>NgramModelTrainerToImplement</code> called <code>AddLambdaNgramModelTrainer</code>. This class will take a parameter λ and add it to each of the ngram counts, including counts of ngrams that do not appear.</p>
+
+<h3 id='default_for_conditionalprobabilitydistribution'>Default for ConditionalProbabilityDistribution</h3>
+
+<p>Of course, you will want to continue to reuse your <code>ProbabilityDistribution</code> and <code>ConditionalProbabilityDistribution</code> classes. However, you will encounter a problem with <code>ConditionalProbabilityDistribution</code> when checking the probability of a word based on a context that was never seen. In order for your <code>ConditionalProbabilityDistribution</code> class to handle this situation correctly, you should add an additional field to it for a &#8220;default&#8221; <code>ProbabilityDistribution</code> that will be used to determine probabilities when the context is not found. In other words, you should have this behavior:</p>
+
+<p><code>\[ 
+  p(B=b \mid A=a) = 
+    \left\{
+      \begin{array}{ll}
+        p(B=b \mid A=a)       &amp; \mbox{if } a \text{ is known} \\
+        p_{default}(B=b) &amp; \mbox{if } a \text{ is unknown}
+      \end{array}
+    \right.
+\]</code></p>
+
+<p>You should also update the <code>ConditionalProbabilityDistribution.sample</code> method to draw from the default distribution when the given context is unknown.</p>
+
+<p>So, if the training data contained</p>
+
+<ul>
+<li>10 instances labeled &#8220;Yes&#8221;, 7 of which had value &#8220;hello&#8221; and 3 &#8220;goodbye&#8221;</li>
+
+<li>5 instances labeled &#8220;No&#8221;, 2 of which had value &#8220;hello&#8221;, and 3 &#8220;goodbye&#8221;</li>
+
+<li>A default distribution built from 3 &#8220;hello&#8221; and 5 &#8220;goodbye&#8221;</li>
+</ul>
+
+<p>then a <code>ConditionalProbabilityDistribution</code> trained on that data might work like this:</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>import</span> <span class='nn'>nlp.a1.ProbabilityDistribution</span> 
+<span class='k'>import</span> <span class='nn'>nlp.a1.ConditionalProbabilityDistribution</span> 
+
+<span class='k'>val</span> <span class='n'>default</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>ProbabilityDistribution</span><span class='o'>(...)</span>
+<span class='k'>val</span> <span class='n'>cpd</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>ConditionalProbabilityDistribution</span><span class='o'>(...,</span> <span class='n'>default</span><span class='o'>)</span>
+
+<span class='n'>cpd</span><span class='o'>(</span><span class='s'>&quot;hello&quot;</span><span class='o'>,</span> <span class='s'>&quot;Yes&quot;</span><span class='o'>)</span>      <span class='c1'>// 0.7, since p(hello | Yes) = 7/10 = 0.7</span>
+<span class='n'>cpd</span><span class='o'>(</span><span class='s'>&quot;hello&quot;</span><span class='o'>,</span> <span class='s'>&quot;No&quot;</span><span class='o'>)</span>       <span class='c1'>// 0.4, since p(hello | No) = 2/5 = 0.4</span>
+<span class='n'>cpd</span><span class='o'>(</span><span class='s'>&quot;hello&quot;</span><span class='o'>,</span> <span class='s'>&quot;unknown&quot;</span><span class='o'>)</span>  <span class='c1'>// 0.375, since p_default(hello) = 3/8 = 0.375</span>
+
+<span class='n'>cpd</span><span class='o'>.</span><span class='n'>sample</span><span class='o'>(</span><span class='s'>&quot;Yes&quot;</span><span class='o'>)</span>     <span class='c1'>// &quot;hello&quot; (70% of the time) or &quot;goodbye&quot; (30%)</span>
+<span class='n'>cpd</span><span class='o'>.</span><span class='n'>sample</span><span class='o'>(</span><span class='s'>&quot;unknown&quot;</span><span class='o'>)</span> <span class='c1'>// &quot;hello&quot; (37.5% of the time) or &quot;goodbye&quot; (62.5%)</span>
+</code></pre></div>
+<h3 id='adding_'>Adding λ</h3>
+
+<p>In general, the add-λ smoothed probability of a word <code>\( w_0 \)</code> given the previous <em>n</em>-1 words is: <code>\[ 
+  p_{+\lambda}(w_0 \mid w_{-(n-1)}, ..., w_{-1}) = \frac{C(w_{-(n-1)}~...~w_{-1}~w_{0})+\lambda}{\sum_x (C(w_{-(n-1)}~...~w_{-1}~x)+\lambda)}
+\]</code></p>
+
+<p>For a trigram model, for example, this would be <code>\[ 
+  p_{+\lambda}(w_0 \mid w_{-2}, w_{-1}) = \frac{C(w_{-2}~w_{-1}~w_{0})+\lambda}{\sum_x (C(w_{-2}~w_{-1}~x)+\lambda)}
+                             = \frac{C(w_{-2}~w_{-1}~w_{0})+\lambda}{\left(\sum_x C(w_{-2}~w_{-1}~x)\right) + \lambda \cdot |V|}
+\]</code></p>
+
+<p>where <em>V</em> is the number of possiblities for <em>x</em>, which all the words that could potentially follow in the sequence. In our case, <em>V</em> will be the set of all known words, plus the special &#8220;end&#8221; symbol.</p>
+
+<p>However, when the context has never been seen, we have to ensure that the conditional probability distribution returns the right result. We will use the &#8220;default&#8221; distribution mentioned above for this. The default distribution that you use for your add-λ smoothed ngram model will have to return a smoothed probability of a word given that its context was never seen. But if the context (the sequence <code>\( w_{-2}~w_{-1} \)</code>) has never been seen, then <code>\( C(w_{-2}~w_{-1}~x)=0 \)</code> for any <em>x</em>, including when <code>\( w_0=x \)</code>. So, we can reduce this to: <code>\[ 
+  p_{+\lambda}(w_0 \mid w_{-2}, w_{-1}) = \frac{C(w_{-2}~w_{-1}~w_{0})+\lambda}{\left(\sum_x C(w_{-2}~w_{-1}~x)\right)+ \lambda \cdot |V|}
+                             = \frac{0+\lambda}{\left(\sum_x 0\right) + \lambda \cdot |V|}
+                             = \frac{0+\lambda}{0+\lambda \cdot |V|}
+                             = \frac{\lambda}{\lambda \cdot |V|}
+                             %= \frac{1}{1 \cdot |V|}
+                             = \frac{1}{|V|}
+\]</code></p>
+
+<p>So the probability of any word following an <em>unseen</em> sequence is uniform over the number of words.</p>
+
+<h3 id='modeling_full_texts'>Modeling full texts</h3>
+
+<p>Now you should be able to train an ngram language model and evaluate it on new texts that contain unseen</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>sbt</span> <span class='s'>&quot;run-main nlp.a3.Ngrams --n 3 --train alice.txt --lambda 1.0 --test alice.txt&quot;</span>
+<span class='c1'>// 1173.074757950973</span>
+<span class='n'>sbt</span> <span class='s'>&quot;run-main nlp.a3.Ngrams --n 3 --train alice.txt --lambda 1.0 --test lookingglass.txt&quot;</span>
+<span class='c1'>// 2179.3556392538153</span>
+<span class='n'>sbt</span> <span class='s'>&quot;run-main nlp.a3.Ngrams --n 3 --train alice.txt --lambda 1.0 --test sherlock.txt&quot;</span>
+<span class='c1'>// 3598.0431975169186</span>
+</code></pre></div>
+<blockquote>
+<p><strong>Written Answer (a):</strong> Why is the perplexity when evaluated on <code>lookingglass.txt</code> worse (higher) than <code>alice.txt</code>? Why is <code>sherlock.txt</code> worse than both?</p>
+</blockquote>
+
+<blockquote>
+<p><strong>Written Answer (b):</strong> Why is the add-λ smoothed perplexity of a model both trained and evaluated on <code>alice.txt</code> worse than the perplexity of an <em>unsmoothed</em> model on the same text with the same <em>n</em>?</p>
+</blockquote>
+
+<blockquote>
+<p><strong>Written Answer (c):</strong> Try a variety of values for λ training a trigram model on <code>alice.txt</code> and testing on <code>sherlock.txt</code>. What is the best perplexity score you find, and what λ value yields that score?</p>
+</blockquote>
+
+<blockquote>
+<p><strong>Written Answer (d):</strong> Repeat part (c) for unigram, bigram, and 4-gram models. Does each model have the same optimal λ? If not, give the best perplexity (and corresponding λ) you find for each model.</p>
+</blockquote>
+
+<h2 id='problem_4_interpolation_20_points'>Problem 4: Interpolation (20 points)</h2>
+
+<h3 id='model'>Model</h3>
+
+<p>Create a class <code>nlp.a1.InterpolatedNgramModel</code> that, again, extends <code>nlpclass.NgramModelToImplement</code>. This class should store multiple <code>NgramModelToImplement</code> subclass objects, each with an interpolation weight. The interpolation weights should sum to 1. The <code>sentenceProb</code> method should calculate the probability of a given sentence using each model, and then calculate the weighted sum of these probabilities. This is the probability of the sentence according to the interpolated model.</p>
+
+<p>Note that since each sub-model&#8217;s <code>sentenceProb</code> returns a <em>log-</em>probability, you cannot simply sum them up, since summing log probabilites is equivalent to multiplying normal probabilities. So for probabilities <em>p</em> and <em>q</em>, whose logs are <em>lp</em> and <em>lq</em>, one option would be to calculate it as <code>\( \log(\exp(lp)+\exp(lq)) \)</code>, but this would result numbers that cannot be represented as Doubles: the exact problem that we were trying to avoid by using log probabilities in the first place! Instead, we will use a formula to add log probabilities that keeps them in log-space:</p>
+
+<p><code>\[
+  logadd(x,y) = 
+    \left\{
+      \begin{array}{ll}
+        x                        &amp; \mbox{if } y = -\infty \\
+        y                        &amp; \mbox{if } x = -\infty \\
+        x + \log(1 + \exp(y-x))  &amp; \mbox{if } y \leq x \\
+        y + \log(1 + \exp(x-y))  &amp; \mbox{otherwise} \\
+      \end{array}
+    \right.
+\]</code></p>
+
+<p>Note that log(1+<em>x</em>) can more quickly and more accurately be calculated using the built-in scala function <code>math.log1p(x)</code></p>
+
+<p>So now we can add <em>p</em> and <em>q</em> in log-space as <em>logadd(lp, lq)</em>.</p>
+
+<p>To implement the <code>generate</code> method you have a few choices. The simple solution is to just generate from the highest-order sub-model. With a different structure, one could implement a more advanced solution that samples a sub-model according to the model weights (which sum to 1, making it a probability distribution) and then generates the next token from that chosen model. This more advanced version would make use of the full interpolated distribution when generating, allowing for more interesting generation.</p>
+
+<h3 id='trainer'>Trainer</h3>
+
+<p>Create a class <code>InterpolatedNgramModelTrainer</code> that extends <code>NgramModelTrainerToImplement</code>. When <code>train</code> is called on a interpolated trainer with order <em>n</em>, the method should train an <code>AddLambdaNgramModelTrainer</code> for orders 1 to <code>n</code>.</p>
+
+<p>For simplicity, you should use the same λ to smooth all the models</p>
+
+<p>Also for simplicity, we will assign weights in a very specific way: each order-<em>n</em> model will have twice the weight of the order-(<em>n</em>-1) model. So the unigram model will have weight proportional to 1, bigram proportional to 2, trigram proportional to 4, and so forth such that a model with order <em>n</em> has weight proportional to <code>\( 2^{(n-1)} \)</code>. Of course, the weights must be normalized so that they sum to 1.</p>
+
+<p>In a more sophisticated implementation you would likely want to allow a different λ and weight for each sub-model, but that is more complex than what is required for this assignment.</p>
+
+<h3 id='commandline'>Command-Line</h3>
+
+<p>Add a new option <code>--interp</code> that takes an argument <code>true</code> or <code>false</code> indicating whether the <code>InterpolatedNgramModelTrainer</code> should be used.</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>sbt</span> <span class='s'>&quot;run-main nlp.a3.Ngrams --n 3 --train alice.txt --lambda 1.0 --interp true --test alice.txt&quot;</span>
+<span class='c1'>// 351.53175535531716</span>
+<span class='n'>sbt</span> <span class='s'>&quot;run-main nlp.a3.Ngrams --n 3 --train alice.txt --lambda 1.0 --interp true --test lookingglass.txt&quot;</span>
+<span class='c1'>// 419.7316785985396</span>
+<span class='n'>sbt</span> <span class='s'>&quot;run-main nlp.a3.Ngrams --n 3 --train alice.txt --lambda 1.0 --interp true --test sherlock.txt&quot;</span>
+<span class='c1'>// 693.092620494836</span>
+</code></pre></div>
+<blockquote>
+<p><strong>Written Answer (a):</strong> Why does the interpolated model yield a lower perplexity than a simple add-λ smoothed model with the same λ?</p>
+</blockquote>
+
+<blockquote>
+<p><strong>Written Answer (b):</strong> Try a variety of values for λ training a trigram model on <code>alice.txt</code> and testing on <code>sherlock.txt</code>. What is the best perplexity score you find, and what λ value yields that score? Is it different from the normal, non-interpolated add-λ smoothed model?</p>
+</blockquote>
+
+<blockquote>
+<p><strong>Written Answer (c):</strong> Repeat part (b) for unigram, bigram, and 4-gram models. Does each model have the same optimal λ? If not, give the best perplexity (and corresponding λ) you find for each model. Are they different the normal, non-interpolated add-λ smoothed models?</p>
+</blockquote>
+
+<h2 id='problem_5_decipherment_15_points'>Problem 5: Decipherment (15 points)</h2>
+
+<p>For this problem, you will use your ngram language model implementation to break a substituion cipher. A substituion cipher is an encoding scheme in which each letter in a text is replaced with another letter. So if &#8216;a&#8217; maps to &#8216;z&#8217; and &#8216;b&#8217; maps to &#8216;r&#8217;, then a word like &#8220;Abba&#8221; would map to &#8220;Zrrz&#8221;. Note that, for simplicity, we always map capital letters and lowercase letters the same way, and that we will not change non-alphabetic characters.</p>
+
+<p>You will complete the implementation of a program that solves substituion ciphers using a language model.</p>
+
+<p>First, some terminology:</p>
+
+<ul>
+<li>plain text: some normal text</li>
+
+<li>cipher text: the enciphered version of some plain text</li>
+
+<li>cipher key: the mapping from letters to letters that was used to encipher the text</li>
+</ul>
+
+<p>Your starting point is <code>nlpclass.DecipherToImplement</code>. The program starts with some enciphered text, and the goal is to figure out what the original text was. The basic idea works like this:</p>
+
+<ol>
+<li>Build a language model from some text.</li>
+
+<li>Make an initial guess for the cipher key.</li>
+
+<li>For each pair of letters:<br />a. Swap their mappings in the current cipher key (so if we are swapping &#8216;a&#8217; and &#8216;c&#8217;, and &#8216;a&#8217; pointed to &#8216;z&#8217; and &#8216;c&#8217; pointed to &#8216;h&#8217;, then the new key would have &#8216;a&#8217; pointing to &#8216;h&#8217; and &#8216;c&#8217; pointing to &#8216;z&#8217;).<br />b. Decipher the cipher text using the new key.<br />c. Score the key by checking how much the deciphered text looks like the underlying language.</li>
+
+<li>Take the highest-scoring cipher key resulting from a letter-swap.</li>
+
+<li>Repeat steps 3-4 until the score does not improve.</li>
+</ol>
+
+<p>This is a fairly basic kind of <a href='http://en.wikipedia.org/wiki/Hill-climbing'>&#8220;hill-climbing&#8221;</a> optimization algorithm: you start at an initial point, look at each direction in which you could take a &#8220;step&#8221; (by swapping two letters), find the step that is most &#8220;uphill&#8221; (the swap that results in the best-looking deciphered text), take that step, and repeat until no improvements can be made.</p>
+
+<p>In <code>DecipherToImplement</code>, the cipher key is represented as a vector of 26 strings, where each string is a different single lowercase letter; the first letter in the vector indicates the letter that &#8216;a&#8217; maps to, the second is the mapping for &#8216;b&#8217;, etc. Texts are represented as vectors of sentences, where each sentence is a vector of string tokens.</p>
+
+<p>The program takes the following options:</p>
+
+<ul>
+<li><code>--n</code>: the order of the ngram language model</li>
+
+<li><code>--lambda</code>: the smoothing parameter for the add-λ smoothed ngram language model</li>
+
+<li><code>--train</code>: the file from which the language model will be consrtucted</li>
+
+<li><code>--trainsize</code>: the number of tokens used for training</li>
+
+<li><code>--cipher</code>: the file that will be enciphered at the start of the program</li>
+
+<li><code>--ciphersize</code>: the number of tokens in the cipher text</li>
+</ul>
+
+<p>The main method of <code>DecipherToImplement</code> starts by generating a random secret cipher key, reading <code>--ciphersize</code> number of tokens from the <code>--cipher</code> file and enciphering the text using the key. Next, it reads <code>-trainsize</code> number of tokens from the <code>--train</code> file and calls the <code>train</code> method to construct a language model. It then proceeds to iteratively try to find the best cipher key by making letter swaps and checking the deciphered output.</p>
+
+<p>You will define an <em>object</em> <code>nlp.a3.Decipher</code> that extends <code>nlpclass.DecipherToImplement</code>. You will have to implement the following methods:</p>
+<div class='highlight'><pre><code class='scala'><span class='cm'>/**</span>
+<span class='cm'> * Train an ngram language model on the given tokens</span>
+<span class='cm'> *</span>
+<span class='cm'> * @param text    Tokenized sentences to train the language model</span>
+<span class='cm'> * @param n       The order of the ngram language model</span>
+<span class='cm'> * @param lambda  The add-lambda smoothing parameter of the model</span>
+<span class='cm'> * @return        An ngram language model</span>
+<span class='cm'> */</span>
+<span class='k'>def</span> <span class='n'>train</span><span class='o'>(</span><span class='n'>text</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[</span><span class='kt'>Vector</span><span class='o'>[</span><span class='kt'>String</span><span class='o'>]],</span> <span class='n'>n</span><span class='k'>:</span> <span class='kt'>Int</span><span class='o'>,</span> <span class='n'>lambda</span><span class='k'>:</span> <span class='kt'>Double</span><span class='o'>)</span><span class='k'>:</span> <span class='kt'>NgramModelToImplement</span>
+
+<span class='cm'>/**</span>
+<span class='cm'> * Swap two letter mappings in the cipher key.</span>
+<span class='cm'> *</span>
+<span class='cm'> * @param i          The cipher key mapping position to swap with j</span>
+<span class='cm'> * @param j          The cipher key mapping position to swap with i</span>
+<span class='cm'> * @param cipherKey  The current cipher key, to be manipulated</span>
+<span class='cm'> * @return           A new cipher key, with swapped letter mappings</span>
+<span class='cm'> */</span>
+<span class='k'>def</span> <span class='n'>swapLetters</span><span class='o'>(</span><span class='n'>i</span><span class='k'>:</span> <span class='kt'>Int</span><span class='o'>,</span> <span class='n'>j</span><span class='k'>:</span> <span class='kt'>Int</span><span class='o'>,</span> <span class='n'>cipherKey</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[</span><span class='kt'>String</span><span class='o'>])</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[</span><span class='kt'>String</span><span class='o'>]</span>
+
+<span class='cm'>/**</span>
+<span class='cm'> * Assign a score for the cipher key.  The score should be based on</span>
+<span class='cm'> * how much the output of deciphering the ciphertext with the key </span>
+<span class='cm'> * looks like the underlying language.</span>
+<span class='cm'> *</span>
+<span class='cm'> * @param cipherText  Tokenized sentences that have been enciphered</span>
+<span class='cm'> * @param cipherKey   Mapping from letters to letters</span>
+<span class='cm'> * @param ngramModel  An ngram language model</span>
+<span class='cm'> * @return            A score.  (Lower is better)</span>
+<span class='cm'> */</span>
+<span class='k'>def</span> <span class='n'>scoreCipherKey</span><span class='o'>(</span><span class='n'>cipherText</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[</span><span class='kt'>Vector</span><span class='o'>[</span><span class='kt'>String</span><span class='o'>]],</span> <span class='n'>cipherKey</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[</span><span class='kt'>String</span><span class='o'>],</span> <span class='n'>ngramModel</span><span class='k'>:</span> <span class='kt'>NgramModelToImplement</span><span class='o'>)</span><span class='k'>:</span> <span class='kt'>Double</span>  
+  
+</code></pre></div>
+<p>The <code>train</code> method corresponds to step 1 above, <code>swapLetters</code> to step 3a, and <code>scoreCipherKey</code> to 3b and 3c. The <code>decipher</code> method on the trait may be useful for deciphering a text with a given key.</p>
+
+<p>The <code>train</code> method that you must implement receives tokenized sentences. However, unlike previous problem, you should train a <em>character</em> ngram model instead of a <em>word</em> model. To do this, you will treat each word as a &#8220;sentence&#8221; of letters, and train the model as such.</p>
+
+<p>You can run the decipher program from the command line:</p>
+
+<pre><code>$ sbt &quot;run-main nlp.a3.Decipher --n 3 --lambda 1.0 --train sherlock.txt --trainsize 1000 --cipher alice.txt --ciphersize 500&quot;
+[...]
+CIPHER TEXT                       DECIPHERED TEXT
+
+Ugcyabp vklxnuyd!&#39;&#39; B ta p&#39;o      `Explain yourself!&#39;&#39; I ca n&#39;t
+ugcyabp IVNUYD, B&#39;i adxabf,       explain MYSELF, I&#39;m afraid,
+nbx&#39; nabf Aybtu, `qutalnu B&#39;i     sir&#39; said Alice, `because I&#39;m
+pko ivnuyd, vkl nuu.&#39;&#39; B fk       not myself, you see.&#39;&#39; I do
+p&#39;o nuu,&#39; nabf osu                n&#39;t see,&#39; said the
+Taouxcbyyax. `B&#39;i adxabf B ta     Caterpillar. `I&#39;m afraid I ca
+p&#39;o clo bo ikxu tyuaxyv,&#39;         n&#39;t put it more clearly,&#39;
+Aybtu xucybuf huxv ckybouyv,      Alice replied very politely,
+[...]
+Alphabet:              abcdefghijklmnopqrstuvwxyz
+Deciphered:            abcdefghijklmnopqrstuvwxyz
+Final score: 45.591579702330975
+solved?: true</code></pre>
+
+<p>There are info logging messages if you want to see the progression of each of the iterations:</p>
+
+<pre><code>$ sbt -Dorg.apache.logging.log4j.level=INFO &quot;run-main nlp.a3.Decipher --n 3 --lambda 1.0 --train sherlock.txt --trainsize 1000 --cipher alice.txt --ciphersize 500&quot;
+[...]
+1: score=163.23  ` Trkmzhx dyijftmn ! &#39; &#39; H wz x&#39;v trkmzhx CDFTMN
+2: score=145.05  ` Trkmehx dyijftmn ! &#39; &#39; H we x&#39;v trkmehx CDFTMN
+3: score=132.80  ` Trkmehx dyijftmn ! &#39; &#39; H we x&#39;o trkmehx CDFTMN
+4: score=124.60  ` Trkmahx dyijftmn ! &#39; &#39; H wa x&#39;o trkmahx CDFTMN
+5: score=119.70  ` Tjkmahx dyirftmn ! &#39; &#39; H wa x&#39;o tjkmahx CDFTMN
+6: score=118.38  ` Tjkmahx dyirftmn ! &#39; &#39; H wa x&#39;o tjkmahx CDFTMN
+[...]</code></pre>
+
+<p>There are also debug logging messages if you want to see the scores from each of the potential letter swaps:</p>
+
+<pre><code>$ sbt -Dorg.apache.logging.log4j.level=DEBUG &quot;run-main nlp.a3.Decipher --n 3 --lambda 1.0 --train sherlock.txt --trainsize 1000 --cipher alice.txt --ciphersize 500&quot;
+[...]
+1: score=144.28  ` Kzcgsuj bynixkge ! &#39; &#39; U as j&#39;h kzcgsuj TBXKGE
+   n &lt;-&gt; y;  143.43;  ` Kzcgsuj bnyixkge ! &#39; &#39; U as j&#39;h kzcgsuj TBXKGE
+   d &lt;-&gt; z;  144.28;  ` Kdcgsuj bynixkge ! &#39; &#39; U as j&#39;h kdcgsuj TBXKGE
+   o &lt;-&gt; x;  136.75;  ` Kzcgsuj byniokge ! &#39; &#39; U as j&#39;h kzcgsuj TBOKGE
+   t &lt;-&gt; u;  137.47;  ` Kzcgstj bynixkge ! &#39; &#39; T as j&#39;h kzcgstj UBXKGE
+   b &lt;-&gt; d;  146.20;  ` Kzcgsuj dynixkge ! &#39; &#39; U as j&#39;h kzcgsuj TDXKGE
+   f &lt;-&gt; t;  144.70;  ` Kzcgsuj bynixkge ! &#39; &#39; U as j&#39;h kzcgsuj FBXKGE
+   g &lt;-&gt; u;  141.60;  ` Kzcusgj bynixkue ! &#39; &#39; G as j&#39;h kzcusgj TBXKUE
+   o &lt;-&gt; u;  144.71;  ` Kzcgsoj bynixkge ! &#39; &#39; O as j&#39;h kzcgsoj TBXKGE
+[...]</code></pre>
+
+<p>Because the algorithm uses a hill-climbing approach, it is possible that sometimes the program will not find the correct solution. This happens when it follows a series of swaps that seem to be leading toward a good solution, but, in actuality, ends up stuck at a cipher key that is wrong, but for which no single swap leads yields a key with a better score.</p>
+
+<blockquote>
+<p><strong>Written Answer (a):</strong> Why is a <em>character</em> ngram model more effective than a token model for this task?</p>
+</blockquote>
+
+<blockquote>
+<p><strong>Written Answer (b):</strong> Try reducing the <code>--trainsize</code> argument to use less data to train the language model. At each training size, run the program a few times and report how often it gets the right answer. Why does less data cause the program to fail more often?</p>
+</blockquote>
+
+<blockquote>
+<p><strong>Written Answer (c):</strong> Try reducing the <code>--ciphersize</code> argument to generate a smaller cipher text. At each size, run the program a few times and report how often it gets the right answer. Why does a smaller cipher text cause the program to fail more often?</p>
+</blockquote>
+
+<blockquote>
+<p><strong>Written Answer (d):</strong> Try different values for <code>--n</code>. At each <em>n</em>, run the program a few times and report how often it gets the right answer. Also report how many iterations it takes to reach that answer (use INFO logging to see iterations). What order of ngrams works the best?</p>
+</blockquote>
+
+<blockquote>
+<p><strong>Written Answer (e):</strong> For step 2, the code makes a <em>random</em> initial guess for the key. Why is it useful for this guess to be random, instead of starting with the same key every time?</p>
+</blockquote>
+
+<blockquote>
+<p><strong>Written Answer (f):</strong> What is a better strategy for coming up with an initial guess for the key than random?</p>
+</blockquote>
+
+<blockquote>
+<p><strong>Written Answer (g):</strong> Assuming you have a small <code>--trainsize</code> and <code>--ciphersize</code> that you are unable to change, what is a strategy that you could use to use to increase the likelihood of finding the right answer?</p>
+</blockquote>
+      </div>
+      <div id='footer'></div>
+    </div>
+  </body>
+</html>

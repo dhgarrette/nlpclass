@@ -1,0 +1,419 @@
+<html>
+  <head>
+    <meta content='text/html;charset=UTF-8' http-equiv='Content-Type'/>
+    <title>NLP &mdash; Assignment 4 - Hidden Markov Models</title>
+    <style type='text/css'>
+      @import '../css/default.css';
+      @import '../css/syntax.css';
+    </style>
+    <link rel="shortcut icon" href="../favicon.ico" />
+    <meta content='Natural Language Processing Class' name='subject'/>
+    <!--<link href='images/favicon.png' rel='shortcut icon'>-->
+
+    <!-- MathJax Section -->
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script>
+      MathJax.Hub.Config({
+        tex2jax: {
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+        }
+      });
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+
+  </head>
+  <body>
+    <div id='wrap'>
+      <div id='header'>
+        <img height="100" alt='NLP Class' src='../images/utexas.png'/>
+        <div class='tagline'>Natural Language Processing: Fall 2013</div>
+      </div>
+      <div id='pages'>
+        <ol class='toc'>
+          <li>NLP Class
+            <ol class="toc">
+              <li><a href='../index.html'>Home</a></li>
+              <li><a href='../syllabus.html'>Syllabus</a></li>
+              <li><a href='../schedule.html'>Schedule</a></li>
+              <li><a href='../notes'>Notes</a></li>
+              <li><a href='../requirements.html'>Assignment Requirements</a></li>
+              <li><a href='../links.html'>Links</a></li>
+            </ol>
+          </li>
+          <li>Useful Information
+            <ol class="toc">
+              <li><a href='../scala'>Scala</a></li>
+            </ol>
+          </li>
+          <li>Assignments
+            <ol class="toc">
+              <li><a href='../assignments/a0programming.html'>#0 - Programming</a></li>
+              <li><a href='../assignments/a1prob.html'>#1 - Probability</a></li>
+              <li><a href='../assignments/a2classification.html'>#2 - Classification</a></li>
+              <li><a href='../assignments/a3ngrams.html'>#3 - N-Grams</a></li>
+              <li><a href='../assignments/a4hmm.html'>#4 - HMMs</a></li>
+              <li><a href='../assignments/a5maxent.html'>#5 - MaxEnt</a></li>
+              <li><a href='../assignments/a6parsing.html'>#6 - Parsing</a></li>
+            </ol>
+          </li>
+          <li>External Links
+            <ol class="toc">
+              <li><a href='http://www.utcompling.com'>UTCL Main site</a></li>
+              <li><a href='https://courses.utexas.edu/webapps/portal/frameset.jsp?tab_tab_group_id=_11_1&url=%2Fwebapps%2Fblackboard%2Fexecute%2Flauncher%3Ftype%3DCourse%26id%3D_159651_1%26url%3D'>Blackboard</a></li>
+            </ol>
+          </li>
+        </ol>
+      </div>
+      <div id='content'>
+        <h1>Assignment 4 - Hidden Markov Models</h1>
+        <ol class="toc"><li><a href="#introduction">Introduction</a></li><li><a href="#problem_1_implement_an_unsmoothed_hmm_tagger_60_points">Problem 1: Implement an Unsmoothed HMM Tagger (60 points)</a></li><li><a href="#problem_2_add_smoothed_hmm_tagger_40_points">Problem 2: Add-λ Smoothed HMM Tagger (40 points)</a></li><li><a href="#problem_3_tag_dictionary_not_required">Problem 3: Tag Dictionary (NOT REQUIRED)</a></li><li><a href="#problem_4_pruned_tag_dictionary_not_required">Problem 4: Pruned Tag Dictionary (NOT REQUIRED)</a></li></ol>
+        <p><strong>Due: Thursday, October 31. Programming at noon. Written portions at 2pm.</strong></p>
+
+<ul>
+<li>Written portions are found throughout the assignment, and are clearly marked.</li>
+
+<li>Coding portions must be turned in via GitHub using the tag <code>a4</code>.</li>
+</ul>
+
+<h2 id='introduction'>Introduction</h2>
+
+<p>This assignment will guide you though the implementation of a Hidden Markov Model with various approaches to handling sparse data. You will apply your model to the task of part-of-speech tagging.</p>
+
+<p>To complete the homework, use the interfaces found in the class GitHub repository.</p>
+
+<ul>
+<li>Your written answers should be hand-written or printed and handed in before class. The problem descriptions clearly state where a written answer is expected.</li>
+
+<li>Programming portions should be turned in via GitHub by noon on the assignment due date.</li>
+</ul>
+
+<p>There are 100 points total in this assignment. Point values for each problem/sub-problem are given below.</p>
+
+<p>The classes used here will extend traits that are found in the <code>nlpclass-fall2013</code> dependency. In order to get these updates, you will need to edit your root <code>build.sbt</code> file and update the version of the dependency:</p>
+
+<pre><code>libraryDependencies += &quot;com.utcompling&quot; % &quot;nlpclass-fall2013_2.10&quot; % &quot;0006&quot; changing()</code></pre>
+
+<p>If you use Eclipse, then after you modify the dependency you will once again have to run <code>sbt &quot;eclipse with-source=true&quot;</code> and refresh your project in Eclipse.</p>
+
+<p><strong>If you have any questions or problems with any of the materials, don&#8217;t hesitate to ask!</strong></p>
+
+<p><strong>Tip:</strong> Look over the entire homework before starting on it. Then read through each problem carefully, in its entirety, before answering questions and doing the implementation.</p>
+
+<p>Finally: if possible, don&#8217;t print this homework out! Just read it online, which ensures you&#8217;ll be looking at the latest version of the homework (in case there are any corrections), you can easily cut-and-paste and follow links, and you won&#8217;t waste paper.</p>
+
+<h2 id='problem_1_implement_an_unsmoothed_hmm_tagger_60_points'>Problem 1: Implement an Unsmoothed HMM Tagger (60 points)</h2>
+
+<p>You will implement a Hidden Markov Model for tagging sentences with part-of-speech tags. The data we will be using comes from the <a href='http://www.cis.upenn.edu/~treebank/'>Penn Treebank</a> corpus. The list of tags used can be found <a href='http://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html'>here</a>.</p>
+
+<p>Create a class <code>nlp.a4.HiddenMarkovModel[Word, Tag]</code> that extends the trait <a href='https://github.com/utcompling/nlpclass-fall2013/blob/master/src/main/scala/nlpclass/AssignmentTraits.scala#L163'><code>nlpclass.Tagger[Word, Tag]</code></a>.</p>
+
+<p>Your class will implement two methods:</p>
+<div class='highlight'><pre><code class='scala'><span class='cm'>/**</span>
+<span class='cm'> * Compute the probability of the tagged sentence.  The result</span>
+<span class='cm'> * should be represented as a logarithm.</span>
+<span class='cm'> */</span>
+<span class='k'>def</span> <span class='n'>sentenceProb</span><span class='o'>(</span><span class='n'>sentence</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[(</span><span class='kt'>Word</span>, <span class='kt'>Tag</span><span class='o'>)])</span><span class='k'>:</span> <span class='kt'>Double</span>
+
+<span class='cm'>/**</span>
+<span class='cm'> * Accepts a sentence of word tokens and returns a sequence of </span>
+<span class='cm'> * tags corresponding to each of those words.</span>
+<span class='cm'> */</span>
+<span class='k'>def</span> <span class='n'>tagSentence</span><span class='o'>(</span><span class='n'>sentence</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[</span><span class='kt'>Word</span><span class='o'>])</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[</span><span class='kt'>Tag</span><span class='o'>]</span>
+</code></pre></div>
+<p>In order to train your model, you will implement a class <code>UnsmoothedHmmTrainer[Word, Tag]</code> that extends the trait <a href='https://github.com/utcompling/nlpclass-fall2013/blob/master/src/main/scala/nlpclass/AssignmentTraits.scala#L179'><code>nlpclass.TaggerTrainer[Word, Tag]</code></a>. It must have the following <code>train</code> method:</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>def</span> <span class='n'>train</span><span class='o'>(</span><span class='n'>taggedSentences</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[</span><span class='kt'>Vector</span><span class='o'>[(</span><span class='kt'>Word</span>, <span class='kt'>Tag</span><span class='o'>)]])</span><span class='k'>:</span> <span class='kt'>Tagger</span><span class='o'>[</span><span class='kt'>Word</span>, <span class='kt'>Tag</span><span class='o'>]</span>
+</code></pre></div>
+<p>Assuming some training dataset that contains this:</p>
+
+<pre><code>the|D man|N walks|V the|D dog|N
+the|D dog|N runs|V
+the|D dog|N walks|V
+the|D man|N walks|V
+a|D man|N saw|V the|D dog|N
+the|D cat|N walks|V</code></pre>
+
+<p>The <code>sentenceProb</code> method should compute the probability in log-space and return it as a logarithm. It should behave like this:</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>val</span> <span class='n'>trainData</span> <span class='k'>=</span> <span class='o'>...</span> <span class='n'>from</span> <span class='n'>the</span> <span class='n'>above</span> <span class='n'>data</span> <span class='o'>...</span>
+<span class='k'>val</span> <span class='n'>trainer</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>UnsmoothedHmmTrainer</span><span class='o'>[</span><span class='kt'>String</span>, <span class='kt'>String</span><span class='o'>](...)</span>
+<span class='k'>val</span> <span class='n'>model</span> <span class='k'>=</span> <span class='n'>trainer</span><span class='o'>.</span><span class='n'>train</span><span class='o'>(</span><span class='n'>trainData</span><span class='o'>)</span>
+
+<span class='k'>val</span> <span class='n'>s1</span> <span class='k'>=</span> <span class='nc'>Vector</span><span class='o'>((</span><span class='s'>&quot;the&quot;</span><span class='o'>,</span> <span class='s'>&quot;D&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;dog&quot;</span><span class='o'>,</span> <span class='s'>&quot;N&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;runs&quot;</span><span class='o'>,</span> <span class='s'>&quot;V&quot;</span><span class='o'>))</span>
+<span class='k'>val</span> <span class='n'>p1</span> <span class='k'>=</span> <span class='n'>model</span><span class='o'>.</span><span class='n'>sentenceProb</span><span class='o'>(</span><span class='n'>s1</span><span class='o'>)</span>
+<span class='n'>println</span><span class='o'>(</span><span class='n'>f</span><span class='s'>&quot;$p1%.4f  ${exp(p1)}%.4f&quot;</span><span class='o'>)</span> <span class='c1'>// -3.3116  0.0365</span>
+
+<span class='k'>val</span> <span class='n'>s2</span> <span class='k'>=</span> <span class='nc'>Vector</span><span class='o'>((</span><span class='s'>&quot;the&quot;</span><span class='o'>,</span> <span class='s'>&quot;D&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;cat&quot;</span><span class='o'>,</span> <span class='s'>&quot;N&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;runs&quot;</span><span class='o'>,</span> <span class='s'>&quot;V&quot;</span><span class='o'>))</span>
+<span class='k'>val</span> <span class='n'>p2</span> <span class='k'>=</span> <span class='n'>model</span><span class='o'>.</span><span class='n'>sentenceProb</span><span class='o'>(</span><span class='n'>s2</span><span class='o'>)</span>
+<span class='n'>println</span><span class='o'>(</span><span class='n'>f</span><span class='s'>&quot;$p2%.4f  ${exp(p2)}%.4f&quot;</span><span class='o'>)</span> <span class='c1'>// -4.6979  0.0091</span>
+
+<span class='k'>val</span> <span class='n'>s3</span> <span class='k'>=</span> <span class='nc'>Vector</span><span class='o'>((</span><span class='s'>&quot;the&quot;</span><span class='o'>,</span> <span class='s'>&quot;D&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;man&quot;</span><span class='o'>,</span> <span class='s'>&quot;N&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;held&quot;</span><span class='o'>,</span> <span class='s'>&quot;V&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;the&quot;</span><span class='o'>,</span> <span class='s'>&quot;D&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;saw&quot;</span><span class='o'>,</span> <span class='s'>&quot;N&quot;</span><span class='o'>))</span>
+<span class='k'>val</span> <span class='n'>p3</span> <span class='k'>=</span> <span class='n'>model</span><span class='o'>.</span><span class='n'>sentenceProb</span><span class='o'>(</span><span class='n'>s3</span><span class='o'>)</span>
+<span class='n'>println</span><span class='o'>(</span><span class='n'>f</span><span class='s'>&quot;$p3%.4f  ${exp(p3)}%.4f&quot;</span><span class='o'>)</span> <span class='c1'>// -Infinity  0.0000</span>
+</code></pre></div>
+<p>The <code>tagSentence</code> method should implement the Viterbi algorithm to find the most likely tag sequence for a given sentence. It should behave like this:</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>println</span><span class='o'>(</span><span class='n'>model</span><span class='o'>.</span><span class='n'>tagSentence</span><span class='o'>(</span><span class='s'>&quot;the dog runs&quot;</span><span class='o'>.</span><span class='n'>split</span><span class='o'>(</span><span class='s'>&quot;\\s+&quot;</span><span class='o'>).</span><span class='n'>toVector</span><span class='o'>))</span>
+<span class='c1'>// Vector(D, N, V)</span>
+<span class='n'>println</span><span class='o'>(</span><span class='n'>model</span><span class='o'>.</span><span class='n'>tagSentence</span><span class='o'>(</span><span class='s'>&quot;the cat runs&quot;</span><span class='o'>.</span><span class='n'>split</span><span class='o'>(</span><span class='s'>&quot;\\s+&quot;</span><span class='o'>).</span><span class='n'>toVector</span><span class='o'>))</span>
+<span class='c1'>// Vector(D, N, V)</span>
+</code></pre></div>
+<p>Here are the viterbi tables for each of these sentences, with backpointers for each non-zero cell:</p>
+<table>
+  <tr> <td>                  </td>  <td><b>&lt;S&gt;</b></td><td />  <td><b>the</b>        </td>  <td><b>dog</b></td>  <td><b>runs</b></td>  <td><b>&lt;E&gt;</b></td> </tr>
+  <tr> <td> <b>&lt;S&gt;</b> </td>  <td>0.0             </td><td />  <td>                  </td>  <td>          </td>  <td>           </td>  <td>                </td> </tr>
+  <tr> <td> <b>D</b>         </td>  <td>                </td><td />  <td>-0.1335, &lt;S&gt;</td>  <td>-Infinity </td>  <td>-Infinity  </td>  <td>                </td> </tr>
+  <tr> <td> <b>N</b>         </td>  <td>                </td><td />  <td>-Infinity         </td>  <td>-0.8267, D</td>  <td>-Infinity  </td>  <td>                </td> </tr>
+  <tr> <td> <b>V</b>         </td>  <td>                </td><td />  <td>-Infinity         </td>  <td>-Infinity </td>  <td>-2.9061, N </td>  <td>                </td> </tr>
+  <tr> <td> <b>&lt;E&gt;</b> </td>  <td>                </td><td />  <td>                  </td>  <td>          </td>  <td>           </td>  <td>-3.3116, V      </td> </tr>
+</table>
+<p>&#160; <br /><table>
+  <tr> <td>                  </td>  <td><b>&lt;S&gt;</b></td><td />  <td><b>the</b>        </td>  <td><b>cat</b></td>  <td><b>runs</b></td>  <td><b>&lt;E&gt;</b></td> </tr>
+  <tr> <td> <b>&lt;S&gt;</b> </td>  <td>0.0             </td><td />  <td>                  </td>  <td>          </td>  <td>           </td>  <td>                </td> </tr>
+  <tr> <td> <b>D</b>         </td>  <td>                </td><td />  <td>-0.1335, &lt;S&gt;</td>  <td>-Infinity </td>  <td>-Infinity  </td>  <td>                </td> </tr>
+  <tr> <td> <b>N</b>         </td>  <td>                </td><td />  <td>-Infinity         </td>  <td>-2.2130, D</td>  <td>-Infinity  </td>  <td>                </td> </tr>
+  <tr> <td> <b>V</b>         </td>  <td>                </td><td />  <td>-Infinity         </td>  <td>-Infinity </td>  <td>-4.2924, N </td>  <td>                </td> </tr>
+  <tr> <td> <b>&lt;E&gt;</b> </td>  <td>                </td><td />  <td>                  </td>  <td>          </td>  <td>           </td>  <td>-4.6967, V      </td> </tr>
+</table></p>
+
+<p>Testing on the <code>ptbtag</code> data should behave like this:</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>val</span> <span class='n'>trainData</span> <span class='k'>=</span> <span class='o'>...</span> <span class='n'>read</span> <span class='n'>from</span> <span class='n'>ptbtag</span><span class='o'>/</span><span class='n'>train</span><span class='o'>.</span><span class='n'>txt</span> <span class='o'>...</span>
+<span class='k'>val</span> <span class='n'>trainer</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>UnsmoothedHmmTrainer</span><span class='o'>[</span><span class='kt'>String</span>, <span class='kt'>String</span><span class='o'>](...)</span>
+<span class='k'>val</span> <span class='n'>model</span> <span class='k'>=</span> <span class='n'>trainer</span><span class='o'>.</span><span class='n'>train</span><span class='o'>(</span><span class='n'>trainData</span><span class='o'>)</span>
+<span class='k'>val</span> <span class='n'>s</span> <span class='k'>=</span> <span class='nc'>Vector</span><span class='o'>((</span><span class='s'>&quot;The&quot;</span><span class='o'>,</span><span class='s'>&quot;DT&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;man&quot;</span><span class='o'>,</span><span class='s'>&quot;NN&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;saw&quot;</span><span class='o'>,</span><span class='s'>&quot;VBD&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;a&quot;</span><span class='o'>,</span><span class='s'>&quot;DT&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;house&quot;</span><span class='o'>,</span><span class='s'>&quot;NN&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;.&quot;</span><span class='o'>,</span><span class='s'>&quot;.&quot;</span><span class='o'>))</span>
+
+<span class='n'>model</span><span class='o'>.</span><span class='n'>sentenceProb</span><span class='o'>(</span><span class='n'>s</span><span class='o'>)</span>
+<span class='c1'>// -34.38332797005687</span>
+
+<span class='n'>model</span><span class='o'>.</span><span class='n'>tagSentence</span><span class='o'>(</span><span class='s'>&quot;The man saw a house .&quot;</span><span class='o'>.</span><span class='n'>split</span><span class='o'>(</span><span class='s'>&quot;\\s+&quot;</span><span class='o'>).</span><span class='n'>toVector</span><span class='o'>)</span>
+<span class='c1'>// Vector(DT, NN, VBD, DT, NN, .)</span>
+</code></pre></div>
+<p>Finally, you should create an object <code>nlp.a4.Hmm</code> with a main method. The program should accept the following parameters:</p>
+
+<ul>
+<li><code>--train FILE</code>, which specifies a file of pos-tagged sentences for training</li>
+
+<li><code>--test FILE</code>, which specifies a file of pos-tagged sentences for evaluation</li>
+</ul>
+
+<p>The main method should output the accuracy of the tagger as the percentage of tokens that are labeled correctly. It should also output an ordered list of the top ten most frequent mistakes made by the tagger showing the &#8220;gold&#8221; tag (what the tag should have been), the &#8220;model&#8221; tag (what the model outputed), and the number of times that specific mistagging occurred.</p>
+
+<p>You should get this output from this command:</p>
+
+<pre><code>$ sbt &quot;run-main nlp.a4.Hmm --train ptbtag/train.txt --test ptbtag/dev.txt&quot;
+Accuracy: 64.82  (58191/89773)
+count  gold  model
+ 4820    NN     IN
+ 3865   NNP     IN
+ 2295    DT     IN
+ 2160    JJ     IN
+ 2105   NNS     IN
+ 2098     ,     IN
+ 1824     .     IN
+ 1699    CD     IN
+  977   VBD     IN
+  941    CC     IN</code></pre>
+
+<p>(Mine runs in 85 sec. Avg time to tag a sentence: 0.0212 sec)</p>
+
+<p><strong>It&#8217;s possible that your numbers won&#8217;t match this exactly since there could be some randomness in choosing equally-likely tags</strong></p>
+
+<blockquote>
+<p><strong>Written Answer (a):</strong> Why does the error report say that the model is outputting the same tag (in this case, &#8220;IN&#8221;) so often?</p>
+</blockquote>
+
+<h2 id='problem_2_add_smoothed_hmm_tagger_40_points'>Problem 2: Add-λ Smoothed HMM Tagger (40 points)</h2>
+
+<p>Implement a class <code>AddLambdaSmoothedHmmTrainer[Word, Tag]</code> that extends the trait <a href='https://github.com/utcompling/nlpclass-fall2013/blob/master/src/main/scala/nlpclass/AssignmentTraits.scala#L179'><code>nlpclass.TaggerTrainer[Word, Tag]</code></a></p>
+
+<p>With λ=0.1, you should see behavior like this:</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>val</span> <span class='n'>trainData</span> <span class='k'>=</span> <span class='o'>...</span> <span class='n'>from</span> <span class='n'>the</span> <span class='n'>above</span> <span class='n'>data</span> <span class='o'>...</span>
+<span class='k'>val</span> <span class='n'>trainer</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>AddLambdaSmoothedHmmTrainer</span><span class='o'>[</span><span class='kt'>String</span>, <span class='kt'>String</span><span class='o'>](...)</span>
+<span class='k'>val</span> <span class='n'>model</span> <span class='k'>=</span> <span class='n'>trainer</span><span class='o'>.</span><span class='n'>train</span><span class='o'>(</span><span class='n'>trainData</span><span class='o'>)</span>
+
+<span class='k'>val</span> <span class='n'>s1</span> <span class='k'>=</span> <span class='nc'>Vector</span><span class='o'>((</span><span class='s'>&quot;the&quot;</span><span class='o'>,</span> <span class='s'>&quot;D&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;dog&quot;</span><span class='o'>,</span> <span class='s'>&quot;N&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;runs&quot;</span><span class='o'>,</span> <span class='s'>&quot;V&quot;</span><span class='o'>))</span>
+<span class='k'>val</span> <span class='n'>p1</span> <span class='k'>=</span> <span class='n'>model</span><span class='o'>.</span><span class='n'>sentenceProb</span><span class='o'>(</span><span class='n'>s1</span><span class='o'>)</span>
+<span class='n'>println</span><span class='o'>(</span><span class='n'>f</span><span class='s'>&quot;$p1%.4f  ${exp(p1)}%.4f&quot;</span><span class='o'>)</span> <span class='c1'>// -3.6339  0.0264</span>
+
+<span class='k'>val</span> <span class='n'>s2</span> <span class='k'>=</span> <span class='nc'>Vector</span><span class='o'>((</span><span class='s'>&quot;the&quot;</span><span class='o'>,</span> <span class='s'>&quot;D&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;cat&quot;</span><span class='o'>,</span> <span class='s'>&quot;N&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;runs&quot;</span><span class='o'>,</span> <span class='s'>&quot;V&quot;</span><span class='o'>))</span>
+<span class='k'>val</span> <span class='n'>p2</span> <span class='k'>=</span> <span class='n'>model</span><span class='o'>.</span><span class='n'>sentenceProb</span><span class='o'>(</span><span class='n'>s2</span><span class='o'>)</span>
+<span class='n'>println</span><span class='o'>(</span><span class='n'>f</span><span class='s'>&quot;$p2%.4f  ${exp(p2)}%.4f&quot;</span><span class='o'>)</span> <span class='c1'>// -4.9496  0.0071</span>
+
+<span class='k'>val</span> <span class='n'>s3</span> <span class='k'>=</span> <span class='nc'>Vector</span><span class='o'>((</span><span class='s'>&quot;the&quot;</span><span class='o'>,</span> <span class='s'>&quot;D&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;man&quot;</span><span class='o'>,</span> <span class='s'>&quot;N&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;held&quot;</span><span class='o'>,</span> <span class='s'>&quot;V&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;the&quot;</span><span class='o'>,</span> <span class='s'>&quot;D&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;saw&quot;</span><span class='o'>,</span> <span class='s'>&quot;N&quot;</span><span class='o'>))</span>
+<span class='k'>val</span> <span class='n'>p3</span> <span class='k'>=</span> <span class='n'>model</span><span class='o'>.</span><span class='n'>sentenceProb</span><span class='o'>(</span><span class='n'>s3</span><span class='o'>)</span>
+<span class='n'>println</span><span class='o'>(</span><span class='n'>f</span><span class='s'>&quot;$p3%.4f  ${exp(p3)}%.4f&quot;</span><span class='o'>)</span> <span class='c1'>// -13.0951  0.0000</span>
+
+<span class='n'>model</span><span class='o'>.</span><span class='n'>tagSentence</span><span class='o'>(</span><span class='s'>&quot;the dog runs&quot;</span><span class='o'>.</span><span class='n'>split</span><span class='o'>(</span><span class='s'>&quot;\\s+&quot;</span><span class='o'>).</span><span class='n'>toVector</span><span class='o'>)</span>
+<span class='c1'>// Vector(D, N, V)</span>
+<span class='n'>model</span><span class='o'>.</span><span class='n'>tagSentence</span><span class='o'>(</span><span class='s'>&quot;the cat runs&quot;</span><span class='o'>.</span><span class='n'>split</span><span class='o'>(</span><span class='s'>&quot;\\s+&quot;</span><span class='o'>).</span><span class='n'>toVector</span><span class='o'>)</span>
+<span class='c1'>// Vector(D, N, V)</span>
+<span class='n'>model</span><span class='o'>.</span><span class='n'>tagSentence</span><span class='o'>(</span><span class='s'>&quot;the man held the saw&quot;</span><span class='o'>.</span><span class='n'>split</span><span class='o'>(</span><span class='s'>&quot;\\s+&quot;</span><span class='o'>).</span><span class='n'>toVector</span><span class='o'>)</span>
+<span class='c1'>// Vector(D, N, V, D, N)</span>
+</code></pre></div>
+<p>Here are the viterbi tables for each of these sentences, with backpointers for each non-zero cell:</p>
+<table>
+  <tr> <td>                  </td>  <td><b>&lt;S&gt;</b></td><td />  <td><b>the</b>        </td>  <td><b>dog</b></td>  <td><b>runs</b></td>  <td><b>&lt;E&gt;</b></td> </tr>
+  <tr> <td> <b>&lt;S&gt;</b> </td>  <td>0.0             </td><td />  <td>                  </td>  <td>          </td>  <td>           </td>  <td>                </td> </tr>
+  <tr> <td> <b>D</b>         </td>  <td>                </td><td />  <td>-0.2469, &lt;S&gt;</td>  <td>-9.1551, D</td>  <td>-9.9552, N </td>  <td>                </td> </tr>
+  <tr> <td> <b>N</b>         </td>  <td>                </td><td />  <td>-8.6205, &lt;S&gt;</td>  <td>-1.0471, D</td>  <td>-9.9552, N </td>  <td>                </td> </tr>
+  <tr> <td> <b>V</b>         </td>  <td>                </td><td />  <td>-8.3626, &lt;S&gt;</td>  <td>-8.8972, D</td>  <td>-3.1886, N </td>  <td>                </td> </tr>
+  <tr> <td> <b>&lt;E&gt;</b> </td>  <td>                </td><td />  <td>                  </td>  <td>          </td>  <td>           </td>  <td>-3.6339, V      </td> </tr>
+</table>
+<p>&#160; <br /><table>
+  <tr> <td>                  </td>  <td><b>&lt;S&gt;</b></td><td />  <td><b>the</b>        </td>  <td><b>cat</b></td>  <td><b>runs</b></td>  <td><b>&lt;E&gt;</b></td> </tr>
+  <tr> <td> <b>&lt;S&gt;</b> </td>  <td>0.0             </td><td />  <td>                  </td>  <td>          </td>  <td>           </td>  <td>                </td> </tr>
+  <tr> <td> <b>D</b>         </td>  <td>                </td><td />  <td>-0.2469, &lt;S&gt;</td>  <td>-9.1551, D</td>  <td>-11.2709, N</td>  <td>                </td> </tr>
+  <tr> <td> <b>N</b>         </td>  <td>                </td><td />  <td>-8.6205, &lt;S&gt;</td>  <td>-2.3627, D</td>  <td>-11.2709, N</td>  <td>                </td> </tr>
+  <tr> <td> <b>V</b>         </td>  <td>                </td><td />  <td>-8.3626, &lt;S&gt;</td>  <td>-8.8972, D</td>  <td> -4.5043, N</td>  <td>                </td> </tr>
+  <tr> <td> <b>&lt;E&gt;</b> </td>  <td>                </td><td />  <td>                  </td>  <td>          </td>  <td>           </td>  <td>-4.9496, V      </td> </tr>
+</table></p>
+
+<p>Testing on the <code>ptbtag</code> data with λ=1.0 should behave like this:</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>val</span> <span class='n'>trainData</span> <span class='k'>=</span> <span class='o'>...</span> <span class='n'>read</span> <span class='n'>from</span> <span class='n'>ptbtag</span><span class='o'>/</span><span class='n'>train</span><span class='o'>.</span><span class='n'>txt</span> <span class='o'>...</span>
+<span class='k'>val</span> <span class='n'>trainer</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>AddLambdaSmoothedHmmTrainer</span><span class='o'>[</span><span class='kt'>String</span>, <span class='kt'>String</span><span class='o'>](...)</span>
+<span class='k'>val</span> <span class='n'>model</span> <span class='k'>=</span> <span class='n'>trainer</span><span class='o'>.</span><span class='n'>train</span><span class='o'>(</span><span class='n'>trainData</span><span class='o'>)</span>
+<span class='k'>val</span> <span class='n'>s</span> <span class='k'>=</span> <span class='nc'>Vector</span><span class='o'>((</span><span class='s'>&quot;The&quot;</span><span class='o'>,</span><span class='s'>&quot;DT&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;man&quot;</span><span class='o'>,</span><span class='s'>&quot;NN&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;saw&quot;</span><span class='o'>,</span><span class='s'>&quot;VBD&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;a&quot;</span><span class='o'>,</span><span class='s'>&quot;DT&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;house&quot;</span><span class='o'>,</span><span class='s'>&quot;NN&quot;</span><span class='o'>),</span> <span class='o'>(</span><span class='s'>&quot;.&quot;</span><span class='o'>,</span><span class='s'>&quot;.&quot;</span><span class='o'>))</span>
+<span class='n'>model</span><span class='o'>.</span><span class='n'>sentenceProb</span><span class='o'>(</span><span class='n'>s</span><span class='o'>)</span>
+<span class='c1'>// -37.56746722307677</span>
+<span class='n'>model</span><span class='o'>.</span><span class='n'>tagSentence</span><span class='o'>(</span><span class='s'>&quot;The man saw a house .&quot;</span><span class='o'>.</span><span class='n'>split</span><span class='o'>(</span><span class='s'>&quot;\\s+&quot;</span><span class='o'>).</span><span class='n'>toVector</span><span class='o'>)</span>
+<span class='c1'>// Vector(DT, NN, VBD, DT, NN, .)</span>
+</code></pre></div>
+<p>Add the option <code>--lambda</code> to your <code>main</code> method to specify the amount of smoothing.</p>
+
+<pre><code>$ sbt &quot;run-main nlp.a4.Hmm --train ptbtag/train.txt --test ptbtag/dev.txt --lambda 1.0&quot;
+Accuracy: 92.13  (82704/89773)
+count  gold  model
+  349    NN     JJ
+  241   NNP     JJ
+  206    NN    NNP
+  159   NNP     NN
+  159    JJ     NN
+  157    RB     IN
+  153   NNS     NN
+  151  NNPS    NNP
+  142   VBG     NN
+  136    JJ     DT</code></pre>
+
+<p>(Mine runs in 87 sec. Avg time to tag a sentence: 0.0216 sec)</p>
+
+<blockquote>
+<p><strong>Written Answer (a):</strong> Experiment with different values for <code>--lambda</code>. Report your findings on <strong>ptbtag/dev.txt</strong>.</p>
+</blockquote>
+
+<blockquote>
+<p><strong>Written Answer (b):</strong> Using the best value found on ptbdev/dev.txt, report your results on <strong>test.txt</strong>.</p>
+</blockquote>
+
+<h2 id='problem_3_tag_dictionary_not_required'>Problem 3: Tag Dictionary (NOT REQUIRED)</h2>
+
+<p>In order to improve your tagger, you will now update your implementation to allow for the specification of a <strong>tag dictionary</strong>. A tag dictionary is a mapping from word types to sets of their potential tags. For example, <em>the</em> may point to the set <em>{DT}</em>, while <em>walks</em> may point to <em>{VBZ, NNS}</em>.</p>
+
+<p>You may want to represent your tag dictionary with something like the following:</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>case</span> <span class='k'>class</span> <span class='nc'>TagDictionary</span><span class='o'>[</span><span class='kt'>Word</span>, <span class='kt'>Tag</span><span class='o'>](</span><span class='n'>map</span><span class='k'>:</span> <span class='kt'>Map</span><span class='o'>[</span><span class='kt'>Word</span>, <span class='kt'>Set</span><span class='o'>[</span><span class='kt'>Tag</span><span class='o'>]],</span> <span class='n'>allTags</span><span class='k'>:</span> <span class='kt'>Set</span><span class='o'>[</span><span class='kt'>Tag</span><span class='o'>])</span> <span class='o'>{</span>
+  <span class='k'>def</span> <span class='n'>apply</span><span class='o'>(</span><span class='n'>w</span><span class='k'>:</span> <span class='kt'>Word</span><span class='o'>)</span><span class='k'>:</span> <span class='kt'>Set</span><span class='o'>[</span><span class='kt'>Tag</span><span class='o'>]</span> <span class='k'>=</span> <span class='n'>map</span><span class='o'>.</span><span class='n'>getOrElse</span><span class='o'>(</span><span class='n'>w</span><span class='o'>,</span> <span class='n'>allTags</span><span class='o'>)</span>
+<span class='o'>}</span>
+</code></pre></div>
+<p>You should update your <strong>trainer</strong> to have a parameter that determines whether a tag dictionary should be used. If this parameter says so, then the trainer should create a tag dictionary based on the training data. So the tag dictionary entry for a particular word will be the set of all tags that were seen with that word in the training data. If a word was never seen in the training corpus, then you should assume that it can take <em>any</em> tag (except the special start or end tags). Also ensure that the only valid tag for the start word is the start tag and likewise for the end word/tag.</p>
+
+<p>You should also update your <strong>model</strong> to have the newly-constructed tag dictionary as a parameter for use during tagging. In other words, you should use the tag dictionary to restrict your search for the best tag for each word.</p>
+
+<p>Then update your command-line interface to allow for a tag dictionary option:</p>
+
+<ul>
+<li><code>--tagdict true|false</code>, which specifies whether a tag dictionary should be used</li>
+</ul>
+
+<p>If the <code>--tagdict</code> parameter is <code>false</code> or not specified, then no tag dictionary should be used. Note that this is equivalent to having an empty tag dictionary, where every word is mapped to the set of all tags.</p>
+
+<p>You should be able to run your code like this:</p>
+
+<pre><code>$ sbt &quot;run-main nlp.a4.Hmm --train ptbtag/train.txt --test ptbtag/dev.txt --tagdict true&quot;
+Accuracy: 84.02  (75430/89773)
+count  gold  model
+ 1238    DT     JJ
+ 1232   NNP     IN
+  793    NN     JJ
+  786    CC     IN
+  717    DT     IN
+  698    TO     IN
+  632   VBD    VBN
+  443    JJ     IN
+  434    CD     IN
+  430   NNP     NN</code></pre>
+
+<p>(Mine runs in 7 sec. Avg time to tag a sentence: 0.0005 sec)</p>
+
+<p><strong>It&#8217;s possible that your numbers won&#8217;t match this exactly since there could be some randomness in choosing equally-likely tags</strong></p>
+
+<blockquote>
+<p><strong>Written Answer (a):</strong> Why are the results so dramatically better when the tag dictionary is used on an unsmoothed HMM?</p>
+</blockquote>
+
+<p>With smoothing, things are slightly trickier. If a word was unseen during training (ie, it doesn&#8217;t appear in the tag dictionary), then we still assume it can have any tag (except start/end). But if a word <em>is</em> in the tag dictionary, we want to restrict it accordingly, even after smoothing. This is not hard to represent in the tag dictionary, but our emission distribution maps from tags to words, not words to tags. Therefore, the emission distribution for a tag <em>t</em> is a smoothed distribution over all words whose tag dictionary entries contain <em>t</em>, as well as any words not appearing in the tag dictionary (since they must be allowed with any tag), and <em>specifically excluding</em> and words that appear in the tag dictionary but for which $t$ is not in their entry.</p>
+
+<p>You should be able to run your smoothed code like this:</p>
+
+<pre><code>$ sbt &quot;run-main nlp.a4.Hmm --train ptbtag/train.txt --test ptbtag/dev.txt --tagdict true --lambda 1.0&quot;
+Accuracy: 93.34  (83794/89773)
+count  gold  model
+  386   NNP   SBAR
+  384   NNP   NNPS
+  290    NN     JJ
+  202   VBD    VBN
+  160    NN    NNP
+  140    IN     RB
+  126    NN   SBAR
+  125   VBN    VBD
+  122    JJ   SBAR
+  120    JJ     NN</code></pre>
+
+<p>(Mine runs in 8 sec. Avg time to tag a sentence: 0.0005 sec)</p>
+
+<h2 id='problem_4_pruned_tag_dictionary_not_required'>Problem 4: Pruned Tag Dictionary (NOT REQUIRED)</h2>
+
+<p>Unfortunately, it is the case that the Penn Treebank corpus contains a large number of tagging mistakes. As an example, the word <em>the</em> is actually tagged with several tags other than <em>DT</em>, even though it is reasonable for the tagger to always assign <em>DT</em> to <em>the</em>. These mistakes can lead to confusion in the tagger when it is trying to handle ambiguous words.</p>
+
+<p>To help the tagger, we can implement a simple strategy for cleaning up the tag dictionary: remove low-probability tags. So, for a given word, we can remove any tags that occur less than, for example, 10% of the time. This will remove tags that were mistakenly used on a word, since those mistakes will likely be seen very few times relative to the number of times the word appears.</p>
+
+<p>You should add a parameter <code>--tdcutoff</code> that is used to determine the minimum percentage that a tag must occur. So <code>--tdcutoff 0.1</code> will remove any tags that occur less than 10% of the time for a given word. (If the <code>--tdcutoff</code> parameter is given, but <code>--tagdict</code> is not, then assume <code>--tagdict</code> is <code>true</code>.)</p>
+
+<pre><code>$ sbt &quot;run-main nlp.a4.Hmm --train ptbtag/train.txt --test ptbtag/dev.txt --tagdict true --tdcutoff 0.1&quot;
+Accuracy: 91.35  (82009/89773)
+count  gold  model
+ 1226   NNP     IN
+  455   VBD    VBN
+  436    JJ     IN
+  434    CD     IN
+  420    NN     IN
+  393    NN     JJ
+  264    VB     NN
+  254   NNS     IN
+  217    RB     IN
+  168   NNP     JJ</code></pre>
+
+<p>(Mine runs in 7 sec. Avg time to tag a sentence: 0.0004 sec)</p>
+
+<p>When smoothing, you will apply the same technique as above.</p>
+
+<pre><code>$ sbt &quot;run-main nlp.a4.Hmm --train ptbtag/train.txt --test ptbtag/dev.txt --tagdict true --tdcutoff 0.1 --lambda 1.0&quot;
+Accuracy: 93.40  (83846/89773)
+count  gold  model
+  470   NNP   NNPS
+  313    NN     JJ
+  257   NNP     LS
+  212   VBD    VBN
+  159    NN    NNP
+  143   VBN    VBD
+  126    IN     RB
+  121    JJ     NN
+  108    RB     IN
+  105   NNP     JJ</code></pre>
+
+<p>(Mine runs in 7 sec. Avg time to tag a sentence: 0.0004 sec)</p>
+      </div>
+      <div id='footer'></div>
+    </div>
+  </body>
+</html>

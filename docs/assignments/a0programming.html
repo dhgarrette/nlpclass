@@ -1,0 +1,432 @@
+<html>
+  <head>
+    <meta content='text/html;charset=UTF-8' http-equiv='Content-Type'/>
+    <title>NLP &mdash; Assignment 0 - Programming in Scala</title>
+    <style type='text/css'>
+      @import '../css/default.css';
+      @import '../css/syntax.css';
+    </style>
+    <link rel="shortcut icon" href="../favicon.ico" />
+    <meta content='Natural Language Processing Class' name='subject'/>
+    <!--<link href='images/favicon.png' rel='shortcut icon'>-->
+
+    <!-- MathJax Section -->
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script>
+      MathJax.Hub.Config({
+        tex2jax: {
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+        }
+      });
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+
+  </head>
+  <body>
+    <div id='wrap'>
+      <div id='header'>
+        <img height="100" alt='NLP Class' src='../images/utexas.png'/>
+        <div class='tagline'>Natural Language Processing: Fall 2013</div>
+      </div>
+      <div id='pages'>
+        <ol class='toc'>
+          <li>NLP Class
+            <ol class="toc">
+              <li><a href='../index.html'>Home</a></li>
+              <li><a href='../syllabus.html'>Syllabus</a></li>
+              <li><a href='../schedule.html'>Schedule</a></li>
+              <li><a href='../notes'>Notes</a></li>
+              <li><a href='../requirements.html'>Assignment Requirements</a></li>
+              <li><a href='../links.html'>Links</a></li>
+            </ol>
+          </li>
+          <li>Useful Information
+            <ol class="toc">
+              <li><a href='../scala'>Scala</a></li>
+            </ol>
+          </li>
+          <li>Assignments
+            <ol class="toc">
+              <li><a href='../assignments/a0programming.html'>#0 - Programming</a></li>
+              <li><a href='../assignments/a1prob.html'>#1 - Probability</a></li>
+              <li><a href='../assignments/a2classification.html'>#2 - Classification</a></li>
+              <li><a href='../assignments/a3ngrams.html'>#3 - N-Grams</a></li>
+              <li><a href='../assignments/a4hmm.html'>#4 - HMMs</a></li>
+              <li><a href='../assignments/a5maxent.html'>#5 - MaxEnt</a></li>
+              <li><a href='../assignments/a6parsing.html'>#6 - Parsing</a></li>
+            </ol>
+          </li>
+          <li>External Links
+            <ol class="toc">
+              <li><a href='http://www.utcompling.com'>UTCL Main site</a></li>
+              <li><a href='https://courses.utexas.edu/webapps/portal/frameset.jsp?tab_tab_group_id=_11_1&url=%2Fwebapps%2Fblackboard%2Fexecute%2Flauncher%3Ftype%3DCourse%26id%3D_159651_1%26url%3D'>Blackboard</a></li>
+            </ol>
+          </li>
+        </ol>
+      </div>
+      <div id='content'>
+        <h1>Assignment 0 - Programming in Scala</h1>
+        <ol class="toc"><li><a href="#overview">Overview</a></li><li><a href="#part_1_getting_set_up">Part 1: Getting set up</a></li><li><a href="#part_2_counting_words">Part 2: Counting words</a></li><li><a href="#part_3_removing_stopwords">Part 3: Removing stopwords</a></li><li><a href="#part_4_word_count_distribution">Part 4: Word count distribution</a></li><li><a href="#part_5_counting_ngrams">Part 5: Counting n-grams</a></li><li><a href="#part_6_reading_a_data_file">Part 6: Reading a data file</a></li></ol>
+        <p><strong>Due: Tuesday, September 10, noon</strong></p>
+
+<p>This course will require you to complete several non-trivial programming assignments. As such, to be successful in this class you must be comfortable programming. The primary purpose of this assignment is for you to ensure that you have at least a minimum level programming competence.</p>
+
+<p><strong>All of the programming assignments for the rest of the course will be more difficult than this one. If you find this assignment excessively difficult, then this course may not be for you.</strong></p>
+
+<p>If you have questions, or want to discuss whether you think the course is a good fit for you, please do not hesitate to talk to me.</p>
+
+<h2 id='overview'>Overview</h2>
+
+<p>In this assignment, you will write code for reading texts from file and calculating basic statistics about that data. This code will be used in subsequent programming assignments since all future assignments will require working with texts.</p>
+
+<p>In the root of your repository, create a file called <code>Assignment0_README.md</code> that contains:</p>
+
+<ul>
+<li>A short overview of what you&#8217;ve done</li>
+
+<li>A list of files relevant to this assignment</li>
+
+<li>Any commands needed to demonstrate your programs</li>
+</ul>
+
+<p>Send an email by noon on the due date to both me (dhg@cs.utexas.edu) and Lewis (lewfish@cs.utexas.edu) when your code is checked in, pushed, and ready for grading. The <strong>subject</strong> of your email should be:</p>
+
+<blockquote>
+<p>nlpclass-fall2013 a0 completed lastname firstname</p>
+</blockquote>
+
+<p>You are highly encouraged to make your code as modular as possible, to facilitate reuse. Functions like reading a file, cleaning it up, and counting things are going to be used all the time in this course. Having easy-to-call functions for these operations in your code will serve you well.</p>
+
+<p>You may discuss programming assignments with your classmates. And google is an invaluable programming asset (in school and in the real world), so use it well. But avoid looking for exact answers on google or having classmates give you exact solutions. And <em>please</em> don&#8217;t post these assignments to StackOverflow asking people to do your work for you. The point of these programming assignments is to reinforce the material; copying and pasting from the internet defeats that purpose. The goal is to learn something, to practice programming, to develop critical thinking skills, and, hopefully, to have fun.</p>
+
+<h2 id='part_1_getting_set_up'>Part 1: Getting set up</h2>
+
+<p>Follow the instructions on the <a href='../assignments.html'>Assignment Requirements</a> and <a href='../scala/setup.html'>Scala Environment Setup</a> pages. At a minimum, you&#8217;ll need to:</p>
+
+<ul>
+<li>
+<p>Download and install Scala</p>
+</li>
+
+<li>
+<p>Download and install SBT</p>
+</li>
+
+<li>
+<p>Create a Github Account and register as a student</p>
+</li>
+
+<li>
+<p>Create a <strong><em>PRIVATE</em></strong> GitHub repository for your code with the name</p>
+<div class='highlight'><pre><code class='text'>nlpclass-fall2013-lastname-firstname
+</code></pre></div>
+<p>and clone it to your computer</p>
+</li>
+
+<li>
+<p>Add me (GitHub username <code>dhgarrette</code>) and Lewis (GitHub username <code>lewfish</code>) each as a &#8220;collaborator&#8221;</p>
+</li>
+
+<li>
+<p>Create a Scala project in (the root of) your repository with <code>nlpclass-fall2013</code> as a dependency</p>
+</li>
+</ul>
+
+<p>All of your code for this assignment will be located in a package called <code>nlp.a0</code>. This means that there should be a folder called <code>a0</code> contained in a folder called <code>nlp</code>. So you should have this:</p>
+
+<pre><code>nlpclass-fall2013-lastname-firstname/src/main/scala/nlp/a0</code></pre>
+
+<p>For an example of this setup, see the program <a href='https://github.com/utcompling/nlpclass-fall2013/blob/master/src/main/scala/nlpclass/Example.scala'><code>Example</code></a>, which is set up in a similar way (though with a different package name). It can be run as:</p>
+
+<pre><code>$ cd nlpclass-fall2013-lastname-firstname
+$ sbt &quot;run-main nlpclass.Example&quot;
+[...]
+This is an example Scala program.
+[...]</code></pre>
+
+<h2 id='part_2_counting_words'>Part 2: Counting words</h2>
+
+<p>Download <a href='http://www.gutenberg.org/cache/epub/11/pg11.txt'>Alice&#8217;s Adventures in Wonderland</a> from Project Gutenberg.</p>
+
+<p>Write an application that does the following:</p>
+
+<ul>
+<li>Takes a file path of as a command-line argument.</li>
+
+<li>Removes all punctuation and numbers and lowercases all words.</li>
+
+<li>Prints the total number of words in the book.</li>
+
+<li>Prints the number of <em>distinct</em> words in the book.</li>
+
+<li>Prints each of the top 10 most frequent words along with its count and its percentage of the total.</li>
+</ul>
+
+<p>The application should be in an <code>object</code> called <code>WordCount</code> in a package called <code>nlp.a0</code>. I should be able to run your program with something like this, and get this exact output (excluding sbt garbage):</p>
+
+<pre><code>$ cd nlpclass-fall2013-lastname-firstname
+$ sbt &quot;run-main nlp.a0.WordCount /Users/dhg/texts/alice.txt&quot;
+Total number of words: 30419
+Number of distinct words: 3007
+Top 10 words:
+the            1818    5.98
+and            940     3.09
+to             809     2.66
+a              690     2.27
+of             631     2.07
+it             610     2.01
+she            553     1.82
+i              545     1.79
+you            481     1.58
+said           462     1.52</code></pre>
+
+<h2 id='part_3_removing_stopwords'>Part 3: Removing stopwords</h2>
+
+<p><em>Stopwords</em> are extremely frequent non-content words such as determiners, pronouns, and prepositions. You&#8217;ll notice that the top 10 words in the book are all stopwords. Because they are so frequent, stopwords don&#8217;t generally tell us much about the content of a document because they are generally the same across all documents.</p>
+
+<p>Here, you will extend your program to allow for word counting that ignore stopwords. Update your program to:</p>
+
+<ul>
+<li>Take a file of stopwords as a command-line parameter with the option <code>--stopwords FILE</code>. (For example: <a href='ftp://ftp.cs.cornell.edu/pub/smart/english.stop'>this one</a>).</li>
+
+<li>If the list of stopwords is present, then skip them in your top-10 display (but don&#8217;t exclude them from your total count).</li>
+
+<li>Ensure that if the stopwords option is not present, that the program will run as in Part 2.</li>
+</ul>
+
+<p>I should be able to run your program with something like this, and get this exact output (excluding sbt garbage):</p>
+
+<pre><code>$ sbt &quot;run-main nlp.a0.WordCount alice.txt --stopwords english.stop&quot;
+Total number of words: 30419
+Number of distinct words: 3007
+Top 10 words:
+alice          403     1.32
+gutenberg      93      0.31
+project        87      0.29
+queen          75      0.25
+thought        74      0.24
+time           71      0.23
+king           63      0.21
+turtle         59      0.19
+began          58      0.19
+tm             57      0.19</code></pre>
+
+<p>This list is a bit more interesting since it shows us words that are actually relevant to the book.</p>
+
+<h2 id='part_4_word_count_distribution'>Part 4: Word count distribution</h2>
+
+<p>The distributions of words in a document are always highly skewed: a few words appear with very high frequencies, but most words appear very few times. To get an idea of the shape of things, write a program called <code>WordFreqFreq</code> that prints the ten most frequent frequencies and the five least frequent frequencies.</p>
+
+<p>Your output should be obviously be sorted by frequency frequency, but for frequencies with the same frequency frequency, you should sort by frequency. Confused yet?</p>
+
+<p>I should be able to run your program with something like this, and get this exact output (excluding sbt garbage):</p>
+
+<pre><code>$ sbt &quot;run-main nlp.a0.WordFreqFreq /Users/dhg/texts/alice.txt&quot;
+Top 10 most frequent frequencies:
+1331 words appear 1 time
+467 words appear 2 times
+264 words appear 3 times
+176 words appear 4 times
+101 words appear 5 times
+74 words appear 8 times
+72 words appear 6 times
+66 words appear 7 times
+38 words appear 9 times
+36 words appear 10 times
+
+Bottom 5 most frequent frequencies:
+1 word appears 631 times
+1 word appears 690 times
+1 word appears 809 times
+1 word appears 940 times
+1 word appears 1818 times</code></pre>
+
+<p><em>Note:</em> your output needs to be grammatical.</p>
+
+<p>So 44% of the words in the book appear only once (1331 out of 3007).</p>
+
+<p>I plotted a graph of the frequency distribution:</p>
+<a href='../images/aliceFreqDist.png'><img alt='Word Frequency Distribution' border='0' style='border:none;max-width:100%;' src='../images/aliceFreqDist.png' /></a>
+<h2 id='part_5_counting_ngrams'>Part 5: Counting n-grams</h2>
+
+<p>An <strong>n-gram</strong> is a sequence of <em>n</em> words. We will be talking a lot more about n-grams later in this course, but for now we&#8217;re just going to count them.</p>
+
+<p>In future exercises, I&#8217;ll be giving you a <code>trait</code> and asking you to implement it. To make sure that this makes sense, here is a simple example.</p>
+
+<p>In the <code>nlpclass-fall2013</code> jar that your project should have as a dependency, there is a trait <a href='https://github.com/utcompling/nlpclass-fall2013/blob/master/src/main/scala/nlpclass/AssignmentTraits.scala#L6'><code>nlpclass.NGramCountingToImplement</code></a>. It looks like this:</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>trait</span> <span class='nc'>NGramCountingToImplement</span> <span class='o'>{</span>
+
+  <span class='cm'>/**</span>
+<span class='cm'>   * Given a vector of tokens, return a mapping from ngrams </span>
+<span class='cm'>   * to their counts.</span>
+<span class='cm'>   */</span>
+  <span class='k'>def</span> <span class='n'>countNGrams</span><span class='o'>(</span><span class='n'>tokens</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[</span><span class='kt'>String</span><span class='o'>])</span><span class='k'>:</span> <span class='kt'>Map</span><span class='o'>[</span><span class='kt'>Vector</span><span class='o'>[</span><span class='kt'>String</span><span class='o'>]</span>, <span class='kt'>Int</span><span class='o'>]</span>
+
+<span class='o'>}</span>
+</code></pre></div>
+<p>Your task is to implement this trait. You should create a file that looks like this:</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>package</span> <span class='nn'>nlp.a0</span>
+
+<span class='k'>import</span> <span class='nn'>nlpclass.NGramCountingToImplement</span>
+
+<span class='k'>class</span> <span class='nc'>NGramCounting</span><span class='o'>(</span><span class='n'>n</span><span class='k'>:</span> <span class='kt'>Int</span><span class='o'>)</span> <span class='k'>extends</span> <span class='nc'>NGramCountingToImplement</span> <span class='o'>{</span>
+
+  <span class='k'>def</span> <span class='n'>countNGrams</span><span class='o'>(</span><span class='n'>tokens</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[</span><span class='kt'>String</span><span class='o'>])</span><span class='k'>:</span> <span class='kt'>Map</span><span class='o'>[</span><span class='kt'>Vector</span><span class='o'>[</span><span class='kt'>String</span><span class='o'>]</span>, <span class='kt'>Int</span><span class='o'>]</span> <span class='k'>=</span> <span class='o'>{</span>
+     <span class='o'>???</span>  <span class='c1'>// Your code here</span>
+  <span class='o'>}</span>
+
+<span class='o'>}</span>
+</code></pre></div>
+<p>and implement the method <code>countNGrams</code>.&#160; <em>Hint:</em> See <code>Vector.sliding</code> in the <a href='http://www.scala-lang.org/api/current/#scala.collection.immutable.Vector'>API</a>.</p>
+
+<p>I&#8217;m going to test your class like this:</p>
+<div class='highlight'><pre><code class='scala'><span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>sbt</span> <span class='n'>console</span>
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>aliceText</span> <span class='k'>=</span> <span class='o'>...</span>
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='k'>val</span> <span class='n'>counts</span> <span class='k'>=</span> <span class='k'>new</span> <span class='n'>nlp</span><span class='o'>.</span><span class='n'>a0</span><span class='o'>.</span><span class='nc'>NGramCounting</span><span class='o'>(</span><span class='mi'>3</span><span class='o'>).</span><span class='n'>countNGrams</span><span class='o'>(</span><span class='n'>aliceText</span><span class='o'>)</span>
+<span class='n'>scala</span><span class='o'>&gt;</span> <span class='n'>counts</span><span class='o'>(</span><span class='nc'>Vector</span><span class='o'>(</span><span class='s'>&quot;the&quot;</span><span class='o'>,</span> <span class='s'>&quot;white&quot;</span><span class='o'>,</span> <span class='s'>&quot;rabbit&quot;</span><span class='o'>))</span>
+<span class='n'>res0</span><span class='k'>:</span> <span class='kt'>Int</span> <span class='o'>=</span> <span class='mi'>21</span>
+</code></pre></div>
+<p>Now write a program called <code>CountTrigrams</code> that prints the top 10 most frequent trigrams along with their counts I should be able to run your program with something like this, and get this exact output (excluding sbt garbage):</p>
+
+<pre><code>$ sbt &quot;run-main nlp.a0.CountTrigrams /Users/dhg/texts/alice.txt&quot;
+project gutenberg tm            57
+the mock turtle                 53
+i don t                         31
+the march hare                  30
+the project gutenberg           29
+said the king                   29
+the white rabbit                21
+said the hatter                 21
+said to herself                 19
+said the mock                   19</code></pre>
+
+<p>Just for fun: of the 25,774 distinct trigrams, 23,294 (90.4%) appear only once, and more than 99.9% appear 12 times or fewer!</p>
+
+<h2 id='part_6_reading_a_data_file'>Part 6: Reading a data file</h2>
+
+<p>During this class, there are times when we will need to read data files that appear in particular formats. Thus, as a final exercise, we will write code to read one such file (that will be used in a future assignment).</p>
+
+<p>The data will be in the form of files like this:</p>
+
+<pre><code>Outlook=Sunny,Temperature=Hot,Humidity=High,Wind=Weak,No
+Outlook=Sunny,Temperature=Hot,Humidity=High,Wind=Strong,No
+Outlook=Overcast,Temperature=Hot,Humidity=High,Wind=Weak,Yes
+Outlook=Rain,Temperature=Mild,Humidity=High,Wind=Weak,Yes
+Outlook=Rain,Temperature=Cool,Humidity=Normal,Wind=Weak,Yes
+Outlook=Rain,Temperature=Cool,Humidity=Normal,Wind=Strong,No
+Outlook=Overcast,Temperature=Cool,Humidity=Normal,Wind=Strong,Yes
+Outlook=Sunny,Temperature=Mild,Humidity=High,Wind=Weak,No
+Outlook=Sunny,Temperature=Cool,Humidity=Normal,Wind=Weak,Yes
+Outlook=Rain,Temperature=Mild,Humidity=Normal,Wind=Weak,Yes
+Outlook=Sunny,Temperature=Mild,Humidity=Normal,Wind=Strong,Yes
+Outlook=Overcast,Temperature=Mild,Humidity=High,Wind=Strong,Yes
+Outlook=Overcast,Temperature=Hot,Humidity=Normal,Wind=Weak,Yes
+Outlook=Rain,Temperature=Mild,Humidity=High,Wind=Strong,No</code></pre>
+
+<p>Each line of the file represents a training instance for a classification task. Lines consist of a series of comma-separated fields. Each field (except the last) is in the format <code>FEATURE=VALUE</code>. The last field is a label for the instance.</p>
+
+<p>Your job is to write a program called <code>CountFeatures</code> that takes a file path and prints a list, for each feature, of feature values and their counts, broken down by label, with everything sorted alphabetically. If the above data was found in a file called <code>data1.txt</code>, I should be able to run your program with something like this, and get this exact output (excluding sbt garbage):</p>
+
+<pre><code>$ sbt &quot;run-main nlp.a0.CountFeatures /Users/dhg/texts/data1.txt&quot;
+No      5
+Yes     9
+
+Humidity
+    No
+        High            4
+        Normal          1
+    Yes
+        High            3
+        Normal          6
+Outlook
+    No
+        Rain            2
+        Sunny           3
+    Yes
+        Overcast        4
+        Rain            3
+        Sunny           2
+Temperature
+    No
+        Cool            1
+        Hot             2
+        Mild            2
+    Yes
+        Cool            3
+        Hot             2
+        Mild            4
+Wind
+    No
+        Strong          3
+        Weak            2
+    Yes
+        Strong          3
+        Weak            6</code></pre>
+
+<p><strong>Critically</strong>, your program must be flexible enough to handle files with <strong>any features</strong> and <strong>any labels</strong>, as long as it conforms to the same format of comma-separated <code>FEATURE=VALUE</code> pairs follwed by a label. You can assume that no feature, value, or label will ever contain either a comma or an equals sign.</p>
+
+<p>If I run it with a file <code>data2.txt</code> that contains:</p>
+
+<pre><code>word=loved,word=film,word=loved,word=actor,pos=loved,pos=loved,positive
+word=film,word=bad,word=plot,word=worst,neg=bad,neg=worst,negative
+word=worst,word=film,word=dumb,word=film,neg=worst,neg=dumb,negative
+word=car,word=chase,word=fight,word=scene,word=film,neutral
+word=great,word=plot,word=best,word=film,pos=great,pos=best,positive
+word=best,word=actor,word=bad,word=plot,pos=best,neg=bad,negative
+word=hated,word=terrible,word=film,neg=hated,neg=terrible,negative</code></pre>
+
+<p>Then I should be able to run your program with something like this, and get this exact output (excluding sbt garbage):</p>
+
+<pre><code>$ sbt &quot;run-main nlp.a0.CountFeatures /Users/dhg/texts/data2.txt&quot;
+negative 4
+neutral 1
+positive 2
+
+neg
+    negative
+        bad             2
+        dumb            1
+        hated           1
+        terrible        1
+        worst           2
+pos
+    negative
+        best            1
+    positive
+        best            1
+        great           1
+        loved           2
+word
+    negative
+        actor           1
+        bad             2
+        best            1
+        dumb            1
+        film            4
+        hated           1
+        plot            2
+        terrible        1
+        worst           2
+    neutral
+        car             1
+        chase           1
+        fight           1
+        film            1
+        scene           1
+    positive
+        actor           1
+        best            1
+        film            2
+        great           1
+        loved           2
+        plot            1</code></pre>
+      </div>
+      <div id='footer'></div>
+    </div>
+  </body>
+</html>

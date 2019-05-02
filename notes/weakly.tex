@@ -1,0 +1,144 @@
+\documentclass[11pt,letterpaper]{article}
+\topmargin -.5truein
+\textheight 9.0truein
+\oddsidemargin 0truein
+\evensidemargin 0truein
+\textwidth 6.5truein
+\setlength{\parskip}{5pt}
+\setlength\parindent{0pt}
+\usepackage[round]{natbib}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{listings}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{drs}
+\usepackage{qtree}
+\usepackage{algorithmic}
+\usepackage{wrapfig}
+\usepackage{tikz}
+\usepackage{dsfont}
+\usepackage{multirow}
+\usetikzlibrary{arrows,snakes,backgrounds,patterns,matrix,shapes,fit,calc,shadows,plotmarks}
+
+\newcommand{\bs}{\textbackslash}
+\renewcommand{\vec}[1]{\mathbf{#1}}
+\newcommand{\sem}[1]{\mbox{[\hspace{-1.25px}[{\bf #1}]\hspace{-1.5px}]}}
+\newcommand{\sub}[1]{$_{#1}$}
+
+\renewcommand\drsalignment{l}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks,
+    citecolor=black,
+    filecolor=black,
+    linkcolor=black,
+    urlcolor=black
+}
+
+\title{NLP: Weakly Supervised Learning}
+\author{Dan Garrette\\\small{dhg@cs.utexas.edu}}
+
+\begin{document}
+\maketitle
+
+
+\section{Weakly-Supervised Learning}
+
+\begin{itemize}
+  \item In the early days of NLP, all systems used hand-crafted, rule-based models built by experts.
+  \item In the 1990s, the field shifted to statistical methods where models were leared from annotated data.
+  \item Once researchers got good at supervised learning, they tried unsupervised learning (learning from no annotation).
+  \item Unsupervised learning generally produces very poor results.
+  \item But it's usually possible to be \textit{some kind} of annotation.
+  \item A better way forward is to assume that you are able to obtain at least some tiny amount of possibly low-quality data, and to try to learn from that.
+\end{itemize}
+
+
+\section{Low-Resource POS Tagging}
+
+\begin{itemize}
+  \item Type (tag dictionary) vs Token (full sentence) annotation
+    \begin{itemize}
+      \item Type annotation is fast, but annotations are out of context
+      \item Token annotation is slower, but gives sequence information as context
+    \end{itemize}
+  \item Garrette and Baldridge (2013) found that \textit{type} annotations are better.
+    \begin{itemize}
+      \item Sequence context information can be recovered with semi-supervised learning algorithms.
+      \item Gettting \textit{some} (even out-of-context) information on more high-frequency words is better.
+    \end{itemize}
+  \item However, there are lots of ways that the token annotation gathering could have been improved
+    \begin{itemize}
+      \item Randomly order the sentence before giving them to the annotator.  Adjacent sentences tend to be on the same topics, meaning that they will share vocabulary.  Shuffling sentences gives a wider array of words.
+      \item Strategically order the sentences to maximize word coverage.
+      \item Actively choose the next best sentence \textit{during annotation}
+    \end{itemize}
+\end{itemize}
+
+
+\section{Active Learning}
+
+\begin{itemize}
+  \item Instead of colkectiong all annotations before training, iteratively choose the next item to be annotated based on the model's confidence given the annotations thus far.
+  \item Useful when you need to get the best performance possible with only a limited amount of time for annotation; make the most of your time!
+  \item A basic active learning pattern:
+    \begin{enumerate}
+      \item Assume a corpus of annotatable items
+      \item Choose an initial N items for annotation
+      \item Train a model on everything annotated so far
+      \item Run the model on all not-yet-annotated items
+      \item Select the N lowest confidence item for annotation
+      \item Repeat from Step 3 until you run out of time
+    \end{enumerate}
+  \item One simple way of judging confidence with, for example, a classifier is to use the model to compute the likelihood of each possible class.  If some class has a much higher probability than the others, then the model has high confidence for that item.  If, instead, no class has particularly high probability, then the model has low confidence.
+  \item Annotating low confidence items is better because they are likely to be the most informative.  If an item is high confidence, then the model is already sure of the answer and, therefore, won't learn anything from having that item annotated.
+    \begin{itemize}
+      \item Though you'd probably still want to take other things into consideration like overlap with other items.  If your system has low confidence because the item has a lot of totally unique words, then annotating it probably won't inform other items very much.
+    \end{itemize}
+  \item The goal of active learning is to shift the learning curve to the left.  That is, we want to reach the target accuracy with less annotation time than we would otherwise.
+  \item Decisions the active learner can make:
+    \begin{itemize}
+      \item Which item to have annotated?
+      \item What kind of annotation (eg, type vs token)?  Some kinds of annotation are more costly than others; don't do a costly annotation if a cheaper one will suffice.
+      \item Who should annotate it?  Different annotators have different skills.  For example, don't waste an expert annotator's time on a simple annotation that a non-expert could do.
+    \end{itemize}
+  \item Active learning experiments have typically been bad
+    \begin{itemize}
+      \item Most experiments treat each annotation item as a single ``unit'' of effort.  
+      \item But not all items are equally easy to annotate.  E.g. long sentences take longer than short sentences.
+      \item Choosing all the complex items instead of the simple items might mean high accuracy is reached with fewer annotations, but if a complex item takes significantly longer, then the comparision is meaningless.
+      \item A real evaluation needs to measure actual annotation time/cost.
+    \end{itemize}
+  \item To choose the best item/annotation/annotator combo, the system must model the potential benefit of the annotation, the effort/time/cost of the annotation, and potentially the computational effort involved. 
+\end{itemize}
+
+
+\section{Graph Fragment Language}
+
+\begin{itemize}
+  \item A fast, flexible scheme for annotating dependency trees/graphs
+  \item Allows partial annotations (leaving part of the tree unspecified), which is useful:
+    \begin{itemize}
+      \item when the right analysis is unclear
+      \item when the right analysis is so obvious that the annotation contributes nothing
+      \item when the annotator needs to just focus on one kind of analysis
+    \end{itemize}
+  \item Certain portions of the analysis may require an expert, while others may be doable by a non-expert.
+\end{itemize}
+
+
+\section{Multi-Domain/Language}
+
+\begin{itemize}
+  \item If you have annotated data in one domain/language, you try to connect annotated data to unannotated data and propogate the information
+  \item If you have sentences in multiple languages, and a good parser in one of the languages, you can use it to guide a parser for the other languages.
+\end{itemize}
+
+
+
+
+\end{document}
+

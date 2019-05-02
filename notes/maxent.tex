@@ -1,0 +1,352 @@
+\documentclass[11pt,letterpaper]{article}
+\topmargin -.5truein
+\textheight 9.0truein
+\oddsidemargin 0truein
+\evensidemargin 0truein
+\textwidth 6.5truein
+\setlength{\parskip}{5pt}
+\setlength\parindent{0pt}
+\usepackage[table]{xcolor}% http://ctan.org/pkg/xcolor
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage[round]{natbib}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{qtree}
+\usepackage{algorithmic}
+\usepackage{wrapfig}
+\usepackage{tikz}
+\usepackage{dsfont}
+\usepackage{multirow}
+\usepackage[all]{xy}
+\usetikzlibrary{arrows,snakes,backgrounds,patterns,matrix,shapes,fit,calc,shadows,plotmarks}
+
+
+
+\newcommand{\bs}{\textbackslash}
+%\renewcommand{\vec}[1]{\mathbf{#1}}
+\newcommand{\vv}[1]{\ensuremath{\vec{\mathbf{#1}}}}
+
+\newcommand{\ngramstart}{\ensuremath{\langle \textsc{s} \rangle}}
+\newcommand{\ngramend}{\ensuremath{\langle \textsc{e} \rangle}}
+\newcommand{\ngramunk}{\ensuremath{\langle unk \rangle}}
+
+\newcommand{\wcurr}{\ensuremath{w_i}}
+\newcommand{\tcurr}{\ensuremath{t_i}}
+\newcommand{\tprev}{\ensuremath{t_{i-1}}}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks,
+    citecolor=black,
+    filecolor=black,
+    linkcolor=black,
+    urlcolor=black
+}
+
+\title{NLP: Maximum Entropy Models}
+\author{Dan Garrette\\\small{dhg@cs.utexas.edu}}
+
+\begin{document}
+\maketitle
+
+
+
+\section{Features}
+
+Why do we like feature?
+
+\begin{itemize}
+  \item Give us additional, useful information.
+  \item Parts of speech: prefixes, suffixes, capitalization, word shape, is a number, ...
+\end{itemize}
+
+Why do we like sequence models?
+
+\begin{itemize}
+  \item Nouns and Adjectives more likely to follow Determiners
+  \item ``I enjoy walks''.  Typically, ``walks'' is a verb, but not here since ``enjoy'' is definitely a verb.
+\end{itemize}
+
+
+
+\section{Linear Regression}
+
+\begin{itemize}
+  \item Given a set of data points, find a line approximating the function that produced the points.
+  \item Equation for a 2D line: $y = b + mx$
+  \item Each feature $f_i$ has an associated weight $w_i$
+  \item So: $y = w_0 + w_1 f_1$, where $y \in (-\infty,\infty)$ is a predicted value
+    \begin{itemize}
+      \item $f_1$ is the observation
+     \end{itemize}
+  \item With multiple features: $y = w_0 + w_1 f_1 + w_2 f_2 + w_3 f_3 + ... = \sum_{i=0}^N w_i \times f_i  = \vv{w} \cdot \vv{f} ~~ \text{(dot product)}$
+    \begin{itemize}
+      \item $\vv{f}$ is the observation (aka $x$)
+     \end{itemize}
+  \item For a particular instance $j$, $y_{\textit{pred}}^{(j)} = \sum_{i=0}^N w_i \times f_i^{(j)}$
+  \item Learning: choose weights $W$ that minimize the sum-squared error:
+    \[\hat{w} = \text{argmin}_x~\sum_{j=0}^M (y_{\textit{pred}}^{(j)}-y_{\textit{obs}}^{(j)})^2\]
+     \begin{itemize}
+       \item can be solved in closed form
+     \end{itemize}
+\end{itemize}
+
+
+\section{Logistic Regression}
+
+\begin{itemize}
+  \item For many NLP applications, we don't want a real value output, we want a \textit{classification}.
+  \item Moreover, we want to assign a \textit{probability} to each class
+  \item Want to be able to use weighted features
+  \item But, can't simply apply linear regression: it gives us a real value, not a probability
+\end{itemize}
+
+Binary Classification
+
+\begin{itemize}
+  \item Need $p(y=\text{true} \mid x)$
+    \begin{itemize}
+      \item For observation $x$ (which is \vv{f}), we want to make use of $\sum_{i=0}^N w_i \times f_i$
+         \begin{itemize}
+           \item but can't directly because it's a real value
+         \end{itemize}
+      \item We can use a ratio of probabilities, $\frac{p(y=\text{true} \mid x)}{p(y=\text{false} \mid x)} = \frac{p(y=\text{true} \mid x)}{1-p(y=\text{true} \mid x)}$, but this yields a value between 0 (definitely false) and $\infty$ (definitely true)
+      \item Logarithm gets us a value between $-\infty$ and $\infty$: $\ln(\frac{p(y=\text{true} \mid x)}{1-p(y=\text{true} \mid x)})$
+        \begin{itemize}
+           \item so we can say this equals $\vv{w} \cdot \vv{f}$, since it is also in $(-\infty, \infty)$
+        \end{itemize}
+      \item Exponentiating both sides gives us: $\frac{p(y=\text{true} \mid x)}{1-p(y=\text{true} \mid x)} = e^{\vv{w} \cdot \vv{f}}$
+      \item So, \vspace{-5mm}
+        \begin{align*} 
+          \frac{p(y=\text{true} \mid x)}{1-p(y=\text{true} \mid x)} &= e^{\vv{w} \cdot \vv{f}} \\
+          p(y=\text{true} \mid x) &= \frac{e^{\vv{w} \cdot \vv{f}}}{1+e^{\vv{w} \cdot \vv{f}}}
+                                   = \frac{1}{1+e^{-\vv{w} \cdot \vv{f}}} \text{~~~~(logistic function)}
+        \end{align*}
+    \end{itemize}
+  \item To classify, just use $\sum_{i=0}^N w_i f_i > 0$
+        \begin{align*} 
+          p(y=\text{true}\mid x) &> p(y=\text{false}\mid x) \\
+          \frac{p(y=\text{true}\mid x)}{p(y=\text{false}\mid x)} &> 1 \\
+          \frac{p(y=\text{true}\mid x)}{1-p(y=\text{true}\mid x)} &> 1 \\
+          e^{\vv{w} \cdot \vv{f}} &> 1  ~~~~\text{from above} \\
+          \vv{w} \cdot \vv{f} &> 0
+         \end{align*}
+      %\item ... and re-arranging gives us $p(y=\text{true} \mid x) = \frac{e^{\vv{w} \cdot \vv{f}}}{1 + e^{\vv{w} \cdot \vv{f}}}$
+      %\item Likewise: $p(y=\text{false} \mid x) = \frac{1}{1 + e^{\vv{w} \cdot \vv{f}}}$
+\end{itemize}
+
+Learning
+
+\begin{align*} 
+  \hat{w} &= \text{argmax}_w~\prod_i~p(y^{(i)}\mid x^{(i)}) \\
+          &= \text{argmax}_w~\prod_i~ \left\{
+                                        \begin{array}{ll}
+                                          p(y^{(i)}=1 \mid x^{(i)}) & \text{ for } y^{(i)}=1 \\
+                                          p(y^{(i)}=0 \mid x^{(i)}) & \text{ for } y^{(i)}=0
+                                        \end{array}
+                                      \right.
+\end{align*}
+
+\begin{itemize}
+  \item convex optimization
+  \item gradient ascent or L-BFGS
+\end{itemize}
+
+
+
+\section{Maximum Entropy}
+
+\begin{itemize}
+  \item Multi-class logistic regression
+  \item Generalizing the above: we want the probability of a class $c$ for some observation $x$, $p(c \mid x)$
+    \begin{align*} 
+      p(c \mid x) = \frac{\text{exp}\left(\sum_{i=0}^N w_{ci} f_i\right)}
+                          {Z}
+                  = \frac{\text{exp}\left(\sum_{i=0}^N w_{ci} f_i\right)}
+                          {\sum_{c' \in C}~p(c' \mid x)}
+                  = \frac{\text{exp}\left(\sum_{i=0}^N w_{ci} f_i\right)}
+                          {\sum_{c' \in C} \text{ exp}\left(\sum_{i=0}^N w_{c'i} f_i\right)}
+    \end{align*}
+  \item $Z$ is the \textit{normalization factor} 
+  \item So, we need to assign a per-class, per-feature weight $w_{ci}$ for each feature $f_i$ and class $c$
+\end{itemize}
+
+Binary Features
+
+\begin{itemize}
+  \item In NLP, we typically use binary features: ``ends in \textit{-ed}'', ``starts with capital'', etc
+  \item Indicator function: feature that takes only values 0 or 1
+  \item $f_i(c,x)$: feature $i$ for class $c$ for observation $x$:
+    \begin{align*} 
+      p(c \mid x) = \frac{\text{exp}\left(\sum_{i=0}^N w_{ci} f_i(c,x)\right)}
+                         {\sum_{c' \in C} \text{ exp}\left(\sum_{i=0}^N w_{c'i} f_i(c',x)\right)}
+    \end{align*}
+\end{itemize}
+
+Example: POS prediction based on word (not sequence tagging!)
+
+\begin{itemize}
+  \item He/PRP is/VBZ expected/VBN to/TO \textbf{race}/\underline{??} tomorrow/
+  \item Indicator function: feature that takes only values 0 or 1
+  \item $f_i(c,x)$: feature $i$ for class $c$ for observation $x$:
+    \begin{align*} 
+      f_1(c,x) &= 1 \text{ iff } \textit{word}_i = \text{``race''} ~&&\&~ c=\text{NN} \text{~~~~~~~~(0 otherwise})&&&&&&&&\\
+      f_2(c,x) &= 1 \text{ iff } t_{i-1} = \text{TO}               ~&&\&~ c=\text{VB} \\
+      f_3(c,x) &= 1 \text{ iff } \text{suffix}(\textit{word}_i) = \text{``ing''} ~&&\&~ c=\text{VBG} \\
+      f_4(c,x) &= 1 \text{ iff } \text{isLowerCase}(\textit{word}_i) ~&&\&~ c=\text{VB} \\
+      f_5(c,x) &= 1 \text{ iff } \textit{word}_i = \text{``race''}   ~&&\&~ c=\text{VB} \\
+      f_6(c,x) &= 1 \text{ iff } t_{i-1} = \text{TO}                 ~&&\&~ c=\text{NN}
+    \end{align*}
+  \item Each $f_i(c,x)$ gets a real-valued weight: ~~~
+    \begin{tabular}{ lcccccc }
+      \hline
+         & $f_1$ & $f_2$ & $f_3$ & $f_4$ & $f_5$ & $f_6$ \\
+      \hline
+      VB &       &  0.8  &       &  0.01 &  0.1  &       \\
+      NN &  0.8  &       &       &       &       &  -1.3 \\
+      \hline
+    \end{tabular}
+  \item Now we can compute the relative probabilities (can leave out $f_i(c,x)=0$ entries):
+    \begin{align*} 
+      p(VB \mid x) = \frac{e^{0.8}~e^{0.01}~e^{0.1}}
+                          {e^{0.8}~e^{-1.3} + e^{0.8}~e^{0.01}~e^{0.1}} = 0.80\\
+      p(NN \mid x) = \frac{e^{0.8}~e^{-1.3}}
+                          {e^{0.8}~e^{-1.3} + e^{0.8}~e^{0.01}~e^{0.1}} = 0.20
+    \end{align*}
+  \item Features can be arbitrarily complex
+    \begin{itemize}
+      \item For example, this feature can be used to recognize that words at the start of the sentence may be capitialized even though they are common nouns.
+        \begin{align*} 
+          f_{125}(c,x) &= 1 \text{ iff } \textit{word}_{i-1} = \texttt{<S>} ~~\&~~ \text{startsUpper}(\textit{word}_i) ~&&\&~ c=\text{NN}&&&&&&&& \\
+        \end{align*}
+    \end{itemize}
+\end{itemize}
+
+Learning
+
+\begin{itemize}
+  \item $\hat{w} = \text{argmax}_w~\sum_i \log p(y^{(i)} \mid x^{(i)})$
+  \item Regularization is like smoothing: 
+            $\hat{w} = \text{argmax}_w~\sum_i \log p(y^{(i)} \mid x^{(i)}) - \alpha \sum_{j=1}^n w_j^2$
+    \begin{itemize}
+      \item Reduce the score if the weights are high
+      \item Penalizes overly-specific weights
+      \item $\alpha$ controls the amount of regularization (analogous to $\lambda$ in smoothing)
+      \item Assume a Gaussian prior on the weights, saying they prefer to have a value 0
+    \end{itemize}
+\end{itemize}
+
+
+\section{MaxEnt Markov Model}
+
+\begin{itemize}
+  \item Descriminative Model: discriminate between various possible tag sequences
+  \item use $o$ for ``observation'' (word) since $w$ means ``weight''
+  \item Single probabilistic model to estimate $p(t_i \mid o_i, t_{i-1})$ instead of two separate models like HMM
+\end{itemize}
+
+Recall for HMM:
+
+\begin{itemize}
+  \item Likelihood of sequence: $p(t_1 ... t_n \mid o_1 ... o_n) = \prod_{i=1}^n p(o_i \mid t_i) \cdot p(t_i \mid t_{i-1})$
+  \item $\hat{t}_i^n = \text{argmax}_{t_1^n}~p(t_1 ... t_n \mid o_1 ... o_n) \approx \text{argmax}_{t_1^n}~\prod_{i=1}^n p(o_i \mid t_i) \cdot p(t_i \mid t_{i-1})$
+  \item $v_i(k) = p(w_i \mid k) \cdot \text{max}_{k' \in T}~v_{i-1}(k') \cdot p(k \mid k')$
+\end{itemize}
+
+For an MEMM:
+\begin{itemize}
+  \item $p(t_i \mid o_i, t_{i-1}) = \frac{1}{Z(t_{i-1},o_i)} \exp \left( \sum_i w_i f_i(t_i,o_i) \right)$
+  \item Likelihood of sequence: $p(t_1 ... t_n \mid o_1 ... o_n) = \prod_{i=1}^n p(t_i \mid o_i, t_{i-1})$
+  \item $\hat{t}_i^n = \text{argmax}_{t_1^n}~p(t_1 ... t_n \mid o_1 ... o_n) \approx \text{argmax}_{t_1^n}~\prod_{i=1}^n p(t_i \mid o_i, t_{i-1})$
+  \item $v_i(k) = \text{max}_{k' \in T}~v_{i-1}(k') \cdot p(k \mid o_i, k')$
+\end{itemize}
+
+
+
+\section{Information Extraction}
+
+``United States President Barack Obama discussed changes in the U.S. economy.  Obama presented his ideas to Congress.''
+
+\begin{itemize}
+  \item Named Entity Recognition: Identify all the named entities (sequences of proper nouns)
+    \begin{itemize}
+      \item United States, President Barack Obama, U.S., Obama, Congress
+    \end{itemize}
+  \item Detect all entities: all nouns or pronouns
+    \begin{itemize}
+      \item \{Named entities\} + changes, economy, his, ideas
+    \end{itemize}
+  \item Co-reference: Determine whether two mentions refer to the same entity
+    \begin{itemize}
+      \item United States = U.S.
+      \item President Barack Obama = Obama = his
+    \end{itemize}
+  \item Relation Extraction: Find all words relating two entities \vspace{2mm}\\
+    \begin{tabular}{llll}
+      \{Obama\} $\leftarrow$ discuss $\rightarrow$ changes 
+          &&& \{Obama\} $\leftarrow$ present $\rightarrow$ ideas\\
+          &&& \{Obama\} $\leftarrow$ present\_to $\rightarrow$ Congress
+    \end{tabular}
+  \item Semantic Role Labeling (VerbNet, PropBank) \vspace{2mm}\\
+    \begin{tabular}{llll}
+      \{Obama\} discussant\_of discuss
+          &&& \{Obama\} giver\_of present \\
+      changes topic\_of discuss 
+          &&& ideas theme\_of present \\
+          &&& Congress recipient\_of present
+    \end{tabular}
+\end{itemize}
+
+Identifying sequence spans
+
+\begin{itemize}
+  \item B-\textit{TYPE} (beginning), I-\textit{TYPE} (inside), O (outside)
+  \item 
+\begin{verbatim}
+United States President Barack Obama discussed changes in the U.S.  economy
+B-ORG  I-ORG  B-PER     I-PER  I-PER O         O       O  O   B-ORG O
+\end{verbatim}
+  \item Predict with an MEMM based on words, previous tag sequence, and any other features (word, wordshape, POS)
+  \item Can use a BIO model of POS as a features: 
+    \begin{itemize}
+      \item if $bt_{i-1}$=B-NNP, $bt_i$=I-NNP, and $ne_{i-1}$=B-PER, then probably $ne_i$=I-PER
+    \end{itemize}
+  \item Or tree-path features: NP $\uparrow$ S $\downarrow$ NP
+\end{itemize}
+
+Pipelines
+\begin{itemize}
+  \item POS useful in NER (NNP $\rightarrow$ named entity)
+  \item NER useful in Co-Reference ($a$ is a person, $b$ is an organization $\rightarrow$ $a \neq b$)
+  \item NER and Co-Reference useful in SRL (``giver'' likely to be a PER, or maybe an ORG)
+\end{itemize}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document}
+

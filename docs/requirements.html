@@ -1,0 +1,198 @@
+<html>
+  <head>
+    <meta content='text/html;charset=UTF-8' http-equiv='Content-Type'/>
+    <title>NLP &mdash; Assignment Requirements</title>
+    <style type='text/css'>
+      @import 'css/default.css';
+      @import 'css/syntax.css';
+    </style>
+    <link rel="shortcut icon" href="favicon.ico" />
+    <meta content='Natural Language Processing Class' name='subject'/>
+    <!--<link href='images/favicon.png' rel='shortcut icon'>-->
+
+    <!-- MathJax Section -->
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script>
+      MathJax.Hub.Config({
+        tex2jax: {
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+        }
+      });
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+
+  </head>
+  <body>
+    <div id='wrap'>
+      <div id='header'>
+        <img height="100" alt='NLP Class' src='images/utexas.png'/>
+        <div class='tagline'>Natural Language Processing: Fall 2013</div>
+      </div>
+      <div id='pages'>
+        <ol class='toc'>
+          <li>NLP Class
+            <ol class="toc">
+              <li><a href='index.html'>Home</a></li>
+              <li><a href='syllabus.html'>Syllabus</a></li>
+              <li><a href='schedule.html'>Schedule</a></li>
+              <li><a href='notes'>Notes</a></li>
+              <li><a href='requirements.html'>Assignment Requirements</a></li>
+              <li><a href='links.html'>Links</a></li>
+            </ol>
+          </li>
+          <li>Useful Information
+            <ol class="toc">
+              <li><a href='scala'>Scala</a></li>
+            </ol>
+          </li>
+          <li>Assignments
+            <ol class="toc">
+              <li><a href='assignments/a0programming.html'>#0 - Programming</a></li>
+              <li><a href='assignments/a1prob.html'>#1 - Probability</a></li>
+              <li><a href='assignments/a2classification.html'>#2 - Classification</a></li>
+              <li><a href='assignments/a3ngrams.html'>#3 - N-Grams</a></li>
+              <li><a href='assignments/a4hmm.html'>#4 - HMMs</a></li>
+              <li><a href='assignments/a5maxent.html'>#5 - MaxEnt</a></li>
+              <li><a href='assignments/a6parsing.html'>#6 - Parsing</a></li>
+            </ol>
+          </li>
+          <li>External Links
+            <ol class="toc">
+              <li><a href='http://www.utcompling.com'>UTCL Main site</a></li>
+              <li><a href='https://courses.utexas.edu/webapps/portal/frameset.jsp?tab_tab_group_id=_11_1&url=%2Fwebapps%2Fblackboard%2Fexecute%2Flauncher%3Ftype%3DCourse%26id%3D_159651_1%26url%3D'>Blackboard</a></li>
+            </ol>
+          </li>
+        </ol>
+      </div>
+      <div id='content'>
+        <h1>Assignment Requirements</h1>
+        <ol class="toc"><li><a href="#overview">Overview</a></li><li><a href="#github">GitHub</a></li><li><a href="#turning_in_your_assignments">Turning in your assignments</a></li><li><a href="#running_speed">Running Speed</a></li></ol>
+        <h2 id='overview'>Overview</h2>
+
+<p>This page describes the expectations for how you will prepare your coding assignments and submit them for grading.</p>
+
+<h2 id='github'>GitHub</h2>
+
+<p>Your code should be hosted in a <em>private</em> GitHub repository. Follow these instructions:</p>
+
+<ol>
+<li>
+<p>If you do not have an account on GitHub, you need to create one here: <a href='https://github.com/'>github.com</a>.</p>
+</li>
+
+<li>
+<p>Register as a student here: <a href='https://github.com/edu'>github.com/edu</a>. This will give you five free private repositories, one of which will be used for this class.</p>
+</li>
+
+<li>
+<p>Create a new repository for your classwork called</p>
+<div class='highlight'><pre><code class='text'>nlpclass-fall2013-lastname-firstname
+</code></pre></div>
+<p>by clicking on &#8220;New Repository&#8221; on the GitHub website. Be sure to select <strong><em>PRIVATE</em></strong> repository.</p>
+</li>
+
+<li>
+<p>Add me as a &#8220;collaborator&#8221;. Do this from the GitHub webpage for your repository: <code>Settings</code> <code>-&gt;</code> <code>Collaborators</code> <code>-&gt;</code> <code>Add a friend</code> and enter my username: <code>dhgarrette</code>.</p>
+</li>
+
+<li>
+<p>Clone your repositiory.</p>
+<div class='highlight'><pre><code class='text'>$ git clone git@github.com:USERNAME/REPOSITORY-NAME.git
+</code></pre></div></li>
+
+<li>
+<p>Follow the instructions on the <a href='scala/setup.html'>Scala Environment Setup</a> page to create a scala project in your repository directory.</p>
+</li>
+
+<li>
+<p>Create a file <code>.gitignore</code> in the root of your repository that contains this:</p>
+
+<pre><code>*.class
+*.log
+.DS_STORE
+
+# sbt specific
+dist/*
+target/
+lib_managed/
+src_managed/
+project/boot/
+project/plugins/project/
+
+# Scala-IDE specific
+.scala_dependencies
+.classpath
+.project
+.settings/
+.cache</code></pre>
+</li>
+
+<li>
+<p>Add the following to your main <code>build.sbt</code>:</p>
+<div class='highlight'><pre><code class='text'>resolvers ++= Seq(
+&quot;dhg releases repo&quot; at &quot;http://www.cs.utexas.edu/~dhg/maven-repository/releases&quot;,
+&quot;dhg snapshot repo&quot; at &quot;http://www.cs.utexas.edu/~dhg/maven-repository/snapshots&quot;
+)
+ 
+libraryDependencies += &quot;dhg&quot; % &quot;nlpclass_2.10&quot; % &quot;001&quot; changing()
+</code></pre></div>
+<p>This creates a dependency from your project to the course project code, which exists online. I will use this project to provide code to you that your code can access.</p>
+
+<p>If you use Eclipse, then you will need to re-run <code>sbt &quot;eclipse with-source=true&quot;</code> and refresh the project from within Eclipse before you will see the changes.</p>
+
+<p>Whenever I update this dependency, I will push a new version online with a new version number. The first version number is <code>001</code>, and I will tell you each time I increment it. When I do, you will have to correspondingly update the number in this file.</p>
+</li>
+</ol>
+
+<h2 id='turning_in_your_assignments'>Turning in your assignments</h2>
+
+<p>The code for your assignments will be &#8220;turned in&#8221; via your GitHub repo. You should probably develop it there too, checking things in as you work so that you don&#8217;t accidentally lose your work. (And you should definitely not develop it in a <em>public</em> repository!)</p>
+
+<p>For each assignment, I will give you instructions on what to call certain classes, but the rest of the structure of your up to you. You will, however, have to document the files used in a README for each assignment to make grading easier. Each README file will need to be in the root of your project repository, and named, for example, <code>README_a0.md</code> for assignment 0.</p>
+
+<p>You will turn in your code via a Git &#8220;tag&#8221;, indicating to us the state of the code that you want graded. When you are ready to turn in an assignment, you will tag your code with the name of the assignment (e.g. <code>a0</code>). You can do this with</p>
+
+<pre><code>git tag a0
+git push origin a0</code></pre>
+
+<p>Please verify that your tag worked by checking it out yourself and making sure everything runs as expected:</p>
+
+<pre><code>cd &lt;some_other_directory&gt;
+git clone &lt;my_repository_name&gt;
+cd &lt;repository_directory&gt;
+git checkout tags/a0
+sbt ...</code></pre>
+
+<p>If you want to change your assignment code after you have already tagged it, you will have to delete the existing tag before recreating it with the usual steps:</p>
+
+<pre><code>git tag -d a0</code></pre>
+
+<p>The timestamp of the tagged commit will be used to determine lateness.</p>
+
+<h2 id='running_speed'>Running Speed</h2>
+
+<p>No program should take more than two minutes to run. Most should run in only a few seconds. If your code runs too slowly, points will be deducted:</p>
+
+<ul>
+<li>2 points off per problem that runs between 2 and 5 min</li>
+
+<li>5 points off per problem that runs between 5 and 10 min</li>
+
+<li>No credit for any problem that takes longer than 10 minutes to run.</li>
+</ul>
+
+<p>There are two main reasons for the time limit.</p>
+
+<p>1) You should be thinking about time complexity and speed somewhat (but I don&#8217;t want you obsessing about it.)</p>
+
+<p>2) We can&#8217;t have it take dozens of hours just to run the code for grading.</p>
+      </div>
+      <div id='footer'></div>
+    </div>
+  </body>
+</html>

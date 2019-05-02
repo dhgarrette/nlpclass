@@ -1,0 +1,80 @@
+<html>
+  <head>
+    <meta content='text/html;charset=UTF-8' http-equiv='Content-Type'/>
+    <title>NLP &mdash; {{ page.title }}</title>
+    <style type='text/css'>
+      @import '{{ page.root }}css/default.css';
+      @import '{{ page.root }}css/syntax.css';
+    </style>
+    <link rel="shortcut icon" href="{{ page.root }}favicon.ico" />
+    <meta content='Natural Language Processing Class' name='subject'/>
+    <!--<link href='images/favicon.png' rel='shortcut icon'>-->
+
+    <!-- MathJax Section -->
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script>
+      MathJax.Hub.Config({
+        tex2jax: {
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+        }
+      });
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+
+  </head>
+  <body>
+    <div id='wrap'>
+      <div id='header'>
+        <img height="100" alt='NLP Class' src='{{ page.root }}images/utexas.png'/>
+        <div class='tagline'>Natural Language Processing: Fall 2013</div>
+      </div>
+      <div id='pages'>
+        <ol class='toc'>
+          <li>NLP Class
+            <ol class="toc">
+              <li><a href='{{ page.root }}index.html'>Home</a></li>
+              <li><a href='{{ page.root }}syllabus.html'>Syllabus</a></li>
+              <li><a href='{{ page.root }}schedule.html'>Schedule</a></li>
+              <li><a href='{{ page.root }}notes'>Notes</a></li>
+              <li><a href='{{ page.root }}requirements.html'>Assignment Requirements</a></li>
+              <li><a href='{{ page.root }}links.html'>Links</a></li>
+            </ol>
+          </li>
+          <li>Useful Information
+            <ol class="toc">
+              <li><a href='{{ page.root }}scala'>Scala</a></li>
+            </ol>
+          </li>
+          <li>Assignments
+            <ol class="toc">
+              <li><a href='{{ page.root }}assignments/a0programming.html'>#0 - Programming</a></li>
+              <li><a href='{{ page.root }}assignments/a1prob.html'>#1 - Probability</a></li>
+              <li><a href='{{ page.root }}assignments/a2classification.html'>#2 - Classification</a></li>
+              <li><a href='{{ page.root }}assignments/a3ngrams.html'>#3 - N-Grams</a></li>
+              <li><a href='{{ page.root }}assignments/a4hmm.html'>#4 - HMMs</a></li>
+              <li><a href='{{ page.root }}assignments/a5maxent.html'>#5 - MaxEnt</a></li>
+              <li><a href='{{ page.root }}assignments/a6parsing.html'>#6 - Parsing</a></li>
+            </ol>
+          </li>
+          <li>External Links
+            <ol class="toc">
+              <li><a href='http://www.utcompling.com'>UTCL Main site</a></li>
+              <li><a href='https://courses.utexas.edu/webapps/portal/frameset.jsp?tab_tab_group_id=_11_1&url=%2Fwebapps%2Fblackboard%2Fexecute%2Flauncher%3Ftype%3DCourse%26id%3D_159651_1%26url%3D'>Blackboard</a></li>
+            </ol>
+          </li>
+        </ol>
+      </div>
+      <div id='content'>
+        <h1>{{ page.title }}</h1>
+        {{ content | toc }}
+        {{ content }}
+      </div>
+      <div id='footer'></div>
+    </div>
+  </body>
+</html>

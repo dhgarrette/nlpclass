@@ -1,0 +1,189 @@
+<html>
+  <head>
+    <meta content='text/html;charset=UTF-8' http-equiv='Content-Type'/>
+    <title>NLP &mdash; My Scala Utilities Library</title>
+    <style type='text/css'>
+      @import '../css/default.css';
+      @import '../css/syntax.css';
+    </style>
+    <link rel="shortcut icon" href="../favicon.ico" />
+    <meta content='Natural Language Processing Class' name='subject'/>
+    <!--<link href='images/favicon.png' rel='shortcut icon'>-->
+
+    <!-- MathJax Section -->
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script>
+      MathJax.Hub.Config({
+        tex2jax: {
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+        }
+      });
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+
+  </head>
+  <body>
+    <div id='wrap'>
+      <div id='header'>
+        <img height="100" alt='NLP Class' src='../images/utexas.png'/>
+        <div class='tagline'>Natural Language Processing: Fall 2013</div>
+      </div>
+      <div id='pages'>
+        <ol class='toc'>
+          <li>NLP Class
+            <ol class="toc">
+              <li><a href='../index.html'>Home</a></li>
+              <li><a href='../syllabus.html'>Syllabus</a></li>
+              <li><a href='../schedule.html'>Schedule</a></li>
+              <li><a href='../notes'>Notes</a></li>
+              <li><a href='../requirements.html'>Assignment Requirements</a></li>
+              <li><a href='../links.html'>Links</a></li>
+            </ol>
+          </li>
+          <li>Useful Information
+            <ol class="toc">
+              <li><a href='../scala'>Scala</a></li>
+            </ol>
+          </li>
+          <li>Assignments
+            <ol class="toc">
+              <li><a href='../assignments/a0programming.html'>#0 - Programming</a></li>
+              <li><a href='../assignments/a1prob.html'>#1 - Probability</a></li>
+              <li><a href='../assignments/a2classification.html'>#2 - Classification</a></li>
+              <li><a href='../assignments/a3ngrams.html'>#3 - N-Grams</a></li>
+              <li><a href='../assignments/a4hmm.html'>#4 - HMMs</a></li>
+              <li><a href='../assignments/a5maxent.html'>#5 - MaxEnt</a></li>
+              <li><a href='../assignments/a6parsing.html'>#6 - Parsing</a></li>
+            </ol>
+          </li>
+          <li>External Links
+            <ol class="toc">
+              <li><a href='http://www.utcompling.com'>UTCL Main site</a></li>
+              <li><a href='https://courses.utexas.edu/webapps/portal/frameset.jsp?tab_tab_group_id=_11_1&url=%2Fwebapps%2Fblackboard%2Fexecute%2Flauncher%3Ftype%3DCourse%26id%3D_159651_1%26url%3D'>Blackboard</a></li>
+            </ol>
+          </li>
+        </ol>
+      </div>
+      <div id='content'>
+        <h1>My Scala Utilities Library</h1>
+        <ol class="toc"><li><a href="#overview">Overview</a></li><li><a href="#collection_extension_methods">Collection extension methods</a></li><li><a href="#file_utilities">File utilities</a></li><li><a href="#graphing">Graphing</a></li></ol>
+        <h2 id='overview'>Overview</h2>
+
+<p>I have created a libarary for all of the things that I find missing or broken in Scala.</p>
+
+<p>To include this library, add the following to your <code>build.sbt</code>:</p>
+
+<pre><code>resolvers ++= Seq(
+  &quot;dhg releases repo&quot; at &quot;http://www.cs.utexas.edu/~dhg/maven-repository/releases&quot;,
+  &quot;dhg snapshot repo&quot; at &quot;http://www.cs.utexas.edu/~dhg/maven-repository/snapshots&quot;
+)
+
+libraryDependencies += &quot;dhg&quot; % &quot;scala-util_2.10&quot; % &quot;1.0.0-SNAPSHOT&quot; changing()</code></pre>
+
+<p><em>NOTE:</em> This is already included in the <code>nlpclass-fall2013</code> dependency, so you do <em>not</em> need to include it again.</p>
+
+<p>The <a href='http://www.cs.utexas.edu/~dhg/maven-repository/snapshots/dhg/scala-util_2.10/1.0.0-SNAPSHOT/api/#package'>API</a> is available online.</p>
+
+<p>Some highlights of the library are below. There is <strong>much more</strong> beyond what is described here.</p>
+
+<h2 id='collection_extension_methods'>Collection extension methods</h2>
+
+<p>To use:</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>import</span> <span class='nn'>dhg.util.CollectionUtil._</span>
+</code></pre></div>
+<p>These methods are defined on as wide a type as makes sense. Most work on <code>Iterator</code> as well.</p>
+
+<h3 id='basic_math_stuff'>Basic math stuff</h3>
+<div class='highlight'><pre><code class='scala'><span class='nc'>Vector</span><span class='o'>(</span><span class='mi'>1</span><span class='o'>,</span><span class='mi'>2</span><span class='o'>,</span><span class='mi'>3</span><span class='o'>,</span><span class='mi'>4</span><span class='o'>).</span><span class='n'>avg</span>      <span class='c1'>// 2.5</span>
+
+<span class='nc'>Vector</span><span class='o'>(</span><span class='mi'>1</span><span class='o'>,</span><span class='mi'>2</span><span class='o'>,</span><span class='mi'>1</span><span class='o'>).</span><span class='n'>normalize</span>  <span class='c1'>// Vector(0.25, 0.5, 0.25)</span>
+
+<span class='nc'>Vector</span><span class='o'>((</span><span class='-Symbol'>&#39;a</span><span class='o'>,</span><span class='mi'>1</span><span class='o'>),</span> <span class='o'>(</span><span class='-Symbol'>&#39;b</span><span class='o'>,</span><span class='mi'>2</span><span class='o'>),</span> <span class='o'>(</span><span class='-Symbol'>&#39;c</span><span class='o'>,</span><span class='mi'>1</span><span class='o'>)).</span><span class='n'>normalizeValues</span>
+<span class='c1'>// Vector((&#39;a,0.25), (&#39;b,0.5), (&#39;c,0.25))</span>
+</code></pre></div>
+<h3 id='counting'>Counting</h3>
+<div class='highlight'><pre><code class='scala'><span class='nc'>Vector</span><span class='o'>(</span><span class='-Symbol'>&#39;a</span><span class='o'>,</span> <span class='-Symbol'>&#39;b</span><span class='o'>,</span> <span class='-Symbol'>&#39;a</span><span class='o'>,</span> <span class='-Symbol'>&#39;c</span><span class='o'>,</span> <span class='-Symbol'>&#39;a</span><span class='o'>,</span> <span class='-Symbol'>&#39;b</span><span class='o'>).</span><span class='n'>counts</span> 
+<span class='c1'>// Map(&#39;b -&gt; 2, &#39;a -&gt; 3, &#39;c -&gt; 1)</span>
+</code></pre></div>
+<h3 id='grouping__ungrouping'>Grouping / Ungrouping</h3>
+<div class='highlight'><pre><code class='scala'><span class='nc'>Vector</span><span class='o'>((</span><span class='-Symbol'>&#39;a</span><span class='o'>,</span> <span class='mi'>1</span><span class='o'>),</span> <span class='o'>(</span><span class='-Symbol'>&#39;b</span><span class='o'>,</span> <span class='mi'>2</span><span class='o'>),</span> <span class='o'>(</span><span class='-Symbol'>&#39;b</span><span class='o'>,</span> <span class='mi'>3</span><span class='o'>),</span> <span class='o'>(</span><span class='-Symbol'>&#39;a</span><span class='o'>,</span> <span class='mi'>4</span><span class='o'>)).</span><span class='n'>groupByKey</span>
+<span class='c1'>// Map(&#39;b -&gt; Vector(2, 3), &#39;a -&gt; Vector(1, 4))</span>
+
+<span class='k'>val</span> <span class='n'>a</span> <span class='k'>=</span> <span class='nc'>Vector</span><span class='o'>((</span><span class='-Symbol'>&#39;a</span><span class='o'>,</span> <span class='nc'>Vector</span><span class='o'>(</span><span class='mi'>1</span><span class='o'>,</span><span class='mi'>2</span><span class='o'>)),</span> <span class='o'>(</span><span class='-Symbol'>&#39;b</span><span class='o'>,</span> <span class='nc'>Vector</span><span class='o'>(</span><span class='mi'>2</span><span class='o'>,</span><span class='mi'>3</span><span class='o'>))).</span><span class='n'>ungroup</span>  
+<span class='c1'>// Iterator[(Symbol, Int)]</span>
+<span class='n'>a</span><span class='o'>.</span><span class='n'>toVector</span>  <span class='c1'>// Vector((&#39;a,1), (&#39;a,2), (&#39;b,2), (&#39;b,3))</span>
+</code></pre></div>
+<h3 id='mapvals'>mapVals</h3>
+
+<p>This corrects the suprising behavior of <code>mapValues</code> that creates a <em>view</em> of a <code>Map</code>, which means that values are <em>recomputed</em> on each access. My method <code>mapVals</code> always creates a new collection, not a view, so values are only computed once.</p>
+<div class='highlight'><pre><code class='scala'><span class='nc'>Vector</span><span class='o'>((</span><span class='-Symbol'>&#39;a</span><span class='o'>,</span> <span class='mi'>1</span><span class='o'>),</span> <span class='o'>(</span><span class='-Symbol'>&#39;b</span><span class='o'>,</span> <span class='mi'>2</span><span class='o'>),</span> <span class='o'>(</span><span class='-Symbol'>&#39;b</span><span class='o'>,</span> <span class='mi'>3</span><span class='o'>)).</span><span class='n'>mapVals</span><span class='o'>(</span><span class='k'>_</span> <span class='o'>+</span> <span class='mi'>1</span><span class='o'>)</span>
+<span class='c1'>// Vector((&#39;a,2), (&#39;b,3), (&#39;b,4))</span>
+</code></pre></div>
+<h3 id='maxbyn__minbyn'>maxByN / minByN</h3>
+
+<p>Get the <code>N</code> max or min results, sorted. Prevents you from having to sort the whole collection or traverse it more than once.</p>
+<div class='highlight'><pre><code class='scala'><span class='nc'>Vector</span><span class='o'>(</span><span class='s'>&quot;be&quot;</span><span class='o'>,</span> <span class='s'>&quot;what&quot;</span><span class='o'>,</span> <span class='s'>&quot;a&quot;</span><span class='o'>,</span> <span class='s'>&quot;the&quot;</span><span class='o'>).</span><span class='n'>maxByN</span><span class='o'>(</span><span class='k'>_</span><span class='o'>.</span><span class='n'>size</span><span class='o'>,</span> <span class='mi'>2</span><span class='o'>)</span> <span class='c1'>// Vector(what, the)</span>
+<span class='nc'>Vector</span><span class='o'>(</span><span class='s'>&quot;be&quot;</span><span class='o'>,</span> <span class='s'>&quot;what&quot;</span><span class='o'>,</span> <span class='s'>&quot;a&quot;</span><span class='o'>,</span> <span class='s'>&quot;the&quot;</span><span class='o'>).</span><span class='n'>minByN</span><span class='o'>(</span><span class='k'>_</span><span class='o'>.</span><span class='n'>size</span><span class='o'>,</span> <span class='mi'>2</span><span class='o'>)</span> <span class='c1'>// Vector(a, be)</span>
+</code></pre></div>
+<h3 id='split__splitwhere'>split / splitWhere</h3>
+
+<p>Works on all <code>Seq</code>. Allows you to keep the delimiter at the front or back. Produces and <code>Iterator</code>.</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>import</span> <span class='nn'>KeepDelimiter._</span>
+<span class='k'>val</span> <span class='n'>a</span> <span class='k'>=</span> <span class='nc'>Vector</span><span class='o'>(</span><span class='s'>&quot;A&quot;</span><span class='o'>,</span> <span class='s'>&quot;B&quot;</span><span class='o'>,</span> <span class='s'>&quot;.&quot;</span><span class='o'>,</span> <span class='s'>&quot;C&quot;</span><span class='o'>,</span> <span class='s'>&quot;.&quot;</span><span class='o'>,</span> <span class='s'>&quot;D&quot;</span><span class='o'>).</span><span class='n'>split</span><span class='o'>(</span><span class='s'>&quot;.&quot;</span><span class='o'>)</span>
+<span class='c1'>// Iterator[Vector[String]]</span>
+<span class='n'>a</span><span class='o'>.</span><span class='n'>toVector</span>  <span class='c1'>// Vector(Vector(A, B), Vector(C), Vector(D))</span>
+
+<span class='k'>val</span> <span class='n'>b</span> <span class='k'>=</span> <span class='nc'>Iterator</span><span class='o'>(</span><span class='s'>&quot;A&quot;</span><span class='o'>,</span> <span class='s'>&quot;B&quot;</span><span class='o'>,</span> <span class='s'>&quot;.&quot;</span><span class='o'>,</span> <span class='s'>&quot;C&quot;</span><span class='o'>,</span> <span class='s'>&quot;.&quot;</span><span class='o'>,</span> <span class='s'>&quot;D&quot;</span><span class='o'>)</span>
+          <span class='o'>.</span><span class='n'>splitWhere</span><span class='o'>((</span><span class='k'>_:</span> <span class='kt'>String</span><span class='o'>)</span> <span class='o'>==</span> <span class='s'>&quot;.&quot;</span><span class='o'>,</span> <span class='nc'>KeepDelimiterAsFirst</span><span class='o'>)</span>
+<span class='n'>b</span><span class='o'>.</span><span class='n'>toVector</span>  <span class='c1'>// Vector(Vector(A, B), Vector(., C), Vector(., D))</span>
+</code></pre></div>
+<h3 id='splitat_on_iterator'>splitAt on Iterator</h3>
+
+<p>Split <code>Iterator</code> in two. Front must be traversed first.</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>val</span> <span class='o'>(</span><span class='n'>a</span><span class='o'>,</span><span class='n'>b</span><span class='o'>)</span> <span class='k'>=</span> <span class='nc'>Iterator</span><span class='o'>(</span><span class='mi'>1</span><span class='o'>,</span><span class='mi'>2</span><span class='o'>,</span><span class='mi'>3</span><span class='o'>,</span><span class='mi'>4</span><span class='o'>,</span><span class='mi'>5</span><span class='o'>).</span><span class='n'>splitAt</span><span class='o'>(</span><span class='mi'>3</span><span class='o'>)</span>
+<span class='n'>a</span><span class='o'>.</span><span class='n'>toVector</span>   <span class='c1'>// (1, 2, 3)</span>
+<span class='n'>b</span><span class='o'>.</span><span class='n'>toVector</span>   <span class='c1'>// Vector(4, 5)</span>
+</code></pre></div>
+<h3 id='zipsafe'>zipSafe</h3>
+
+<p>Throw an exception if the two parts are different sizes.</p>
+<div class='highlight'><pre><code class='scala'><span class='nc'>Vector</span><span class='o'>(</span><span class='mi'>1</span><span class='o'>,</span><span class='mi'>2</span><span class='o'>,</span><span class='mi'>3</span><span class='o'>)</span> <span class='n'>zipSafe</span> <span class='nc'>Vector</span><span class='o'>(</span><span class='mi'>1</span><span class='o'>,</span><span class='mi'>2</span><span class='o'>)</span>   <span class='c1'>// ERROR!</span>
+</code></pre></div>
+<h2 id='file_utilities'>File utilities</h2>
+
+<p>To use:</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>import</span> <span class='nn'>dhg.util.FileUtil._</span>
+</code></pre></div>
+<h3 id='selfclosing_file_reader'>Self-closing file reader</h3>
+<div class='highlight'><pre><code class='scala'><span class='nc'>File</span><span class='o'>(</span><span class='n'>filename</span><span class='o'>).</span><span class='n'>readLines</span><span class='o'>.</span><span class='n'>foreach</span><span class='o'>(</span><span class='n'>println</span><span class='o'>)</span>
+<span class='c1'>// file now closed</span>
+</code></pre></div>
+<h3 id='selfclosing_file_writing_and_a__method'>Self-closing file writing (and a <code>writeLine</code> method)</h3>
+<div class='highlight'><pre><code class='scala'><span class='n'>writeUsing</span><span class='o'>(</span><span class='nc'>File</span><span class='o'>(</span><span class='n'>filename</span><span class='o'>))</span> <span class='o'>{</span> 
+  <span class='n'>f</span> <span class='k'>=&gt;</span> <span class='n'>f</span><span class='o'>.</span><span class='n'>writeLine</span><span class='o'>(</span><span class='s'>&quot;something&quot;</span><span class='o'>)</span>
+<span class='o'>}</span>
+<span class='c1'>// file now closed</span>
+</code></pre></div>
+<h2 id='graphing'>Graphing</h2>
+
+<p>To use:</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>import</span> <span class='nn'>dhg.util.viz._</span>
+</code></pre></div>
+<p>Create a <code>Chart</code> and <code>draw()</code> it.</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>import</span> <span class='nn'>java.awt.Color.</span><span class='o'>{</span><span class='n'>red</span><span class='o'>,</span> <span class='n'>lightGray</span><span class='o'>}</span>
+<span class='nc'>Chart</span><span class='o'>(</span>
+    <span class='nc'>Histogram</span><span class='o'>(</span><span class='nc'>Vector</span><span class='o'>(</span><span class='mi'>0</span><span class='o'>,</span> <span class='mi'>4</span><span class='o'>,</span> <span class='mi'>5</span><span class='o'>,</span> <span class='mi'>1</span><span class='o'>,</span> <span class='mf'>1.5</span><span class='o'>,</span> <span class='mi'>3</span><span class='o'>),</span> <span class='mi'>3</span><span class='o'>,</span> <span class='n'>lightGray</span><span class='o'>),</span> 
+    <span class='nc'>ScatterGraph</span><span class='o'>(</span><span class='nc'>Vector</span><span class='o'>((</span><span class='mf'>0.5</span><span class='o'>,</span> <span class='mf'>0.6</span><span class='o'>),</span> <span class='o'>(</span><span class='mi'>1</span><span class='o'>,</span><span class='mi'>2</span><span class='o'>),</span> <span class='o'>(</span><span class='mi'>4</span><span class='o'>,</span><span class='mi'>3</span><span class='o'>),</span> <span class='o'>(</span><span class='mf'>2.5</span><span class='o'>,</span><span class='mf'>2.7</span><span class='o'>))),</span> 
+    <span class='nc'>LineGraph</span><span class='o'>(</span><span class='nc'>Vector</span><span class='o'>((</span><span class='mi'>1</span><span class='o'>,</span><span class='mi'>1</span><span class='o'>),</span> <span class='o'>(</span><span class='mi'>3</span><span class='o'>,</span><span class='mi'>3</span><span class='o'>),</span> <span class='o'>(</span><span class='mi'>5</span><span class='o'>,</span><span class='mi'>4</span><span class='o'>)),</span> <span class='n'>red</span><span class='o'>))</span>
+  <span class='o'>.</span><span class='n'>draw</span><span class='o'>(</span><span class='n'>exitOnClose</span> <span class='k'>=</span> <span class='kc'>false</span><span class='o'>)</span>
+</code></pre></div>
+      </div>
+      <div id='footer'></div>
+    </div>
+  </body>
+</html>

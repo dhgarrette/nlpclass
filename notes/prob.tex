@@ -1,0 +1,265 @@
+\documentclass[11pt,letterpaper]{article}
+\topmargin -.5truein
+\textheight 9.0truein
+\oddsidemargin 0truein
+\evensidemargin 0truein
+\textwidth 6.5truein
+\setlength{\parskip}{5pt}
+\setlength\parindent{0pt}
+\usepackage[round]{natbib}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{qtree}
+\usepackage{algorithmic}
+\usepackage{wrapfig}
+\usepackage{subfig}
+\usepackage{tikz}
+\usepackage{dsfont}
+\usetikzlibrary{arrows,snakes,backgrounds,patterns,matrix,shapes,fit,calc,shadows,plotmarks}
+
+\newcommand{\bs}{\textbackslash}
+\renewcommand{\vec}[1]{\mathbf{#1}}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks,
+    citecolor=black,
+    filecolor=black,
+    linkcolor=black,
+    urlcolor=black
+}
+
+\title{NLP: Probability}
+\author{Dan Garrette\\\small{dhg@cs.utexas.edu}}
+
+\begin{document}
+\maketitle
+
+
+
+\section{Basics}
+
+\begin{itemize}
+  \item $\mathcal{E} \neq \emptyset$: event space (sample space)
+  \item We will be dealing with sets of discrete events.
+\end{itemize}
+
+Example 1: Coin
+
+\begin{itemize}
+  \item Trial: flipping a coin
+  \item Two possible outcomes: heads or tails, $\mathcal{E} = \{$H, T$\}$
+  \item $p(H)$ is the probability of heads
+  \item if $p(H)=0.8$, we would expect that flipping 100 times would yield 80 heads
+\end{itemize}
+
+Example 2: 3 coins
+
+\begin{itemize}
+  \item Trial: flipping three coins
+  \item Still two possible outcomes: heads or tails
+  \item e.g. first=H, second=T, third=T (HTT)
+  \item $\mathcal{E} = \{$HHH, HHT, HTH, THH, HTT, THT, TTH, TTT$\}$ ($2^3$)
+  \item event: set of results
+  \begin{itemize}
+    \item e.g. two tails and one head ($A$ = {HTT, THT, TTH})
+  \end{itemize}
+\end{itemize}
+
+Example 3: Die
+
+\begin{itemize}
+  \item Trial: rolling a die
+  \item outcomes: 1, 2, 3, 4, 5, or 6
+  \item $\mathcal{E} = \{ 1,2,3,4,5,6 \}$
+  \item event: set of results
+  \begin{itemize}
+    \item e.g. 1 or 2 ({1,2})
+    \item e.g. even ({2,4,6})
+    \item $2^6 = 64$ distinct events
+  \end{itemize}
+\end{itemize}
+
+
+\section{Probability functions}
+
+\begin{itemize}
+  \item 0 (impossible) to 1 (certain)
+  \item $p$ distributions probability mass 1 over the sample space
+  \item $p(X)$ for $X \subseteq \mathcal{E}$: function mapping sets of events to $[0,1]$, the probability $X$
+  \begin{itemize}
+    \item How likely is an event to occur
+    \item e.g. Fair coin: $p(A) = \frac{|A|}{|\mathcal{E}|}$
+    \item e.g. Die: Event $B$ = divisible by 3: $P(B) = P(\{3,6\}) = \frac{2}{6} = \frac{1}{3}$
+  \end{itemize}
+  \item $p(\mathcal{E}) = 1$, $p(\emptyset) = 0$
+\end{itemize}
+
+Properties
+
+\begin{itemize}
+  \item If $A$ and $B$ are disjoint events (sets of outcomes), i.e. $A \cap B = \emptyset$, then $p(A \cup B) = p(A) + p(B)$
+  \begin{itemize}
+    \item e.g. $A$=roll a 3, $B$=roll a 6: p(3 OR 6) = p(\{3,6\}) = p(\{3\} $\cup$ \{6\}) = p(\{3\}) + p(\{6\}) 
+    \item e.g. $A$=raining, $B$=snowing: p(raining OR snowing) = p(raining) + p(snowing)
+  \end{itemize}
+  \item $p(A \cup B) = p(A) + p(B) - p(A \cap B)$
+  \begin{itemize}
+    \item notice that this subsumes the previous because we assumed $A \cap B = \emptyset$, so $p(A \cap B) = 0$
+  \end{itemize}
+\end{itemize}
+
+
+\section{Conditional Probability}
+
+\begin{itemize}
+  \item probability of event A given event B: $p(A \mid B)$
+  \item prior probabiliy of $A$: $p(A)$
+  \item posterior probability of $A$ given $B$: $p(A \mid B)$
+  \item $p(A \mid B) = \frac{p(A \cap B)}{p(B)}$
+  \begin{itemize}
+    \item $p({4} \mid $ even$) = \frac{|\{4\} \cap \{2,4,6\}|}{|\{2,4,6\}|} = \frac{|\{4\}|}{|\{2,4,6\}|} = \frac{1}{3}$
+    \item $p($even $ \mid {4}) = \frac{|\{2,4,6\} \cap \{4\}|}{|\{4\}|} = \frac{|\{4\}|}{|\{4\}|} = \frac{1}{1}$
+    \item $B$ becomes the sample space
+    \item $\sum_x p(x \mid B) = 1$
+  \end{itemize}
+\end{itemize}
+
+The chain rule
+
+\begin{itemize}
+  \item $p(A \cap B) = p(A \mid B) \cdot p(B) = p(B \mid A) \cdot p(A)$
+  \item $p(A_1 \cap ... \cap A_n) = p(A_1) \cdot p(A_2 \mid A_1) \cdot p(A_3 \mid A_1, A_2) \cdot ... \cdot p(A_n \mid \bigcap_{i=1}^{n-1} A_i)$
+\end{itemize}
+
+\section{Independence}
+
+\begin{itemize}
+  \item Outcomes of two events do not affect each other
+  \item $p(A) = p(A \mid B)$
+  \item $p(A \cap B) = p(A) \cdot p(B)$
+  \item $p(H \mid HHHHH) = \frac{1}{2}$
+\end{itemize}
+
+
+\section{Random Variable Notation}
+
+\begin{itemize}
+  \item $p(X = a)$
+  \item $X$ is a random variable.  It selects an event from the sample space
+  \item e.g. coin flip: $p(X = $ H$) = \frac{1}{2}$ and $p(X = $ T$) = \frac{1}{2}$
+  \item e.g. tennis
+  \begin{itemize}
+    \item $p(tennis = $ yes$)$
+    \item $p(tennis = $ yes $ \mid outlook = $ rain$)$
+    \item $p(tennis = $ yes $ \mid outlook = $ sunny$)$
+  \end{itemize}
+\end{itemize}
+
+
+\section{Joint Probability}
+
+\begin{itemize}
+  \item Probability of both $x$ and $y$ happening: $p(x,y) = p(X = x, Y = y)$
+  \item Probability of $x$ happening is the sum of probabilities across all $y$s: $p_X(x) = \sum_y p(x,y)$
+  \item If $X$ and $Y$ are independent, then $p(x,y) = p_X(x) \cdot p_Y(y)$
+  \begin{itemize}
+    \item Rolling two sixes: $p(X=6,Y=6) = p(X=6) \cdot p(Y=6) = \frac{1}{6} \cdot \frac{1}{6} = \frac{1}{36}$
+  \end{itemize}
+\end{itemize}
+
+
+\section{Maximum Likelihood Estimate (MLE)}
+
+Coin
+
+\begin{itemize}
+  \item Data: H H T H T
+  \item How do we determine probabilities from the data?  What should $p($H$)$ be? And $p($T$)$?
+  \item Choose $p($H$)$ and $p($T$)$ to maximize the probability of the data
+  \item Remember that flips are independent: $p(data) = p($H,H,T,H,T$) = p($H$) \cdot p($H$) \cdot p($T$) \cdot p($H$) \cdot p($T$)$
+  \item Want maximum $p(data)$
+  \begin{itemize}
+    \item $p($H$) = 1.0$ ($p($T$) = 0.0$): $p(data) = 1.0 \cdot 1.0 \cdot 0.0 \cdot 1.0 \cdot 0.0 = 0.0$
+    \item $p($H$) = 0.8$ ($p($T$) = 0.2$): $p(data) = 0.8 \cdot 0.8 \cdot 0.2 \cdot 0.8 \cdot 0.2 = 0.02048$
+    \item $p($H$) = 0.6$ ($p($T$) = 0.4$): $p(data) = 0.6 \cdot 0.6 \cdot 0.4 \cdot 0.6 \cdot 0.4 = \mathbf{0.03456}$
+    \item $p($H$) = 0.5$ ($p($T$) = 0.5$): $p(data) = 0.5 \cdot 0.5 \cdot 0.5 \cdot 0.5 \cdot 0.5 = 0.03125$
+  \end{itemize}
+  \item $p(data) = p($H$)^3 \cdot p($T$)^2$
+  \item We can get the MLE by taking counts from the data: 
+  \begin{itemize}
+    \item $p($H$) = \frac{C(H)}{C(H) + C(T)} = \frac{3}{5}$, $p($T$) = \frac{C(T)}{C(H) + C(T)} = \frac{2}{5}$
+  \end{itemize}
+\end{itemize}
+
+Named Entity Recognition
+
+\begin{itemize}
+  \item Data: \\
+  endsWith=ia,location\\
+  endsWith=er,person\\
+  endsWith=ia,person\\
+  endsWith=er,location\\
+  endsWith=ia,location\\
+  endsWith=nd,location\\
+  endsWith=ia,location
+  \item $p(type = $ location $ \mid endswith = $ ia$) = \frac{C(type = location \text{ AND } endswith = ia)}{C(endswith = ia)} = \frac{3}{4} = 0.75$
+  \item $p(type = $ person $ \mid endswith = $ ia$) = \frac{C(type = person \text{ AND } endswith = ia)}{C(endswith = ia)} = \frac{1}{4} = 0.25$
+  \item $p(type = $ location $ \mid endswith = $ nd$) = \frac{C(type = location \text{ AND } endswith = nd)}{C(endswith = nd)} = \frac{1}{1} = 1.0$
+  \item $p(type = $ person $ \mid endswith = $ nd$) = \frac{C(type = person \text{ AND } endswith = nd)}{C(endswith = nd)} = \frac{0}{1} = 0.0$
+\end{itemize}
+
+
+\section{Bayes Theorem}
+
+\begin{itemize}
+  \item $p(A \mid B) = \frac{p(B \mid A) \cdot p(A)}{p(B)}$
+  \item proof:\\ 
+  $p(X \mid Y) = \frac{p(X \cap Y)}{p(Y)}$,\\ 
+  so $p(A \cap B) = p(A \mid B) \cdot p(B) = p(B \mid A) \cdot p(A)$,\\ 
+  so $p(A \mid B) = \frac{p(B \mid A) \cdot p(A)}{p(B)}$
+  \item $p(A \mid B)$: the posterior, what we are trying to figure out
+  \item $p(A)$: the ``prior'', useful for encoding prior knowledge about the likelihood of $A$
+  \item $p(B \mid A)$: the likelihood of the evidence
+  \item Example:
+  \begin{itemize}
+    \item Setup:\\
+    1\% of women age forty who are screened have breast cancer.\\
+    80\% of women with breast cancer will get positive mammographies.\\
+    9.6\% of women get false positive mammographies.
+    \item If a woman has a positive test result, what is the probability that she has breast cancer?
+    \item 85\% of doctors get this wrong.  They usually say 80\%.
+    \item Solution:
+    \begin{align*}
+      p(cancer) &= 0.01 & p(\overline{cancer}) &= 0.99 \\
+      p(pos \mid cancer) &= 0.8 & p(pos \mid \overline{cancer}) &= 0.096 \\
+      \frac{p(pos \cap cancer)}{p(cancer)} &= 0.8 &
+      \frac{p(pos \cap \overline{cancer})}{p(\overline{cancer})} &= 0.096 \\
+      p(pos \cap cancer) &= 0.8 \cdot 0.01 & p(pos \cap \overline{cancer}) &= 0.096 \cdot 0.99 \\
+    \end{align*}
+    \begin{align*}
+      p(pos) &= p(pos \mid cancer) + p(pos \mid \overline{cancer}) \\ 
+             &=p(pos \mid cancer) \cdot p(cancer) + p(pos \mid \overline{cancer}) \cdot p(\overline{cancer}) \\
+             &= 0.8 \cdot 0.01 + 0.096 \cdot 0.99 = 0.10304 \\
+      p(cancer \mid pos) &= \frac{p(pos \mid cancer) \cdot p(cancer)}{p(pos)} \\
+                         &= \frac{0.8 \cdot 0.01}{0.10304} \approx 7.76\% \\
+    \end{align*}
+    \item But 7.76\% is much less than 80\%
+    \item So 92.24\% of positive results are false alarms, meaning that a huge number of women undergo unnecessary procedures.  Since all procedures themselves carry risks, many women are put at risk unncessarily, which is why many health organizations are now against blanket screenings.
+  \end{itemize}
+
+\end{itemize}
+
+
+
+
+
+
+
+
+
+
+
+\end{document}

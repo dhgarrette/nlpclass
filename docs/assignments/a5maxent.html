@@ -1,0 +1,372 @@
+<html>
+  <head>
+    <meta content='text/html;charset=UTF-8' http-equiv='Content-Type'/>
+    <title>NLP &mdash; Assignment 5 - Maximum Entropy Models</title>
+    <style type='text/css'>
+      @import '../css/default.css';
+      @import '../css/syntax.css';
+    </style>
+    <link rel="shortcut icon" href="../favicon.ico" />
+    <meta content='Natural Language Processing Class' name='subject'/>
+    <!--<link href='images/favicon.png' rel='shortcut icon'>-->
+
+    <!-- MathJax Section -->
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script>
+      MathJax.Hub.Config({
+        tex2jax: {
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+        }
+      });
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+
+  </head>
+  <body>
+    <div id='wrap'>
+      <div id='header'>
+        <img height="100" alt='NLP Class' src='../images/utexas.png'/>
+        <div class='tagline'>Natural Language Processing: Fall 2013</div>
+      </div>
+      <div id='pages'>
+        <ol class='toc'>
+          <li>NLP Class
+            <ol class="toc">
+              <li><a href='../index.html'>Home</a></li>
+              <li><a href='../syllabus.html'>Syllabus</a></li>
+              <li><a href='../schedule.html'>Schedule</a></li>
+              <li><a href='../notes'>Notes</a></li>
+              <li><a href='../requirements.html'>Assignment Requirements</a></li>
+              <li><a href='../links.html'>Links</a></li>
+            </ol>
+          </li>
+          <li>Useful Information
+            <ol class="toc">
+              <li><a href='../scala'>Scala</a></li>
+            </ol>
+          </li>
+          <li>Assignments
+            <ol class="toc">
+              <li><a href='../assignments/a0programming.html'>#0 - Programming</a></li>
+              <li><a href='../assignments/a1prob.html'>#1 - Probability</a></li>
+              <li><a href='../assignments/a2classification.html'>#2 - Classification</a></li>
+              <li><a href='../assignments/a3ngrams.html'>#3 - N-Grams</a></li>
+              <li><a href='../assignments/a4hmm.html'>#4 - HMMs</a></li>
+              <li><a href='../assignments/a5maxent.html'>#5 - MaxEnt</a></li>
+              <li><a href='../assignments/a6parsing.html'>#6 - Parsing</a></li>
+            </ol>
+          </li>
+          <li>External Links
+            <ol class="toc">
+              <li><a href='http://www.utcompling.com'>UTCL Main site</a></li>
+              <li><a href='https://courses.utexas.edu/webapps/portal/frameset.jsp?tab_tab_group_id=_11_1&url=%2Fwebapps%2Fblackboard%2Fexecute%2Flauncher%3Ftype%3DCourse%26id%3D_159651_1%26url%3D'>Blackboard</a></li>
+            </ol>
+          </li>
+        </ol>
+      </div>
+      <div id='content'>
+        <h1>Assignment 5 - Maximum Entropy Models</h1>
+        <ol class="toc"><li><a href="#overview">Overview</a></li><li><a href="#introduction">Introduction</a></li><li><a href="#problem_1_lexicon_ratio_sentiment_analysis_baseline_20_points">Problem 1: Lexicon Ratio Sentiment Analysis Baseline (20 points)</a></li><li><a href="#problem_2_sentiment_analysis_with_a_maxent_model_20_points">Problem 2: Sentiment Analysis with a MaxEnt Model (20 points)</a></li><li><a href="#problem_3_extended_features_for_sentiment_analysis_60_points">Problem 3: Extended Features for Sentiment Analysis (60 points)</a></li></ol>
+        <p><strong>Due: Thursday, November 14. Programming at noon. Written portions at 2pm.</strong></p>
+
+<ul>
+<li>Written portions are found throughout the assignment, and are clearly marked.</li>
+
+<li>Coding portions must be turned in via GitHub using the tag <code>a5</code>.</li>
+</ul>
+
+<p>&#160;<span><span style='color: red; font-weight: bold'>UPDATE (11/5):</span> nlpclass-fall2013 dependency changed from version 0007 to 0008</span><br />&#160;<span><span style='color: red; font-weight: bold'>UPDATE (11/12):</span> nlpclass-fall2013 dependency changed to version 0009</span></p>
+
+<h2 id='overview'>Overview</h2>
+
+<p>To complete the homework, use the code and interfaces found in the class GitHub repository.</p>
+
+<ul>
+<li>Your written answers should be hand-written or printed and handed in before class. The problem descriptions clearly state where a written answer is expected.</li>
+
+<li>Programming portions should be turned in via GitHub by noon on the assignment due date.</li>
+</ul>
+
+<p>There are 100 points total in this assignment. Point values for each problem/sub-problem are given below.</p>
+
+<p>The classes used here will extend traits that are found in the <code>nlpclass-fall2013</code> dependency. In order to get these updates, you will need to edit your root <code>build.sbt</code> file and update the version of the dependency:</p>
+
+<pre><code>libraryDependencies += &quot;com.utcompling&quot; % &quot;nlpclass-fall2013_2.10&quot; % &quot;0009&quot; changing()</code></pre>
+
+<p>If you use Eclipse, then after you modify the dependency you will once again have to run <code>sbt &quot;eclipse with-source=true&quot;</code> and refresh your project in Eclipse.</p>
+
+<p><strong>If you have any questions or problems with any of the materials, don&#8217;t hesitate to ask!</strong></p>
+
+<p><strong>Tip:</strong> Look over the entire homework before starting on it. Then read through each problem carefully, in its entirety, before answering questions and doing the implementation.</p>
+
+<p>Finally: if possible, don&#8217;t print this homework out! Just read it online, which ensures you&#8217;ll be looking at the latest version of the homework (in case there are any corrections), you can easily cut-and-paste and follow links, and you won&#8217;t waste paper.</p>
+
+<h2 id='introduction'>Introduction</h2>
+
+<p>For this homework, you will create a sentiment analysis system for tweets by implementing features that will be used by supervised machine learners. You will also use a MaxEnt Markov Model to perform part-of-speech tagging, comparing your approach against your HMM from the previous assignment.</p>
+
+<p>To complete the homework, you need to obtain some training and testing data:</p>
+
+<ul>
+<li><a href='http://www.google.com/url?q=http%3A%2F%2Fwww.cs.uic.edu%2F%257Eliub%2F&amp;sa=D&amp;sntz=1&amp;usg=AFrqEzdMHP-wFPNtogumAiASdvJ6BXGaWQ'>Bing Liu</a>&#8217;s <a href='https://github.com/utcompling/nlpclass-fall2013/tree/master/data/classify/opinion-lexicon'>Opinion Lexicon</a></li>
+
+<li>The <a href='https://github.com/utcompling/nlpclass-fall2013/tree/master/data/classify/debate08'>debate08</a> data</li>
+
+<li>The <a href='https://github.com/utcompling/nlpclass-fall2013/tree/master/data/classify/hcr'>health care reform</a> data</li>
+</ul>
+
+<p>Check out Bo Pang and Lillian Lee&#8217;s book: Opinion Mining and Sentiment Analysis (free online!)</p>
+
+<p>Warning: there is a mix of software and resources in this homework, and you should not assume you can use them outside of the academic context. In other words, there are several things here that you cannot use in closed commercial applications. Licenses for each for resource are stated in the files themselves, or in the README. The core code is licensed under the GNU General Public License, which means you must follow the rules of that license: in sum, if you use it in any other application, then that application must also be released according to the GPL license.</p>
+
+<h2 id='problem_1_lexicon_ratio_sentiment_analysis_baseline_20_points'>Problem 1: Lexicon Ratio Sentiment Analysis Baseline (20 points)</h2>
+
+<p>The first thing that you will implement is an extremely simple baseline classifier for deciding whether a tweet has positive, negative, or neutral sentiment. The classifier will make use a <a href='https://github.com/utcompling/nlpclass-fall2013/tree/master/data/classify/opinion-lexicon'>polarity lexicon</a> consisting of a set of words indicating <em>positive</em> sentiment and a set of words indicating <em>negative</em> sentiment. This classifier will compare tokens in the tweet against the lexicon and will judge a tweet to be <em>positive</em> if it has more positive words than negative words, <em>negative</em> if it has more negative than positive words, and <em>neutral</em> if it has the same number of positive and negative words.</p>
+
+<p>Your job is to implement a class <code>nlp.a5.LexiconRatioSentimentClassifier</code> that extends <code>nlpclass.Classifier[String, String, String]</code>. (You can assume that the Feature, Value, and Label are all Strings since the OpenNLP code only works with Strings.) This <code>predict</code> method of this class should examine the <em>token</em> features of the given tweet and compare use sets of positive and negative words to make a judgement.</p>
+
+<p>To run this baseline, create an object <code>nlp.a5.SentimentLexiconRatio</code> with a main method that accepts the following parameters:</p>
+
+<ul>
+<li><code>--pos</code>: path to the <em>positive</em> lexicon file</li>
+
+<li><code>--neg</code>: path to the <em>negative</em> lexicon file</li>
+
+<li><code>--test</code>: path to the file to test on</li>
+</ul>
+
+<p>Note that no <em>training</em> file is needed since the classifications are made purely based on the lexicon files.</p>
+
+<p>The main method should construct a classifier and evaluate it on the <code>test</code> data using the <code>ClassifierScorer</code> object. You should assume that your test data is in the same format as we used for Assignment 2, so you should be able to re-use your file-reading code.</p>
+
+<p>Here is an example of what your output should look like:</p>
+
+<pre><code>$ sbt &quot;run-main nlp.a5.SentimentLexiconRatio --pos positive-words.txt --neg negative-words.txt --test hcr/dev.txt&quot;
+accuracy = 44.04  (351 / 797)
+          P      R      F1
+negative  72.46  36.85  48.86
+neutral   28.82  62.11  39.37
+positive  37.38  46.51  41.45
+avg       46.22  48.49  43.23</code></pre>
+
+<p>The lexicon ratio accuracy of 44% isn&#8217;t great, but it&#8217;s better than the expected 33% from random guessing.</p>
+
+<p>A couple notes:</p>
+
+<ol>
+<li>Both lexicon files have comments at the top. Your code should ignore these when reading the files.</li>
+
+<li>The lexicon files contain all lower-cased words, but the tweets do not.</li>
+</ol>
+
+<h2 id='problem_2_sentiment_analysis_with_a_maxent_model_20_points'>Problem 2: Sentiment Analysis with a MaxEnt Model (20 points)</h2>
+
+<p>We will now attempt to improve our sentiment classifier by actually using training data. To accomplish this, I have provided you a few useful classes that wrap functionality in the <a href='http://opennlp.apache.org/'>OpenNLP MaxEnt</a> library:</p>
+
+<ul>
+<li><code>nlpclass.MaxEntModel</code></li>
+
+<li><code>nlpclass.MaxEntModelTrainer</code></li>
+</ul>
+
+<p>You <strong>do not</strong> need to implement these classes. They are already avilable to you through the nlpclass-fall2013 dependency. However, if you are interested, you can take a look at the <a href='https://github.com/utcompling/nlpclass-fall2013/blob/master/src/main/scala/nlpclass/MaxEntClassifier.scala'>source code</a>.</p>
+
+<h3 id='maxentmodel'>MaxEntModel</h3>
+
+<p>A <code>MaxEntModel</code> is a <code>Classifier</code> that can make label predictions from features.</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>class</span> <span class='nc'>MaxEntModel</span> <span class='k'>extends</span> <span class='nc'>Classifier</span><span class='o'>[</span><span class='kt'>String</span>, <span class='kt'>String</span>, <span class='kt'>String</span><span class='o'>]</span> <span class='o'>{</span>
+
+  <span class='k'>def</span> <span class='n'>predict</span><span class='o'>(</span><span class='n'>features</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[(</span><span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>)])</span><span class='k'>:</span> <span class='kt'>Label</span> <span class='o'>=</span> <span class='o'>{</span>
+</code></pre></div>
+<p>(Again, it only works with Strings (<code>Classifier[String, String, String]</code>) because OpenNLP only deals with Strings.)</p>
+
+<p><em>Note:</em> It also has a method <code>saveToFile(modelFilename: String)</code> that can be used to persist the trained model to a file to be used later. The model can be restored from file using the <code>MaxEntModel.fromFile(modelFilename: String)</code>.</p>
+
+<h3 id='maxentmodeltrainer'>MaxEntModelTrainer</h3>
+
+<p>A <code>MaxEntModelTrainer</code> is a <code>ClassifierTrainer</code> that uses training instances to learn a <code>MaxEntModel</code>. It trains using an iterative algorithm. It takes a few optional parameters, two of which are relevant for this problem:</p>
+
+<ul>
+<li><code>sigma</code> controls the amount of regularization. Remember that regularization in a MaxEnt model is analogous to smoothing in naive Bayes. A higher <code>sigma</code> value means that models parameters (the weights) will be more normal and adhere less to the training data.</li>
+
+<li><code>maxIterations</code> dictates the maximum number of iterations that the learning algorithm will be allowed to run. More iterations mean better parameter estimates, but it also means that training may take longer. Note that the algorithm may take fewer than the maximum number of iterations. This happens when the learner finds an optimal set of parameters since it does not need to look any further.</li>
+</ul>
+<div class='highlight'><pre><code class='scala'><span class='k'>class</span> <span class='nc'>MaxEntModelTrainer</span><span class='o'>(</span>
+  <span class='n'>featureExtender</span><span class='k'>:</span> <span class='kt'>FeatureExtender</span><span class='o'>[</span><span class='kt'>String</span>, <span class='kt'>String</span><span class='o'>]</span> <span class='k'>=</span> <span class='k'>new</span> <span class='nc'>NoOpFeatureExtender</span><span class='o'>[</span><span class='kt'>String</span>, <span class='kt'>String</span><span class='o'>]</span>
+  <span class='n'>sigma</span><span class='k'>:</span> <span class='kt'>Double</span> <span class='o'>=</span> <span class='mf'>1.0</span><span class='o'>,</span> <span class='n'>maxIterations</span><span class='k'>:</span> <span class='kt'>Int</span> <span class='o'>=</span> <span class='mi'>100</span><span class='o'>,</span> <span class='n'>cutoff</span><span class='k'>:</span> <span class='kt'>Int</span> <span class='o'>=</span> <span class='mi'>1</span><span class='o'>)</span> 
+  <span class='k'>extends</span> <span class='nc'>ClassifierTrainer</span><span class='o'>[</span><span class='kt'>String</span>, <span class='kt'>String</span>, <span class='kt'>String</span><span class='o'>]</span> <span class='o'>{</span>
+
+  <span class='k'>def</span> <span class='n'>train</span><span class='o'>(</span><span class='n'>instances</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[(</span><span class='kt'>Label</span>, <span class='kt'>Vector</span><span class='o'>[(</span><span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>)])])</span><span class='k'>:</span> <span class='kt'>Classifier</span><span class='o'>[</span><span class='kt'>Label</span>, <span class='kt'>Feature</span>, <span class='kt'>Value</span><span class='o'>]</span> <span class='k'>=</span> <span class='o'>{</span>
+</code></pre></div>
+<p>You can ignore the <code>featureExtender</code> parameter until Problem 3, so when you instantiate this trainer class, you can do so with by naming the parameters you are passing in:</p>
+<div class='highlight'><pre><code class='scala'><span class='k'>new</span> <span class='nc'>MaxEntModelTrainer</span><span class='o'>(</span><span class='n'>sigma</span> <span class='k'>=</span> <span class='mf'>0.1</span><span class='o'>)</span>
+</code></pre></div>
+<h3 id='maxent_main_method'>MaxEnt main method</h3>
+
+<p>For this problem, you will need to create an object <code>nlp.a5.MaxEnt</code> with a main method that accepts the following parameters:</p>
+
+<ul>
+<li><code>--train</code>: path to the file to train on</li>
+
+<li><code>--test</code>: path to the file to test on</li>
+
+<li><code>--sigma</code>: a Double value that controls the amount of regularization</li>
+</ul>
+
+<p>Here is an expected run:</p>
+
+<pre><code>$ sbt &quot;run-main nlp.a5.MaxEnt --train hcr/train.txt --test hcr/dev.txt --sigma 0.1&quot;
+Indexing events using cutoff of 1
+
+  Computing event counts...  done. 797 events
+  Indexing...  done.
+Sorting and merging events... done. Reduced 797 events to 793.
+Done indexing.
+Incorporating indexed data for training...
+done.
+  Number of Event Tokens: 793
+      Number of Outcomes: 3
+    Number of Predicates: 5069
+...done.
+Computing model parameters ...
+Performing 100 iterations.
+  1:  ... loglikelihood=-875.5939940685004  0.5094102885821832
+  2:  ... loglikelihood=-727.0049502761096  0.6888331242158093
+  3:  ... loglikelihood=-649.4591428267686  0.7565872020075283
+  4:  ... loglikelihood=-601.6288853298706  0.794228356336261
+  5:  ... loglikelihood=-569.6074858149511  0.8117942283563363
+[...]
+ 95:  ... loglikelihood=-409.9199660094035  0.9008782936010038
+ 96:  ... loglikelihood=-409.7914217929766  0.9021329987452948
+ 97:  ... loglikelihood=-409.6656997949007  0.9021329987452948
+ 98:  ... loglikelihood=-409.5427133223546  0.9021329987452948
+ 99:  ... loglikelihood=-409.4223790721019  0.9021329987452948
+100:  ... loglikelihood=-409.30461696932133 0.9021329987452948
+accuracy = 61.73  (492 / 797)
+          P      R      F1
+negative  68.64  77.37  72.75
+neutral   52.34  41.61  46.37
+positive  45.21  38.37  41.51
+avg       55.40  52.45  53.54</code></pre>
+
+<p>In the &#8220;iterations&#8221;, you will see how the likelihood of the training data increases as the iterations progress.</p>
+
+<p>Experiment with different values for <code>--sigma</code> and see how it affects the accuracy.</p>
+
+<blockquote>
+<p><strong>Written Answer (a):</strong> Use the hcr dev set to find a sigma value that works well. Report that that value and the accuracy it produces. (We will be using this value below).</p>
+</blockquote>
+
+<p>Now, since both <code>MaxEntModel</code> and <code>NaiveBayesModel</code> extend <code>Classifier</code> we can directly compare them on the same data. Thus, you should update <code>NaiveBayes.main</code> to evaluate the model using <code>ClassifierScorer</code>:</p>
+
+<pre><code>$ sbt &quot;run-main nlp.a2.NaiveBayes --train hcr/train.txt --test hcr/dev.txt --log true --lambda 0.1&quot;
+accuracy = 42.66  (340 / 797)
+          P      R      F1
+negative  65.37  36.21  46.60
+neutral   32.21  65.22  43.12
+positive  31.31  38.95  34.72
+avg       42.96  46.79  41.48</code></pre>
+
+<p>Experiment with different values for <code>--lambda</code> and see how it affects the accuracy.</p>
+
+<blockquote>
+<p><strong>Written Answer (b):</strong> Use the hcr dev set to find a lambda value that works well. Report that that value and the accuracy it produces. (We will be using this value below).</p>
+</blockquote>
+
+<h2 id='problem_3_extended_features_for_sentiment_analysis_60_points'>Problem 3: Extended Features for Sentiment Analysis (60 points)</h2>
+
+<p>Similarly to what we did in Assignment 2 with the extended feature set for our naive Bayes model of prepositional phrase attachment, we will implement extended features for sentiment classification.</p>
+
+<p>First, you should update your <code>NaiveBayes.main</code> code so that the option <code>--extend</code> takes either a key indicating a specific FeatureExtender to use, or &#8220;none&#8221;, indicating that no extended features should be used. If a key is given, then the <code>main</code> method should instantiate the FeatureExtender specific to this key and pass it to the trainer. If &#8220;none&#8221;, or if the option is not present, you should, instead, instantiate <code>nlpclass.NoOpFeatureExtender</code> and pass <em>it</em> to the trainer. You should have the key &#8220;ppa&#8221; point to the <code>FeatureExtender</code> that you created specifically for the ppa dataset in Assignment 2.</p>
+
+<p>You should then extract the code for instantiating the <code>FeatureExtender</code> into its own function so that it can be called from both <code>NaiveBayes</code> and your new <code>MaxEnt</code> code. This will ensure that the exact same <code>FeatureExtenders</code> will be used by both.</p>
+
+<p>For this assignment, you will create a <code>FeatureExtender</code> specific to the hcr data that can be used with <code>--extend hcr</code>.</p>
+
+<p>As with Assignment 2, your hcr <code>FeatureExtender</code> should add various kinds of features. Here are several ideas:</p>
+
+<ol>
+<li>
+<p>Lower-cased versions of all tokens</p>
+</li>
+
+<li>
+<p>Features that make use of the polarity lexicons seen in Problem 1. You should, again, pass the positive and negative files into the classifier on the command line via the <code>--pos</code> and <code>--neg</code> options.</p>
+</li>
+
+<li>
+<p>Some analysis of the username. E.g. contains &#8220;gop&#8221; vs. &#8220;dem&#8221;</p>
+</li>
+
+<li>
+<p>You might try conditioning some new features based on the &#8220;target&#8221; feature. For example:</p>
+
+<ul>
+<li><code>if(target == &quot;obama&quot; &amp;&amp; username.contains(&quot;gop&quot;))</code> add a feature <code>user-target=gop-obama</code></li>
+
+<li><code>if(target == &quot;hcr&quot; &amp;&amp; username.contains(&quot;lib&quot;))</code> add a feature <code>user-target=dems-hcr</code></li>
+</ul>
+</li>
+</ol>
+
+<p>You might even want to remove features:</p>
+
+<ol>
+<li>Maybe the <code>target</code> feature is too noisy?</li>
+
+<li>Maybe stopword tokens confuse the learner?</li>
+</ol>
+
+<p>Come up with at least five <strong>new</strong> feature extensions. You can implement the feature extensions described here, but you must come up with five novel extensions on your own that are not just variants of each other. Be creative!</p>
+
+<p>You are allowed, and <em>encouraged</em>, to examine both the hcr train and dev datasets while you design your features. But <strong>do not</strong> look at the test set and do not look at <strong>any</strong> of the debate08 dataset. One good strategy when designing features is to add some features, run the model, examine the mistakes, and add new features that specifically target those mistakes.</p>
+
+<p>You should be able to run both <code>NaiveBayes</code> and <code>MaxEnt</code> with the <code>--extend hcr</code> features. You should be able to run them like this:</p>
+
+<pre><code>$ sbt &quot;run-main nlp.a2.NaiveBayes --train hcr/train.txt --test hcr/dev.txt --lambda 1.0 --log true --extend hcr --pos positive-words.txt --neg negative-words.txt&quot;</code></pre>
+
+<p>and this:</p>
+
+<pre><code>$ sbt &quot;run-main nlp.a5.MaxEnt --train hcr/train.txt --test hcr/dev.txt --sigma 1.0 --extend hcr --pos positive-words.txt --neg negative-words.txt&quot;</code></pre>
+
+<blockquote>
+<p><strong>Written Answer (a):</strong> Describe five of the novel features you came up with, and why you think they would be useful.</p>
+</blockquote>
+
+<blockquote>
+<p><strong>Written Answer (b):</strong> Using the sigma and lambda features you decided on for Problem 2, report the accuracies of the NaiveBayes and MaxEnt models on the hcr dev set using your feature extensions.</p>
+</blockquote>
+
+<blockquote>
+<p><strong>Written Answer (c):</strong> For MaxEnt only, see if you can find a better sigma for the hcr dev set. Use this value for the subsequent questions. If you found a better sigma, was it higher or lower? Why do you think it changed?</p>
+</blockquote>
+
+<p>In order to determine how much a particular feature extension helps (or <em>whether</em> it actually help!), it is common to run <em>ablation</em> experiments. This is done by removing just one extension at a time and running the model. So if you had extensions A, B and C, you would do an ablation by running with B and C (but not A), A and C, and A and B. This would let you how much A, B, and C, respectively, helped.</p>
+
+<blockquote>
+<p><strong>Written Answer (d):</strong> For the five novel features you described, run a set of ablations on <code>MaxEnt</code> on the hcr dev set with the sigma value you decided on in Problem 3c. For each each of the five runs, list the feature that was ablated and how much the accuracy decreased (or increased!).</p>
+</blockquote>
+
+<p>Now that you&#8217;ve refined your model by adding lots of good features and choosing the best sigma, you are ready to run your final tests of the model!</p>
+
+<blockquote>
+<p><strong>Written Answer (e):</strong> Using your final selection of feature extenders and your best sigma value, run MaxEnt once on <code>hcr/test.txt</code>. Report the accuracy.</p>
+</blockquote>
+
+<p>As we have discussed before, we have separate dev and test sets because we want to be able to see how our model performs on new data and using the test set for tuning would introduce an unrealistic bias. The fact that we have carefully tuned our model for the specific task classifying the sentiment of tweets related to health care reform hopefully means that it will perform well on the hcr test set. However, it does <em>not</em> necessarily mean that the model will work well as a general-purpose tweet sentiment analyzer.</p>
+
+<p>In order to make claims about the generality of the model, it is important to evaluate the model &#8220;blind&#8221; on data from an entirely different dataset. We often do this for NLP models when we want to make statements about effectiveness across languages; we develop on English and then run blind on other languages to make sure it works. In this case, we will evaluate our model on the dev set of the debate08 data. The debate08 data is still comprised of tweets about contemporary American politics, so it is reasonable to believe that our hcr features will still be useful.</p>
+
+<blockquote>
+<p><strong>Written Answer (f):</strong> Using the same feature extenders sigma value as Problem 3e, run MaxEnt once on <code>debate08/dev.txt</code>. Report the accuracy.</p>
+</blockquote>
+      </div>
+      <div id='footer'></div>
+    </div>
+  </body>
+</html>
