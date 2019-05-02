@@ -110,7 +110,7 @@
 
 <p>You will implement a Hidden Markov Model for tagging sentences with part-of-speech tags. The data we will be using comes from the <a href='http://www.cis.upenn.edu/~treebank/'>Penn Treebank</a> corpus. The list of tags used can be found <a href='http://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html'>here</a>.</p>
 
-<p>Create a class <code>nlp.a4.HiddenMarkovModel[Word, Tag]</code> that extends the trait <a href='https://www.dhgarrette.com/nlpclass/blob/master/src/main/scala/nlpclass/AssignmentTraits.scala#L163'><code>nlpclass.Tagger[Word, Tag]</code></a>.</p>
+<p>Create a class <code>nlp.a4.HiddenMarkovModel[Word, Tag]</code> that extends the trait <a href='https://github.com/dhgarrette/nlpclass/blob/master/src/main/scala/nlpclass/AssignmentTraits.scala#L163'><code>nlpclass.Tagger[Word, Tag]</code></a>.</p>
 
 <p>Your class will implement two methods:</p>
 <div class='highlight'><pre><code class='scala'><span class='cm'>/**</span>
@@ -125,7 +125,7 @@
 <span class='cm'> */</span>
 <span class='k'>def</span> <span class='n'>tagSentence</span><span class='o'>(</span><span class='n'>sentence</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[</span><span class='kt'>Word</span><span class='o'>])</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[</span><span class='kt'>Tag</span><span class='o'>]</span>
 </code></pre></div>
-<p>In order to train your model, you will implement a class <code>UnsmoothedHmmTrainer[Word, Tag]</code> that extends the trait <a href='https://www.dhgarrette.com/nlpclass/blob/master/src/main/scala/nlpclass/AssignmentTraits.scala#L179'><code>nlpclass.TaggerTrainer[Word, Tag]</code></a>. It must have the following <code>train</code> method:</p>
+<p>In order to train your model, you will implement a class <code>UnsmoothedHmmTrainer[Word, Tag]</code> that extends the trait <a href='https://github.com/dhgarrette/nlpclass/blob/master/src/main/scala/nlpclass/AssignmentTraits.scala#L179'><code>nlpclass.TaggerTrainer[Word, Tag]</code></a>. It must have the following <code>train</code> method:</p>
 <div class='highlight'><pre><code class='scala'><span class='k'>def</span> <span class='n'>train</span><span class='o'>(</span><span class='n'>taggedSentences</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[</span><span class='kt'>Vector</span><span class='o'>[(</span><span class='kt'>Word</span>, <span class='kt'>Tag</span><span class='o'>)]])</span><span class='k'>:</span> <span class='kt'>Tagger</span><span class='o'>[</span><span class='kt'>Word</span>, <span class='kt'>Tag</span><span class='o'>]</span>
 </code></pre></div>
 <p>Assuming some training dataset that contains this:</p>
@@ -226,7 +226,7 @@ count  gold  model
 
 <h2 id='problem_2_add_smoothed_hmm_tagger_40_points'>Problem 2: Add-λ Smoothed HMM Tagger (40 points)</h2>
 
-<p>Implement a class <code>AddLambdaSmoothedHmmTrainer[Word, Tag]</code> that extends the trait <a href='https://www.dhgarrette.com/nlpclass/blob/master/src/main/scala/nlpclass/AssignmentTraits.scala#L179'><code>nlpclass.TaggerTrainer[Word, Tag]</code></a></p>
+<p>Implement a class <code>AddLambdaSmoothedHmmTrainer[Word, Tag]</code> that extends the trait <a href='https://github.com/dhgarrette/nlpclass/blob/master/src/main/scala/nlpclass/AssignmentTraits.scala#L179'><code>nlpclass.TaggerTrainer[Word, Tag]</code></a></p>
 
 <p>With λ=0.1, you should see behavior like this:</p>
 <div class='highlight'><pre><code class='scala'><span class='k'>val</span> <span class='n'>trainData</span> <span class='k'>=</span> <span class='o'>...</span> <span class='n'>from</span> <span class='n'>the</span> <span class='n'>above</span> <span class='n'>data</span> <span class='o'>...</span>

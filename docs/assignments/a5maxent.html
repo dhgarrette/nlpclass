@@ -113,11 +113,11 @@
 <p>To complete the homework, you need to obtain some training and testing data:</p>
 
 <ul>
-<li><a href='http://www.google.com/url?q=http%3A%2F%2Fwww.cs.uic.edu%2F%257Eliub%2F&amp;sa=D&amp;sntz=1&amp;usg=AFrqEzdMHP-wFPNtogumAiASdvJ6BXGaWQ'>Bing Liu</a>&#8217;s <a href='https://www.dhgarrette.com/nlpclass/tree/master/data/classify/opinion-lexicon'>Opinion Lexicon</a></li>
+<li><a href='http://www.google.com/url?q=http%3A%2F%2Fwww.cs.uic.edu%2F%257Eliub%2F&amp;sa=D&amp;sntz=1&amp;usg=AFrqEzdMHP-wFPNtogumAiASdvJ6BXGaWQ'>Bing Liu</a>&#8217;s <a href='https://github.com/dhgarrette/nlpclass/tree/master/data/classify/opinion-lexicon'>Opinion Lexicon</a></li>
 
-<li>The <a href='https://www.dhgarrette.com/nlpclass/tree/master/data/classify/debate08'>debate08</a> data</li>
+<li>The <a href='https://github.com/dhgarrette/nlpclass/tree/master/data/classify/debate08'>debate08</a> data</li>
 
-<li>The <a href='https://www.dhgarrette.com/nlpclass/tree/master/data/classify/hcr'>health care reform</a> data</li>
+<li>The <a href='https://github.com/dhgarrette/nlpclass/tree/master/data/classify/hcr'>health care reform</a> data</li>
 </ul>
 
 <p>Check out Bo Pang and Lillian Lee&#8217;s book: Opinion Mining and Sentiment Analysis (free online!)</p>
@@ -126,7 +126,7 @@
 
 <h2 id='problem_1_lexicon_ratio_sentiment_analysis_baseline_20_points'>Problem 1: Lexicon Ratio Sentiment Analysis Baseline (20 points)</h2>
 
-<p>The first thing that you will implement is an extremely simple baseline classifier for deciding whether a tweet has positive, negative, or neutral sentiment. The classifier will make use a <a href='https://www.dhgarrette.com/nlpclass/tree/master/data/classify/opinion-lexicon'>polarity lexicon</a> consisting of a set of words indicating <em>positive</em> sentiment and a set of words indicating <em>negative</em> sentiment. This classifier will compare tokens in the tweet against the lexicon and will judge a tweet to be <em>positive</em> if it has more positive words than negative words, <em>negative</em> if it has more negative than positive words, and <em>neutral</em> if it has the same number of positive and negative words.</p>
+<p>The first thing that you will implement is an extremely simple baseline classifier for deciding whether a tweet has positive, negative, or neutral sentiment. The classifier will make use a <a href='https://github.com/dhgarrette/nlpclass/tree/master/data/classify/opinion-lexicon'>polarity lexicon</a> consisting of a set of words indicating <em>positive</em> sentiment and a set of words indicating <em>negative</em> sentiment. This classifier will compare tokens in the tweet against the lexicon and will judge a tweet to be <em>positive</em> if it has more positive words than negative words, <em>negative</em> if it has more negative than positive words, and <em>neutral</em> if it has the same number of positive and negative words.</p>
 
 <p>Your job is to implement a class <code>nlp.a5.LexiconRatioSentimentClassifier</code> that extends <code>nlpclass.Classifier[String, String, String]</code>. (You can assume that the Feature, Value, and Label are all Strings since the OpenNLP code only works with Strings.) This <code>predict</code> method of this class should examine the <em>token</em> features of the given tweet and compare use sets of positive and negative words to make a judgement.</p>
 
@@ -174,7 +174,7 @@ avg       46.22  48.49  43.23</code></pre>
 <li><code>nlpclass.MaxEntModelTrainer</code></li>
 </ul>
 
-<p>You <strong>do not</strong> need to implement these classes. They are already avilable to you through the nlpclass-fall2013 dependency. However, if you are interested, you can take a look at the <a href='https://www.dhgarrette.com/nlpclass/blob/master/src/main/scala/nlpclass/MaxEntClassifier.scala'>source code</a>.</p>
+<p>You <strong>do not</strong> need to implement these classes. They are already avilable to you through the nlpclass-fall2013 dependency. However, if you are interested, you can take a look at the <a href='https://github.com/dhgarrette/nlpclass/blob/master/src/main/scala/nlpclass/MaxEntClassifier.scala'>source code</a>.</p>
 
 <h3 id='maxentmodel'>MaxEntModel</h3>
 
