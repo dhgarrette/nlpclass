@@ -359,7 +359,7 @@ This `object` will require a method `fromFile(filename: String)` to be implement
 2. A probability distribution over labels
 3. A `Map` from features to conditional probability distribution over feature values given labels.
 
-The source code for the traits can be [viewed](https://github.com/utcompling/nlpclass-fall2013/blob/master/src/main/scala/nlpclass/AssignmentTraits.scala#L21) in the class GitHub repository.
+The source code for the traits can be [viewed](https://www.dhgarrette.com/nlpclass/blob/master/src/main/scala/nlpclass/AssignmentTraits.scala#L21) in the class GitHub repository.
 
 So, given a file `data2.txt`:
 

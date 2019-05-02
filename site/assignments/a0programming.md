@@ -48,7 +48,7 @@ All of your code for this assignment will be located in a package called `nlp.a0
 
     nlpclass-fall2013-lastname-firstname/src/main/scala/nlp/a0
 
-For an example of this setup, see the program [`Example`](https://github.com/utcompling/nlpclass-fall2013/blob/master/src/main/scala/nlpclass/Example.scala), which is set up in a similar way (though with a different package name).  It can be run as:
+For an example of this setup, see the program [`Example`](https://www.dhgarrette.com/nlpclass/blob/master/src/main/scala/nlpclass/Example.scala), which is set up in a similar way (though with a different package name).  It can be run as:
 
     $ cd nlpclass-fall2013-lastname-firstname
     $ sbt "run-main nlpclass.Example"
@@ -161,7 +161,7 @@ An **n-gram** is a sequence of *n* words.  We will be talking a lot more about n
 
 In future exercises, I'll be giving you a `trait` and asking you to implement it.  To make sure that this makes sense, here is a simple example.  
 
-In the `nlpclass-fall2013` jar that your project should have as a dependency, there is a trait [`nlpclass.NGramCountingToImplement`](https://github.com/utcompling/nlpclass-fall2013/blob/master/src/main/scala/nlpclass/AssignmentTraits.scala#L6).  It looks like this:
+In the `nlpclass-fall2013` jar that your project should have as a dependency, there is a trait [`nlpclass.NGramCountingToImplement`](https://www.dhgarrette.com/nlpclass/blob/master/src/main/scala/nlpclass/AssignmentTraits.scala#L6).  It looks like this:
 
 {% highlight scala %}
 trait NGramCountingToImplement {

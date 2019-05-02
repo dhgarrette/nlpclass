@@ -124,7 +124,7 @@ Your task for this assignment is to implement an N-Gram model and supervised lea
 
 To simplify things, we will only be modeling full sentences, not arbitrary sequences of words.
 
-Your task is to implement the traits provided in [AssignmentTraits.scala](https://github.com/utcompling/nlpclass-fall2013/blob/master/src/main/scala/nlpclass/AssignmentTraits.scala):
+Your task is to implement the traits provided in [AssignmentTraits.scala](https://www.dhgarrette.com/nlpclass/blob/master/src/main/scala/nlpclass/AssignmentTraits.scala):
 
 
 ### NgramModel
@@ -196,7 +196,7 @@ Learning the parameters for the model will not take place in this class.  Instea
 
 ### UnsmoothedNgramModelTrainer
 
-Like we did for or naive Bayes model implementation, we want to de-couple the actual ngram model from the way that it is trained.  Do do this, we will have special 'trainer' classes for training models.  The trainers should implement the following interface, given in [AssignmentTraits.scala](https://github.com/utcompling/nlpclass-fall2013/blob/master/src/main/scala/nlpclass/AssignmentTraits.scala):
+Like we did for or naive Bayes model implementation, we want to de-couple the actual ngram model from the way that it is trained.  Do do this, we will have special 'trainer' classes for training models.  The trainers should implement the following interface, given in [AssignmentTraits.scala](https://www.dhgarrette.com/nlpclass/blob/master/src/main/scala/nlpclass/AssignmentTraits.scala):
 
 {% highlight scala %}
 trait NgramModelTrainerToImplement {

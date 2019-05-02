@@ -188,7 +188,7 @@ p_{reversed}(\vec{w}) \stackrel{\tiny{\mbox{def}}}{=}&amp;p(w_n) \cdot
 
 <p>To simplify things, we will only be modeling full sentences, not arbitrary sequences of words.</p>
 
-<p>Your task is to implement the traits provided in <a href='https://github.com/utcompling/nlpclass-fall2013/blob/master/src/main/scala/nlpclass/AssignmentTraits.scala'>AssignmentTraits.scala</a>:</p>
+<p>Your task is to implement the traits provided in <a href='https://www.dhgarrette.com/nlpclass/blob/master/src/main/scala/nlpclass/AssignmentTraits.scala'>AssignmentTraits.scala</a>:</p>
 
 <h3 id='ngrammodel'>NgramModel</h3>
 
@@ -262,7 +262,7 @@ p_{reversed}(\vec{w}) \stackrel{\tiny{\mbox{def}}}{=}&amp;p(w_n) \cdot
 
 <h3 id='unsmoothedngrammodeltrainer'>UnsmoothedNgramModelTrainer</h3>
 
-<p>Like we did for or naive Bayes model implementation, we want to de-couple the actual ngram model from the way that it is trained. Do do this, we will have special &#8216;trainer&#8217; classes for training models. The trainers should implement the following interface, given in <a href='https://github.com/utcompling/nlpclass-fall2013/blob/master/src/main/scala/nlpclass/AssignmentTraits.scala'>AssignmentTraits.scala</a>:</p>
+<p>Like we did for or naive Bayes model implementation, we want to de-couple the actual ngram model from the way that it is trained. Do do this, we will have special &#8216;trainer&#8217; classes for training models. The trainers should implement the following interface, given in <a href='https://www.dhgarrette.com/nlpclass/blob/master/src/main/scala/nlpclass/AssignmentTraits.scala'>AssignmentTraits.scala</a>:</p>
 <div class='highlight'><pre><code class='scala'><span class='k'>trait</span> <span class='nc'>NgramModelTrainerToImplement</span> <span class='o'>{</span>
 
   <span class='k'>def</span> <span class='n'>train</span><span class='o'>(</span><span class='n'>tokenizedSentences</span><span class='k'>:</span> <span class='kt'>Vector</span><span class='o'>[</span><span class='kt'>Vector</span><span class='o'>[</span><span class='kt'>String</span><span class='o'>]])</span><span class='k'>:</span> <span class='kt'>NgramModelToImplement</span>

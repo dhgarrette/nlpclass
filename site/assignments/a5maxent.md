@@ -42,9 +42,9 @@ For this homework, you will create a sentiment analysis system for tweets by imp
 
 To complete the homework, you need to obtain some training and testing data:
 
-* [Bing Liu](http://www.google.com/url?q=http%3A%2F%2Fwww.cs.uic.edu%2F%257Eliub%2F&sa=D&sntz=1&usg=AFrqEzdMHP-wFPNtogumAiASdvJ6BXGaWQ)'s [Opinion Lexicon](https://github.com/utcompling/nlpclass-fall2013/tree/master/data/classify/opinion-lexicon)
-* The [debate08](https://github.com/utcompling/nlpclass-fall2013/tree/master/data/classify/debate08) data
-* The [health care reform](https://github.com/utcompling/nlpclass-fall2013/tree/master/data/classify/hcr) data
+* [Bing Liu](http://www.google.com/url?q=http%3A%2F%2Fwww.cs.uic.edu%2F%257Eliub%2F&sa=D&sntz=1&usg=AFrqEzdMHP-wFPNtogumAiASdvJ6BXGaWQ)'s [Opinion Lexicon](https://www.dhgarrette.com/nlpclass/tree/master/data/classify/opinion-lexicon)
+* The [debate08](https://www.dhgarrette.com/nlpclass/tree/master/data/classify/debate08) data
+* The [health care reform](https://www.dhgarrette.com/nlpclass/tree/master/data/classify/hcr) data
 
 Check out Bo Pang and Lillian Lee's book: Opinion Mining and Sentiment Analysis (free online!)
 
@@ -54,7 +54,7 @@ Warning: there is a mix of software and resources in this homework, and you shou
 
 ## Problem 1: Lexicon Ratio Sentiment Analysis Baseline (20 points)
 
-The first thing that you will implement is an extremely simple baseline classifier for deciding whether a tweet has positive, negative, or neutral sentiment.  The classifier will make use a [polarity lexicon](https://github.com/utcompling/nlpclass-fall2013/tree/master/data/classify/opinion-lexicon) consisting of a set of words indicating *positive* sentiment and a set of words indicating *negative* sentiment.  This classifier will compare tokens in the tweet against the lexicon and will judge a tweet to be *positive* if it has more positive words than negative words, *negative* if it has more negative than positive words, and *neutral* if it has the same number of positive and negative words.
+The first thing that you will implement is an extremely simple baseline classifier for deciding whether a tweet has positive, negative, or neutral sentiment.  The classifier will make use a [polarity lexicon](https://www.dhgarrette.com/nlpclass/tree/master/data/classify/opinion-lexicon) consisting of a set of words indicating *positive* sentiment and a set of words indicating *negative* sentiment.  This classifier will compare tokens in the tweet against the lexicon and will judge a tweet to be *positive* if it has more positive words than negative words, *negative* if it has more negative than positive words, and *neutral* if it has the same number of positive and negative words.
 
 Your job is to implement a class `nlp.a5.LexiconRatioSentimentClassifier` that extends `nlpclass.Classifier[String, String, String]`.  (You can assume that the Feature, Value, and Label are all Strings since the OpenNLP code only works with Strings.)  This `predict` method of this class should examine the *token* features of the given tweet and compare use sets of positive and negative words to make a judgement.
 
@@ -94,7 +94,7 @@ We will now attempt to improve our sentiment classifier by actually using traini
 * `nlpclass.MaxEntModel`
 * `nlpclass.MaxEntModelTrainer`
 
-You **do not** need to implement these classes.  They are already avilable to you through the nlpclass-fall2013 dependency.  However, if you are interested, you can take a look at the [source code](https://github.com/utcompling/nlpclass-fall2013/blob/master/src/main/scala/nlpclass/MaxEntClassifier.scala).
+You **do not** need to implement these classes.  They are already avilable to you through the nlpclass-fall2013 dependency.  However, if you are interested, you can take a look at the [source code](https://www.dhgarrette.com/nlpclass/blob/master/src/main/scala/nlpclass/MaxEntClassifier.scala).
 
 
 ### MaxEntModel

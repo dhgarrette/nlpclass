@@ -441,7 +441,7 @@ An example is I saw the man with the telescope. If the prepositional phrase atta
 
 We can deal with this decision just like any simple labeling problem: each sentence receives a label *V* or *N* indicating the attachment decision, and there is no benefit to be gained from using previous attachment decisions.
 
-For this problem, you will use a conveniently formatted [data set](https://github.com/utcompling/nlpclass-fall2013/tree/master/data/classify/ppa) for prepositional phrase attachment which has been made available by Adwait Ratnaparkhi. There are three files which you will use for this problem: `train.txt`, `dev.txt`, and `test.txt`. Look at the contents of training:
+For this problem, you will use a conveniently formatted [data set](https://www.dhgarrette.com/nlpclass/tree/master/data/classify/ppa) for prepositional phrase attachment which has been made available by Adwait Ratnaparkhi. There are three files which you will use for this problem: `train.txt`, `dev.txt`, and `test.txt`. Look at the contents of training:
 
     verb=join,noun=board,prep=as,prep_obj=director,V
     verb=is,noun=chairman,prep=of,prep_obj=N.V.,N

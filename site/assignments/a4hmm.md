@@ -44,7 +44,7 @@ Finally: if possible, don't print this homework out! Just read it online, which 
 
 You will implement a Hidden Markov Model for tagging sentences with part-of-speech tags.  The data we will be using comes from the [Penn Treebank](http://www.cis.upenn.edu/~treebank/) corpus.  The list of tags used can be found [here](http://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html).
 
-Create a class `nlp.a4.HiddenMarkovModel[Word, Tag]` that extends the trait [`nlpclass.Tagger[Word, Tag]`](https://github.com/utcompling/nlpclass-fall2013/blob/master/src/main/scala/nlpclass/AssignmentTraits.scala#L163).
+Create a class `nlp.a4.HiddenMarkovModel[Word, Tag]` that extends the trait [`nlpclass.Tagger[Word, Tag]`](https://www.dhgarrette.com/nlpclass/blob/master/src/main/scala/nlpclass/AssignmentTraits.scala#L163).
 
 Your class will implement two methods:
 
@@ -62,7 +62,7 @@ def sentenceProb(sentence: Vector[(Word, Tag)]): Double
 def tagSentence(sentence: Vector[Word]): Vector[Tag]
 {% endhighlight %}
 
-In order to train your model, you will implement a class `UnsmoothedHmmTrainer[Word, Tag]` that extends the trait [`nlpclass.TaggerTrainer[Word, Tag]`](https://github.com/utcompling/nlpclass-fall2013/blob/master/src/main/scala/nlpclass/AssignmentTraits.scala#L179).  It must have the following `train` method:
+In order to train your model, you will implement a class `UnsmoothedHmmTrainer[Word, Tag]` that extends the trait [`nlpclass.TaggerTrainer[Word, Tag]`](https://www.dhgarrette.com/nlpclass/blob/master/src/main/scala/nlpclass/AssignmentTraits.scala#L179).  It must have the following `train` method:
 
 {% highlight scala %}
 def train(taggedSentences: Vector[Vector[(Word, Tag)]]): Tagger[Word, Tag]
@@ -180,7 +180,7 @@ You should get this output from this command:
 
 ## Problem 2: Add-λ Smoothed HMM Tagger (40 points)
 
-Implement a class `AddLambdaSmoothedHmmTrainer[Word, Tag]` that extends the trait [`nlpclass.TaggerTrainer[Word, Tag]`](https://github.com/utcompling/nlpclass-fall2013/blob/master/src/main/scala/nlpclass/AssignmentTraits.scala#L179)
+Implement a class `AddLambdaSmoothedHmmTrainer[Word, Tag]` that extends the trait [`nlpclass.TaggerTrainer[Word, Tag]`](https://www.dhgarrette.com/nlpclass/blob/master/src/main/scala/nlpclass/AssignmentTraits.scala#L179)
 
 With λ=0.1, you should see behavior like this:
 
