@@ -11,6 +11,8 @@ The field of computational linguistics deals with both the science behind provid
 
 The course will be oriented towards hands-on experience of language processing techniques. Previous programming experience is required. 
 
+The GitHub repository for this course (including this website): [https://www.dhgarrette.com/nlpclass/](https://www.dhgarrette.com/nlpclass/)
+
 ## Announcements
 
 * Aug 30, 2013 - The class room has <span style="color: red">CHANGED</span>.  We are now meeting in **ENS 145**.
